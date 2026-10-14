@@ -951,3 +951,53 @@ function deleteKontenItem(mode, id) {
     return { success: false, message: err.toString() };
   }
 }
+
+function simpanPengumuman(payload) {
+  try {
+    var ss = getSpreadsheet();
+    if (!ss) return { success: false, message: "Database spreadsheet tidak ditemukan." };
+
+    var sheet = ss.getSheetByName("PENGUMUMAN");
+    if (!sheet) {
+      sheet = ss.insertSheet("PENGUMUMAN");
+      sheet.appendRow(["Pengumuman_ID", "Judul", "Isi_Pengumuman", "Tanggal_Terbit", "Status_Publish"]);
+    }
+
+    var judul = (payload && payload.judul) ? String(payload.judul).trim() : "";
+    var isi = (payload && payload.isi) ? String(payload.isi).trim() : "";
+    if (!judul || !isi) {
+      return { success: false, message: "Judul dan isi pengumuman tidak boleh kosong!" };
+    }
+
+    var pgmId = "PGM-" + new Date().getTime();
+    var now = Utilities.formatDate(new Date(), "Asia/Jakarta", "dd MMM yyyy HH:mm");
+
+    sheet.appendRow([pgmId, judul, isi, now, "true"]);
+    invalidateCache("INITIAL_DATA");
+
+    return { success: true, message: "Pengumuman berhasil diterbitkan!" };
+  } catch (err) {
+    return { success: false, message: "Gagal menerbitkan pengumuman: " + err.toString() };
+  }
+}
+
+function hapusPengumuman(pengumumanId) {
+  try {
+    var ss = getSpreadsheet();
+    if (!ss) return { success: false, message: "Database spreadsheet tidak ditemukan." };
+    var sheet = ss.getSheetByName("PENGUMUMAN");
+    if (!sheet) return { success: false, message: "Sheet PENGUMUMAN tidak ditemukan." };
+
+    var data = sheet.getDataRange().getDisplayValues();
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][0]).trim() === String(pengumumanId).trim()) {
+        sheet.deleteRow(i + 1);
+        invalidateCache("INITIAL_DATA");
+        return { success: true, message: "Pengumuman berhasil dihapus!" };
+      }
+    }
+    return { success: false, message: "Pengumuman tidak ditemukan." };
+  } catch (err) {
+    return { success: false, message: "Gagal menghapus pengumuman: " + err.toString() };
+  }
+}
