@@ -963,21 +963,44 @@ function simpanPengumuman(payload) {
       sheet.appendRow(["Pengumuman_ID", "Judul", "Isi_Pengumuman", "Tanggal_Terbit", "Status_Publish"]);
     }
 
+    var pgmId = (payload && payload.id) ? String(payload.id).trim() : "";
     var judul = (payload && payload.judul) ? String(payload.judul).trim() : "";
     var isi = (payload && payload.isi) ? String(payload.isi).trim() : "";
+    var tanggal = (payload && payload.tanggal) ? String(payload.tanggal).trim() : "";
+
     if (!judul || !isi) {
       return { success: false, message: "Judul dan isi pengumuman tidak boleh kosong!" };
     }
 
-    var pgmId = "PGM-" + new Date().getTime();
-    var now = Utilities.formatDate(new Date(), "Asia/Jakarta", "dd MMM yyyy HH:mm");
+    if (!tanggal) {
+      tanggal = Utilities.formatDate(new Date(), "Asia/Jakarta", "dd MMM yyyy HH:mm");
+    }
 
-    sheet.appendRow([pgmId, judul, isi, now, "true"]);
-    invalidateCache("INITIAL_DATA");
+    var data = sheet.getDataRange().getDisplayValues();
+    var foundIndex = -1;
+    if (pgmId) {
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]).trim() === pgmId) {
+          foundIndex = i + 1;
+          break;
+        }
+      }
+    }
 
-    return { success: true, message: "Pengumuman berhasil diterbitkan!" };
+    if (foundIndex > 0) {
+      sheet.getRange(foundIndex, 2).setValue(judul);
+      sheet.getRange(foundIndex, 3).setValue(isi);
+      sheet.getRange(foundIndex, 4).setValue(tanggal);
+      invalidateCache("INITIAL_DATA");
+      return { success: true, message: "Pengumuman berhasil diperbarui!" };
+    } else {
+      var newId = pgmId || ("PGM-" + new Date().getTime());
+      sheet.appendRow([newId, judul, isi, tanggal, "true"]);
+      invalidateCache("INITIAL_DATA");
+      return { success: true, message: "Pengumuman berhasil diterbitkan!" };
+    }
   } catch (err) {
-    return { success: false, message: "Gagal menerbitkan pengumuman: " + err.toString() };
+    return { success: false, message: "Gagal menyimpan pengumuman: " + err.toString() };
   }
 }
 

@@ -1958,24 +1958,53 @@ Minggu & Hari Libur: Tutup</p>
           <div
             class="glass-card p-6 rounded-2xl border border-slate-800 space-y-4"
           >
-            <input
-              type="text"
-              id="adm-pgm-title"
-              placeholder="Judul Pengumuman (cth: PENGINGAT: Pendaftaran Open Recruitment Segera Ditutup...)"
-              class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:outline-none"
-            />
-            <textarea
-              id="adm-pgm-isi"
-              placeholder="Tuliskan isi pengumuman secara lengkap di sini..."
-              class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-sm h-32 focus:border-indigo-500 focus:outline-none"
-            ></textarea>
-            <button
-              type="button"
-              onclick="window.handlePublishPengumuman()"
-              class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs cursor-pointer flex items-center gap-2 transition"
-            >
-              <i class="fa-solid fa-paper-plane"></i> Publish Pengumuman
-            </button>
+            <input type="hidden" id="adm-pgm-id" />
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="sm:col-span-2">
+                <label class="block text-[11px] font-bold text-slate-400 mb-1">Judul Pengumuman*</label>
+                <input
+                  type="text"
+                  id="adm-pgm-title"
+                  placeholder="Judul Pengumuman (cth: PENGINGAT: Pendaftaran Open Recruitment...)"
+                  class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-400 mb-1">Tanggal Terbit</label>
+                <input
+                  type="text"
+                  id="adm-pgm-date"
+                  placeholder="Kosongkan untuk tanggal otomatis"
+                  class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">Isi Pengumuman Lengkap*</label>
+              <textarea
+                id="adm-pgm-isi"
+                placeholder="Tuliskan isi pengumuman secara lengkap di sini..."
+                class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-sm h-32 focus:border-indigo-500 focus:outline-none"
+              ></textarea>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                type="button"
+                id="adm-pgm-btn-submit"
+                onclick="window.handlePublishPengumuman()"
+                class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs cursor-pointer flex items-center gap-2 transition"
+              >
+                <i class="fa-solid fa-paper-plane"></i> <span id="adm-pgm-btn-text">Publish Pengumuman</span>
+              </button>
+              <button
+                type="button"
+                id="adm-pgm-btn-cancel"
+                onclick="window.handleCancelEditPengumuman()"
+                class="hidden bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-xs cursor-pointer transition"
+              >
+                Batal Edit
+              </button>
+            </div>
           </div>
           <div class="space-y-3 pt-2">
             <h4 class="text-sm font-bold text-slate-300 flex items-center gap-2">
@@ -4194,9 +4223,14 @@ Minggu & Hari Libur: Tutup</p>
                     '<p class="text-xs text-slate-400 line-clamp-2">' + isi + '</p>' +
                     '<span class="text-[10px] text-slate-500 flex items-center gap-1"><i class="fa-regular fa-clock"></i>' + tgl + '</span>' +
                   '</div>' +
-                  '<button type="button" onclick="window.handleHapusPengumuman(\'' + pgmId + '\')" class="self-end sm:self-center text-xs px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition cursor-pointer flex items-center gap-1.5 shrink-0">' +
-                    '<i class="fa-solid fa-trash"></i> Hapus' +
-                  '</button>' +
+                  '<div class="flex items-center gap-2 self-end sm:self-center shrink-0">' +
+                    '<button type="button" onclick="window.handleEditPengumuman(\'' + pgmId + '\')" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/30 transition cursor-pointer flex items-center gap-1.5">' +
+                      '<i class="fa-solid fa-pen-to-square"></i> Edit' +
+                    '</button>' +
+                    '<button type="button" onclick="window.handleHapusPengumuman(\'' + pgmId + '\')" class="text-xs px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition cursor-pointer flex items-center gap-1.5">' +
+                      '<i class="fa-solid fa-trash"></i> Hapus' +
+                    '</button>' +
+                  '</div>' +
                 '</div>'
               );
             }).join("");
@@ -4204,10 +4238,61 @@ Minggu & Hari Libur: Tutup</p>
         }
       };
 
-      window.handlePublishPengumuman = function () {
+      window.handleEditPengumuman = function (id) {
+        const item = (window.appState.data.pengumuman || []).find(function (x) {
+          return String(x.Pengumuman_ID).trim() === String(id).trim();
+        });
+        if (!item) {
+          window.showToast("Data pengumuman tidak ditemukan!");
+          return;
+        }
+
+        const idEl = document.getElementById("adm-pgm-id");
         const titleEl = document.getElementById("adm-pgm-title");
+        const dateEl = document.getElementById("adm-pgm-date");
         const isiEl = document.getElementById("adm-pgm-isi");
+        const btnText = document.getElementById("adm-pgm-btn-text");
+        const btnCancel = document.getElementById("adm-pgm-btn-cancel");
+        const formContainer = document.getElementById("admin-sub-pengumuman");
+
+        if (idEl) idEl.value = item.Pengumuman_ID;
+        if (titleEl) titleEl.value = item.Judul || "";
+        if (dateEl) dateEl.value = item.Tanggal_Terbit || "";
+        if (isiEl) isiEl.value = item.Isi_Pengumuman || "";
+        if (btnText) btnText.innerText = "Simpan Perubahan Pengumuman";
+        if (btnCancel) btnCancel.classList.remove("hidden");
+
+        if (formContainer) {
+          formContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        window.showToast("Mode Edit aktif: Silakan ubah judul, tanggal, atau isi lalu klik Simpan.");
+      };
+
+      window.handleCancelEditPengumuman = function () {
+        const idEl = document.getElementById("adm-pgm-id");
+        const titleEl = document.getElementById("adm-pgm-title");
+        const dateEl = document.getElementById("adm-pgm-date");
+        const isiEl = document.getElementById("adm-pgm-isi");
+        const btnText = document.getElementById("adm-pgm-btn-text");
+        const btnCancel = document.getElementById("adm-pgm-btn-cancel");
+
+        if (idEl) idEl.value = "";
+        if (titleEl) titleEl.value = "";
+        if (dateEl) dateEl.value = "";
+        if (isiEl) isiEl.value = "";
+        if (btnText) btnText.innerText = "Publish Pengumuman";
+        if (btnCancel) btnCancel.classList.add("hidden");
+      };
+
+      window.handlePublishPengumuman = function () {
+        const idEl = document.getElementById("adm-pgm-id");
+        const titleEl = document.getElementById("adm-pgm-title");
+        const dateEl = document.getElementById("adm-pgm-date");
+        const isiEl = document.getElementById("adm-pgm-isi");
+
+        const pgmId = idEl ? idEl.value.trim() : "";
         const judul = titleEl ? titleEl.value.trim() : "";
+        const tanggal = dateEl ? dateEl.value.trim() : "";
         const isi = isiEl ? isiEl.value.trim() : "";
 
         if (!judul || !isi) {
@@ -4215,15 +4300,23 @@ Minggu & Hari Libur: Tutup</p>
           return;
         }
 
-        window.showLoading(true, "Menerbitkan pengumuman ke portal...");
+        const isEdit = Boolean(pgmId);
+        window.showLoading(true, isEdit ? "Menyimpan perubahan pengumuman..." : "Menerbitkan pengumuman ke portal...");
+
+        const payload = {
+          id: pgmId,
+          judul: judul,
+          tanggal: tanggal,
+          isi: isi
+        };
+
         if (window.checkIsGAS()) {
           google.script.run
             .withSuccessHandler(function (res) {
               window.showLoading(false);
               if (res && res.success) {
-                window.showToast(res.message || "Pengumuman berhasil diterbitkan!");
-                if (titleEl) titleEl.value = "";
-                if (isiEl) isiEl.value = "";
+                window.showToast(res.message || "Pengumuman berhasil disimpan!");
+                window.handleCancelEditPengumuman();
                 window.initData(true);
               } else {
                 window.showToast("Gagal: " + (res ? res.message : "Error"));
@@ -4231,21 +4324,31 @@ Minggu & Hari Libur: Tutup</p>
             })
             .withFailureHandler(function (err) {
               window.showLoading(false);
-              window.showToast("Error menerbitkan: " + err.toString());
+              window.showToast("Error menyimpan: " + err.toString());
             })
-            .simpanPengumuman({ judul: judul, isi: isi });
+            .simpanPengumuman(payload);
         } else {
           window.showLoading(false);
           if (!window.appState.data.pengumuman) window.appState.data.pengumuman = [];
-          window.appState.data.pengumuman.unshift({
-            Pengumuman_ID: "PGM-" + Date.now(),
-            Judul: judul,
-            Isi_Pengumuman: isi,
-            Tanggal_Terbit: new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-            Status_Publish: "true"
-          });
-          if (titleEl) titleEl.value = "";
-          if (isiEl) isiEl.value = "";
+          if (isEdit) {
+            const idx = window.appState.data.pengumuman.findIndex(function (x) {
+              return String(x.Pengumuman_ID) === String(pgmId);
+            });
+            if (idx !== -1) {
+              window.appState.data.pengumuman[idx].Judul = judul;
+              window.appState.data.pengumuman[idx].Isi_Pengumuman = isi;
+              window.appState.data.pengumuman[idx].Tanggal_Terbit = tanggal || new Date().toLocaleDateString("id-ID");
+            }
+          } else {
+            window.appState.data.pengumuman.unshift({
+              Pengumuman_ID: "PGM-" + Date.now(),
+              Judul: judul,
+              Isi_Pengumuman: isi,
+              Tanggal_Terbit: tanggal || new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+              Status_Publish: "true"
+            });
+          }
+          window.handleCancelEditPengumuman();
           window.renderPengumumanList();
           window.showToast("Pengumuman tersimpan (mode lokal)!");
         }
