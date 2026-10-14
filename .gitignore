@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Clasp & Google Apps Script credentials
+.clasprc.json
+
+# Environment & Temporary files
+.env
+.env.local
+.DS_Store
+Thumbs.db
+*.log
