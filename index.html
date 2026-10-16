@@ -520,53 +520,6 @@
           <div id="home-berita-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </div>
 
-        <!-- LOKASI & KONTAK RESMI (EDITABLE OLEH ADMIN & MOBILE-FIT) -->
-        <div class="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-slate-900/90 border border-slate-800 space-y-5 reveal">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800 pb-4">
-            <div>
-              <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">Informasi Sekretariat</span>
-              <h3 class="text-lg sm:text-xl font-bold text-white">Lokasi, Jam Kerja & Kontak Resmi</h3>
-            </div>
-            <button
-              type="button"
-              onclick="window.openModalInfoKontak()"
-              class="admin-only-btn hidden bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white font-bold px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-2 transition cursor-pointer border border-indigo-500/30"
-            >
-              <i class="fa-solid fa-pen-to-square"></i> Edit Info Kontak
-            </button>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            <div class="p-4 sm:p-5 rounded-2xl bg-slate-800/40 border border-slate-700/50 space-y-2">
-              <div class="flex items-center gap-2 text-indigo-400 font-bold text-sm">
-                <i class="fa-solid fa-location-dot"></i> Lokasi Laboratorium
-              </div>
-              <p id="info-lokasi-text" class="text-xs text-slate-300 leading-relaxed whitespace-pre-line break-words">Gedung Laboratorium Terpadu Teknik Industri Lt. 2
-Universitas PGRI Ronggolawe (UNIROW)
-Jl. Manunggal No. 61, Tuban, Jawa Timur</p>
-            </div>
-            <div class="p-4 sm:p-5 rounded-2xl bg-slate-800/40 border border-slate-700/50 space-y-2">
-              <div class="flex items-center gap-2 text-cyan-400 font-bold text-sm">
-                <i class="fa-solid fa-clock"></i> Jam Operasional Praktikum
-              </div>
-              <p id="info-jam-text" class="text-xs text-slate-300 leading-relaxed whitespace-pre-line break-words">Senin - Jumat: 08.00 - 17.00 WIB
-Sabtu: Jadwal Khusus Praktikum & Riset
-Minggu & Hari Libur: Tutup</p>
-            </div>
-            <div class="p-4 sm:p-5 rounded-2xl bg-slate-800/40 border border-slate-700/50 space-y-3 sm:col-span-2 lg:col-span-1">
-              <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-                <i class="fa-solid fa-share-nodes"></i> Kontak & Sosial Media
-              </div>
-              <div class="text-xs text-slate-300 leading-relaxed space-y-2">
-                <p class="flex items-center gap-2"><i class="fa-solid fa-envelope text-indigo-400 w-4 text-center"></i> <a id="info-email-link" href="mailto:iela@unirow.ac.id" class="text-indigo-300 hover:underline break-all">iela@unirow.ac.id</a></p>
-                <p class="flex items-center gap-2"><i class="fa-brands fa-whatsapp text-emerald-400 w-4 text-center"></i> <a id="info-wa-link" href="https://wa.me/6285934457912" target="_blank" class="text-emerald-400 hover:underline break-all">+62 859-3445-7912</a></p>
-                <p class="flex items-center gap-2"><i class="fa-brands fa-instagram text-pink-400 w-4 text-center"></i> <a id="info-ig-link" href="https://instagram.com/iela_unirow" target="_blank" class="text-pink-400 hover:underline break-all">@iela_unirow</a></p>
-                <p id="info-tiktok-row" class="flex items-center gap-2" style="display:none"><i class="fa-brands fa-tiktok text-slate-200 w-4 text-center"></i> <a id="info-tiktok-link" href="#" target="_blank" class="text-slate-200 hover:underline break-all"></a></p>
-                <p id="info-youtube-row" class="flex items-center gap-2" style="display:none"><i class="fa-brands fa-youtube text-red-400 w-4 text-center"></i> <a id="info-youtube-link" href="#" target="_blank" class="text-red-400 hover:underline break-all"></a></p>
-                <p id="info-facebook-row" class="flex items-center gap-2" style="display:none"><i class="fa-brands fa-facebook text-blue-400 w-4 text-center"></i> <a id="info-facebook-link" href="#" target="_blank" class="text-blue-400 hover:underline break-all"></a></p>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       <!-- TAB 2: PROFIL LAB -->
@@ -3152,6 +3105,15 @@ Minggu & Hari Libur: Tutup</p>
               />
             </div>
             <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-300"><i class="fa-brands fa-github text-slate-300 mr-1"></i>GitHub</label>
+              <input
+                type="text"
+                id="kontak-input-github"
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-indigo-500"
+                placeholder="iela-unirow atau link GitHub"
+              />
+            </div>
+            <div class="space-y-1.5 sm:col-span-2">
               <label class="text-xs font-bold text-slate-300"><i class="fa-brands fa-facebook text-blue-400 mr-1"></i>Facebook</label>
               <input
                 type="text"
@@ -3244,13 +3206,127 @@ Minggu & Hari Libur: Tutup</p>
         </div>
       </div>
     </div>
-    <footer
-      class="mt-12 py-8 border-t border-slate-800 text-center text-xs text-slate-500"
-    >
-      <p>
-        &copy; 2027 Laboratorium Industri (IELA) - Universitas PGRI Ronggolawe
-        Tuban. All rights reserved.
-      </p>
+    <!-- FOOTER RESMI INSTITUSI LABORATORIUM IELA UNIROW -->
+    <footer class="bg-slate-950 text-slate-300 border-t border-slate-800 mt-16 text-xs relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          
+          <!-- Column 1: Identity & Address -->
+          <div class="space-y-4 md:col-span-1">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 p-1 flex items-center justify-center shrink-0">
+                <img
+                  src="https://i.ibb.co/B5pjdF4v/Whats-App-Image-2026-09-30-at-18-36-50-1.jpg"
+                  alt="Logo IELA"
+                  class="w-full h-full object-contain rounded-lg"
+                  onerror="this.src='https://placehold.co/100x100/1e293b/ffffff?text=IELA';"
+                />
+              </div>
+              <div>
+                <span class="font-extrabold text-white text-sm tracking-wide block">IELA UNIROW</span>
+                <span class="text-[10px] text-slate-400">Teknik Industri Tuban</span>
+              </div>
+            </div>
+            <p id="footer-lokasi-text" class="text-slate-400 leading-relaxed text-[11px] whitespace-pre-line break-words">Gedung Laboratorium Terpadu Lantai 2, Kampus Universitas PGRI Ronggolawe, Jl. Manunggal No. 61, Wire, Gedongombo, Semanding, Kabupaten Tuban, Jawa Timur 62381.</p>
+            <div class="text-[11px] text-slate-400 flex items-center gap-2">
+              <i class="fa-solid fa-clock text-amber-400"></i>
+              <span id="footer-jam-text">Senin &ndash; Jumat: 08.00 &ndash; 16.00 WIB</span>
+            </div>
+          </div>
+
+          <!-- Column 2: 5 Sub-Laboratorium Navigation -->
+          <div class="space-y-3">
+            <h4 class="font-bold text-white text-xs uppercase tracking-wider">Sub-Laboratorium</h4>
+            <ul class="space-y-2 text-slate-400 text-[11px]">
+              <li><a href="javascript:void(0)" onclick="window.switchTab('profil')" class="hover:text-white transition">1. Fisika Dasar &amp; Terapan</a></li>
+              <li><a href="javascript:void(0)" onclick="window.switchTab('profil')" class="hover:text-white transition">2. Ergonomi &amp; Perancangan Kerja</a></li>
+              <li><a href="javascript:void(0)" onclick="window.switchTab('profil')" class="hover:text-white transition">3. Statistika &amp; Pemodelan Sistem</a></li>
+              <li><a href="javascript:void(0)" onclick="window.switchTab('profil')" class="hover:text-white transition">4. Pemesinan &amp; Manufaktur (Bubut/CNC)</a></li>
+              <li><a href="javascript:void(0)" onclick="window.switchTab('profil')" class="hover:text-white transition">5. Komputasi, Algoritma &amp; AI</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 3: Akademik & Rekrutmen -->
+          <div class="space-y-3">
+            <h4 class="font-bold text-white text-xs uppercase tracking-wider">Tautan Akademik</h4>
+            <ul class="space-y-2 text-slate-400 text-[11px]">
+              <li><a href="javascript:void(0)" onclick="window.switchTab('recruitment')" class="hover:text-white transition">Penerimaan Asisten Lab 2027</a></li>
+              <li><a href="javascript:void(0)" onclick="window.switchTab('pengumuman')" class="hover:text-white transition">Pengumuman Kelulusan Seleksi</a></li>
+              <li><a href="javascript:void(0)" onclick="window.switchTab('profil'); setTimeout(function(){ var el = document.getElementById('aslab-grid-container'); if(el) el.scrollIntoView({behavior:'smooth'}); }, 100);" class="hover:text-white transition">Direktori 29 Asisten Laboratorium</a></li>
+              <li><a href="javascript:void(0)" onclick="window.switchTab('berita')" class="hover:text-white transition">Panduan Keselamatan &amp; SOP K3</a></li>
+              <li><a href="https://unirow.ac.id" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">Website Resmi UNIROW Tuban</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 4: Kontak & Media Sosial -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-white text-xs uppercase tracking-wider">Kontak &amp; Informasi</h4>
+              <button
+                type="button"
+                onclick="window.handleAdminEditFooter()"
+                class="text-[10px] text-indigo-400 hover:text-white flex items-center gap-1 font-bold cursor-pointer transition"
+                title="Edit informasi kontak, lokasi & medsos"
+              >
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+              </button>
+            </div>
+            <div class="space-y-2 text-[11px] text-slate-400">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-envelope text-indigo-400"></i>
+                <a id="footer-email-link" href="mailto:iela.teknikindustri@unirow.ac.id" class="hover:text-white transition break-all">iela.teknikindustri@unirow.ac.id</a>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-brands fa-whatsapp text-emerald-400"></i>
+                <a id="footer-wa-link" href="https://wa.me/6285934457912" target="_blank" rel="noopener noreferrer" class="hover:text-white transition break-all">+62 859-3445-7912 (Koordinator Aslab)</a>
+              </div>
+            </div>
+            
+            <div id="footer-medsos-block" class="pt-2">
+              <span class="text-[10px] uppercase font-bold text-slate-500 block mb-2">Media Komunikasi</span>
+              <div class="flex items-center flex-wrap gap-2 text-slate-400">
+                <a id="footer-ig-link" href="#" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 hover:border-pink-500 hover:text-white flex items-center justify-center transition" title="Instagram" style="display:none">
+                  <i class="fa-brands fa-instagram text-sm"></i>
+                </a>
+                <a id="footer-tiktok-link" href="#" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 hover:border-slate-300 hover:text-white flex items-center justify-center transition" title="TikTok" style="display:none">
+                  <i class="fa-brands fa-tiktok text-sm"></i>
+                </a>
+                <a id="footer-youtube-link" href="#" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 hover:border-red-500 hover:text-white flex items-center justify-center transition" title="YouTube" style="display:none">
+                  <i class="fa-brands fa-youtube text-sm"></i>
+                </a>
+                <a id="footer-github-link" href="#" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 hover:border-indigo-500 hover:text-white flex items-center justify-center transition" title="GitHub" style="display:none">
+                  <i class="fa-brands fa-github text-sm"></i>
+                </a>
+                <a id="footer-facebook-link" href="#" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 hover:border-blue-500 hover:text-white flex items-center justify-center transition" title="Facebook" style="display:none">
+                  <i class="fa-brands fa-facebook text-sm"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="pt-8 mt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500 text-[11px]">
+          <div>
+            &copy; 2027 Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban. Hak Cipta Dilindungi.
+          </div>
+          <div class="flex items-center gap-4">
+            <button
+              type="button"
+              onclick="window.handleAdminEditFooter()"
+              class="hover:text-indigo-300 text-slate-400 cursor-pointer flex items-center gap-1 font-semibold transition"
+            >
+              <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit Footer (Admin)
+            </button>
+            <span>&bull;</span>
+            <span class="hover:text-slate-400 cursor-pointer" onclick="window.switchTab('profil')">SOP Laboratorium</span>
+            <span>&bull;</span>
+            <span class="hover:text-slate-400 cursor-pointer" onclick="window.switchTab('profil')">Standar Mutu ISO</span>
+            <span>&bull;</span>
+            <span class="hover:text-slate-400 cursor-pointer">Kebijakan Privasi</span>
+          </div>
+        </div>
+      </div>
     </footer>
     <script>
       window.appState = {
@@ -3480,6 +3556,24 @@ Minggu & Hari Libur: Tutup</p>
             .getInitialData(forceRefresh || false);
         } else {
           clearTimeout(_safetyTimer);
+          try {
+            var localOverride = localStorage.getItem("IELA_PENGATURAN_OVERRIDE");
+            if (localOverride) {
+              var parsed = JSON.parse(localOverride);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                parsed.forEach(function (p) {
+                  var idx = (window.appState.data.pengaturan || []).findIndex(function (x) {
+                    return String(x.Key_Name || x.key).trim() === String(p.Key_Name || p.key).trim();
+                  });
+                  if (idx !== -1) {
+                    window.appState.data.pengaturan[idx].Value_Text = p.Value_Text;
+                  } else {
+                    window.appState.data.pengaturan.push(p);
+                  }
+                });
+              }
+            }
+          } catch (e) {}
           setTimeout(function () {
             window.showLoading(false);
             try {
@@ -3650,6 +3744,117 @@ Minggu & Hari Libur: Tutup</p>
             elFacebookRow.style.display = "none";
           }
         }
+
+        // --- UPDATE TAMPILAN FOOTER RESMI (EDITABLE ADMIN) ---
+        var github = window.getPengaturanVal("INFO_GITHUB", "");
+
+        var elFooterLokasi = document.getElementById("footer-lokasi-text");
+        var elFooterJam = document.getElementById("footer-jam-text");
+        var elFooterEmail = document.getElementById("footer-email-link");
+        var elFooterWa = document.getElementById("footer-wa-link");
+
+        if (elFooterLokasi) elFooterLokasi.innerText = lokasi;
+        if (elFooterJam) elFooterJam.innerText = jam.split("\n")[0] || jam;
+        if (elFooterEmail) {
+          elFooterEmail.innerText = email;
+          elFooterEmail.href = "mailto:" + email;
+        }
+        if (elFooterWa) {
+          var waClean = wa.replace(/[^0-9]/g, "");
+          elFooterWa.innerText = wa + " (Koordinator Aslab)";
+          elFooterWa.href = "https://wa.me/" + (waClean.startsWith("0") ? "62" + waClean.slice(1) : waClean);
+        }
+
+        // HANYA MUNCULKAN MEDIA KOMUNIKASI YANG DIISI OLEH ADMIN
+        var elFooterMedsosBlock = document.getElementById("footer-medsos-block");
+        var elFooterIg = document.getElementById("footer-ig-link");
+        var elFooterTiktok = document.getElementById("footer-tiktok-link");
+        var elFooterYoutube = document.getElementById("footer-youtube-link");
+        var elFooterGithub = document.getElementById("footer-github-link");
+        var elFooterFacebook = document.getElementById("footer-facebook-link");
+
+        var countMedsos = 0;
+
+        // 1. Instagram
+        if (elFooterIg) {
+          var igVal = (ig || "").trim();
+          if (igVal && igVal !== "-" && igVal !== "#" && !igVal.toLowerCase().includes("kosongkan")) {
+            var igClean = igVal.replace(/^@/, "").trim();
+            elFooterIg.href = igVal.startsWith("http") ? igVal : "https://instagram.com/" + igClean;
+            elFooterIg.style.display = "inline-flex";
+            countMedsos++;
+          } else {
+            elFooterIg.style.display = "none";
+          }
+        }
+
+        // 2. TikTok
+        if (elFooterTiktok) {
+          var tkVal = (tiktok || "").trim();
+          if (tkVal && tkVal !== "-" && tkVal !== "#" && !tkVal.toLowerCase().includes("kosongkan")) {
+            var tkClean = tkVal.replace(/^@/, "").trim();
+            elFooterTiktok.href = tkVal.startsWith("http") ? tkVal : "https://tiktok.com/@" + tkClean;
+            elFooterTiktok.style.display = "inline-flex";
+            countMedsos++;
+          } else {
+            elFooterTiktok.style.display = "none";
+          }
+        }
+
+        // 3. YouTube
+        if (elFooterYoutube) {
+          var ytVal = (youtube || "").trim();
+          if (ytVal && ytVal !== "-" && ytVal !== "#" && !ytVal.toLowerCase().includes("kosongkan")) {
+            var ytClean = ytVal.replace(/^@/, "").replace(/\s+/g, "").trim();
+            elFooterYoutube.href = ytVal.startsWith("http") ? ytVal : "https://youtube.com/@" + ytClean;
+            elFooterYoutube.style.display = "inline-flex";
+            countMedsos++;
+          } else {
+            elFooterYoutube.style.display = "none";
+          }
+        }
+
+        // 4. GitHub
+        if (elFooterGithub) {
+          var ghVal = (github || "").trim();
+          if (ghVal && ghVal !== "-" && ghVal !== "#" && !ghVal.toLowerCase().includes("kosongkan")) {
+            var ghClean = ghVal.replace(/^@/, "").replace(/\s+/g, "").trim();
+            elFooterGithub.href = ghVal.startsWith("http") ? ghVal : "https://github.com/" + ghClean;
+            elFooterGithub.style.display = "inline-flex";
+            countMedsos++;
+          } else {
+            elFooterGithub.style.display = "none";
+          }
+        }
+
+        // 5. Facebook
+        if (elFooterFacebook) {
+          var fbVal = (facebook || "").trim();
+          if (fbVal && fbVal !== "-" && fbVal !== "#" && !fbVal.toLowerCase().includes("kosongkan")) {
+            var fbClean = fbVal.replace(/\s+/g, "").trim();
+            elFooterFacebook.href = fbVal.startsWith("http") ? fbVal : "https://facebook.com/" + fbClean;
+            elFooterFacebook.style.display = "inline-flex";
+            countMedsos++;
+          } else {
+            elFooterFacebook.style.display = "none";
+          }
+        }
+
+        // Sembunyikan seluruh blok Media Komunikasi jika tidak ada yang diisi
+        if (elFooterMedsosBlock) {
+          elFooterMedsosBlock.style.display = countMedsos > 0 ? "block" : "none";
+        }
+      };
+
+      window.handleAdminEditFooter = function () {
+        var user = window.appState.currentUser;
+        var isAdmin = user && (String(user.role || "").toLowerCase().includes("admin") || String(user.role || "").toLowerCase().includes("koordinator"));
+        if (isAdmin || !window.checkIsGAS()) {
+          window.openModalInfoKontak();
+        } else {
+          window.showToast("Silakan login sebagai Administrator terlebih dahulu untuk mengedit informasi footer.");
+          window.openModal("modal-login");
+        }
       };
 
       window.openModalInfoKontak = function () {
@@ -3660,15 +3865,17 @@ Minggu & Hari Libur: Tutup</p>
         var elIgInp = document.getElementById("kontak-input-ig");
         var elTiktokInp = document.getElementById("kontak-input-tiktok");
         var elYoutubeInp = document.getElementById("kontak-input-youtube");
+        var elGithubInp = document.getElementById("kontak-input-github");
         var elFacebookInp = document.getElementById("kontak-input-facebook");
 
-        if (elLokasiInp) elLokasiInp.value = window.getPengaturanVal("INFO_LOKASI", "Gedung Laboratorium Terpadu Teknik Industri Lt. 2\nUniversitas PGRI Ronggolawe (UNIROW)\nJl. Manunggal No. 61, Tuban, Jawa Timur");
-        if (elJamInp) elJamInp.value = window.getPengaturanVal("INFO_JAM", "Senin - Jumat: 08.00 - 17.00 WIB\nSabtu: Jadwal Khusus Praktikum & Riset\nMinggu & Hari Libur: Tutup");
-        if (elEmailInp) elEmailInp.value = window.getPengaturanVal("INFO_EMAIL", "iela@unirow.ac.id");
-        if (elWaInp) elWaInp.value = window.getPengaturanVal("INFO_WA", "+62 859-3445-7912");
+        if (elLokasiInp) elLokasiInp.value = window.getPengaturanVal("INFO_LOKASI", "Gedung Laboratorium Terpadu Lantai 2, Kampus Universitas PGRI Ronggolawe, Jl. Manunggal No. 61, Wire, Gedongombo, Semanding, Kabupaten Tuban, Jawa Timur 62381.");
+        if (elJamInp) elJamInp.value = window.getPengaturanVal("INFO_JAM", "Senin – Jumat: 08.00 – 16.00 WIB");
+        if (elEmailInp) elEmailInp.value = window.getPengaturanVal("INFO_EMAIL", "iela.teknikindustri@unirow.ac.id");
+        if (elWaInp) elWaInp.value = window.getPengaturanVal("INFO_WA", "0859-3445-7912");
         if (elIgInp) elIgInp.value = window.getPengaturanVal("INFO_IG", "@iela_unirow");
         if (elTiktokInp) elTiktokInp.value = window.getPengaturanVal("INFO_TIKTOK", "");
         if (elYoutubeInp) elYoutubeInp.value = window.getPengaturanVal("INFO_YOUTUBE", "");
+        if (elGithubInp) elGithubInp.value = window.getPengaturanVal("INFO_GITHUB", "");
         if (elFacebookInp) elFacebookInp.value = window.getPengaturanVal("INFO_FACEBOOK", "");
 
         window.openModal("modal-edit-info-kontak");
@@ -3683,6 +3890,7 @@ Minggu & Hari Libur: Tutup</p>
         var ig = document.getElementById("kontak-input-ig").value.trim();
         var tiktok = (document.getElementById("kontak-input-tiktok") || {}).value || "";
         var youtube = (document.getElementById("kontak-input-youtube") || {}).value || "";
+        var github = (document.getElementById("kontak-input-github") || {}).value || "";
         var facebook = (document.getElementById("kontak-input-facebook") || {}).value || "";
 
         var payload = {
@@ -3693,6 +3901,7 @@ Minggu & Hari Libur: Tutup</p>
           INFO_IG: ig,
           INFO_TIKTOK: tiktok.trim(),
           INFO_YOUTUBE: youtube.trim(),
+          INFO_GITHUB: github.trim(),
           INFO_FACEBOOK: facebook.trim()
         };
 
@@ -3707,6 +3916,12 @@ Minggu & Hari Libur: Tutup</p>
             window.appState.data.pengaturan.push({ Param_ID: "PRM-" + Date.now(), Key_Name: k, Value_Text: payload[k] });
           }
         }
+        
+        // Save to localStorage for demo persistence
+        try {
+          localStorage.setItem("IELA_PENGATURAN_OVERRIDE", JSON.stringify(window.appState.data.pengaturan));
+        } catch (err) {}
+
         window.renderInfoKontak();
 
         if (window.checkIsGAS()) {
