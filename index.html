@@ -1552,39 +1552,103 @@
         </div>
         <div id="admin-sub-master" class="admin-sub-content space-y-6">
           <div
-            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+            class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"
           >
             <div>
-              <h3 class="text-lg font-bold text-white">
-                Data Peserta Pendaftar IELA 2027-2028
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>Data Peserta Pendaftar IELA 2027-2028</span>
               </h3>
               <p id="admin-total-count" class="text-xs text-slate-400">
                 Total: 0 Peserta
               </p>
             </div>
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-              <input
-                type="text"
-                id="admin-search-input"
-                oninput="window.renderAdminTable()"
-                placeholder="Cari nama atau NPM..."
-                class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white w-full sm:w-64"
-              />
+            <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+              <!-- Filter Status Pills: Semua, Submitted, Draft -->
+              <div class="inline-flex items-center p-1 bg-slate-900/90 border border-slate-800 rounded-xl text-xs shadow-inner">
+                <button
+                  type="button"
+                  id="admin-filter-pill-all"
+                  onclick="window.setAdminStatusFilter('all')"
+                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 cursor-pointer"
+                >
+                  <span>Semua</span>
+                  <span id="admin-count-all" class="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 font-mono">0</span>
+                </button>
+                <button
+                  type="button"
+                  id="admin-filter-pill-submitted"
+                  onclick="window.setAdminStatusFilter('submitted')"
+                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer"
+                >
+                  <span class="inline-block w-2 h-2 rounded-full bg-indigo-400"></span>
+                  <span>Submitted</span>
+                  <span id="admin-count-submitted" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-indigo-300 font-mono">0</span>
+                </button>
+                <button
+                  type="button"
+                  id="admin-filter-pill-draft"
+                  onclick="window.setAdminStatusFilter('draft')"
+                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer"
+                >
+                  <span class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
+                  <span>Draft</span>
+                  <span id="admin-count-draft" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-amber-300 font-mono">0</span>
+                </button>
+              </div>
+
+              <!-- Urutkan / Sort Select -->
+              <div class="relative">
+                <select
+                  id="admin-sort-select"
+                  onchange="window.onAdminSortChange()"
+                  class="bg-slate-900 border border-slate-800 text-xs text-slate-200 rounded-xl pl-3 pr-8 py-2 cursor-pointer focus:ring-1 focus:ring-indigo-500 appearance-none font-medium"
+                >
+                  <option value="default">Urutkan: Default</option>
+                  <option value="status_submitted">Status: Submitted Dulu</option>
+                  <option value="status_draft">Status: Draft Dulu</option>
+                  <option value="nama_asc">Nama (A &rarr; Z)</option>
+                  <option value="nama_desc">Nama (Z &rarr; A)</option>
+                  <option value="ipk_desc">IPK Tertinggi</option>
+                  <option value="ipk_asc">IPK Terendah</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-3 top-3 text-[9px] text-slate-400 pointer-events-none"></i>
+              </div>
+
+              <!-- Cari Nama / NPM -->
+              <div class="relative flex-1 sm:w-56">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                <input
+                  type="text"
+                  id="admin-search-input"
+                  oninput="window.renderAdminTable()"
+                  placeholder="Cari nama atau NPM..."
+                  class="bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-white w-full placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
             </div>
           </div>
           <div
-            class="glass-card rounded-2xl border border-slate-800 overflow-hidden"
+            class="glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-xl"
           >
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm text-slate-300">
                 <thead
-                  class="bg-slate-900/80 text-xs uppercase font-bold text-slate-400 border-b border-slate-800"
+                  class="bg-slate-900/80 text-xs uppercase font-bold text-slate-400 border-b border-slate-800 select-none"
                 >
                   <tr>
-                    <th class="p-4">Nama Pendaftar</th>
-                    <th class="p-4">Prodi & IPK</th>
+                    <th class="p-4 cursor-pointer hover:text-white transition group" onclick="window.toggleAdminSort('nama')" title="Klik untuk mengurutkan berdasarkan nama">
+                      <span>Nama Pendaftar</span>
+                      <i id="sort-icon-nama" class="fa-solid fa-sort ml-1 text-slate-500 group-hover:text-indigo-400"></i>
+                    </th>
+                    <th class="p-4 cursor-pointer hover:text-white transition group" onclick="window.toggleAdminSort('ipk')" title="Klik untuk mengurutkan berdasarkan IPK">
+                      <span>Prodi &amp; IPK</span>
+                      <i id="sort-icon-ipk" class="fa-solid fa-sort ml-1 text-slate-500 group-hover:text-amber-400"></i>
+                    </th>
                     <th class="p-4">Bidang Pilihan</th>
-                    <th class="p-4">Status Seleksi</th>
+                    <th class="p-4 cursor-pointer hover:text-white transition group" onclick="window.toggleAdminSort('status')" title="Klik untuk menyortir status">
+                      <span>Status Seleksi</span>
+                      <i id="sort-icon-status" class="fa-solid fa-sort ml-1 text-slate-500 group-hover:text-indigo-400"></i>
+                    </th>
                     <th class="p-4 text-center">Aksi Admin</th>
                   </tr>
                 </thead>
@@ -4971,36 +5035,253 @@
           }, 800);
         }
       };
+      window.appState.adminStatusFilter = "all";
+      window.appState.adminSortCol = "default";
+
+      window.setAdminStatusFilter = function (status) {
+        window.appState.adminStatusFilter = status;
+        ["all", "submitted", "draft"].forEach(function (key) {
+          var btn = document.getElementById("admin-filter-pill-" + key);
+          if (!btn) return;
+          if (key === status) {
+            if (key === "draft") {
+              btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-amber-600 text-white shadow-sm shadow-amber-600/30 cursor-pointer";
+            } else {
+              btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 cursor-pointer";
+            }
+          } else {
+            btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer";
+          }
+        });
+        window.renderAdminTable();
+      };
+
+      window.onAdminSortChange = function () {
+        var sortSelect = document.getElementById("admin-sort-select");
+        if (sortSelect) {
+          window.appState.adminSortCol = sortSelect.value;
+        }
+        window.renderAdminTable();
+      };
+
+      window.toggleAdminSort = function (col) {
+        var sortSelect = document.getElementById("admin-sort-select");
+        if (col === "status") {
+          if (window.appState.adminSortCol === "status_submitted") {
+            window.appState.adminSortCol = "status_draft";
+          } else {
+            window.appState.adminSortCol = "status_submitted";
+          }
+        } else if (col === "nama") {
+          if (window.appState.adminSortCol === "nama_asc") {
+            window.appState.adminSortCol = "nama_desc";
+          } else {
+            window.appState.adminSortCol = "nama_asc";
+          }
+        } else if (col === "ipk") {
+          if (window.appState.adminSortCol === "ipk_desc") {
+            window.appState.adminSortCol = "ipk_asc";
+          } else {
+            window.appState.adminSortCol = "ipk_desc";
+          }
+        }
+        if (sortSelect) sortSelect.value = window.appState.adminSortCol;
+        window.renderAdminTable();
+      };
+
       window.renderAdminTable = function () {
         const tb = document.getElementById("admin-pendaftar-table-body");
-        const search = (
-          (document.getElementById("admin-search-input") ? document.getElementById("admin-search-input").value : "") || ""
-        ).toLowerCase();
         if (!tb) return;
-        let list = window.appState.data.pendaftar || [];
-        if (search) {
-          list = list.filter(
-            (x) =>
-              String(x.Nama || "")
-                .toLowerCase()
-                .includes(search) ||
-              String(x.NIM || "")
-                .toLowerCase()
-                .includes(search),
-          );
+
+        const rawList = window.appState.data.pendaftar || [];
+        const searchInput = document.getElementById("admin-search-input");
+        const search = ((searchInput ? searchInput.value : "") || "").toLowerCase().trim();
+
+        // 1. Calculate status statistics across all participants
+        let totalDraft = 0;
+        let totalSubmitted = 0;
+        rawList.forEach(function (x) {
+          var s = String(x.Status_Pendaftaran || "").toLowerCase().trim();
+          if (s === "draft") {
+            totalDraft++;
+          } else {
+            totalSubmitted++;
+          }
+        });
+
+        const countAllEl = document.getElementById("admin-count-all");
+        const countSubmittedEl = document.getElementById("admin-count-submitted");
+        const countDraftEl = document.getElementById("admin-count-draft");
+        if (countAllEl) countAllEl.innerText = rawList.length;
+        if (countSubmittedEl) countSubmittedEl.innerText = totalSubmitted;
+        if (countDraftEl) countDraftEl.innerText = totalDraft;
+
+        // 2. Filter by Status (all / submitted / draft)
+        let list = rawList.slice();
+        const curStatusFilter = window.appState.adminStatusFilter || "all";
+        if (curStatusFilter === "draft") {
+          list = list.filter(function (x) {
+            return String(x.Status_Pendaftaran || "").toLowerCase().trim() === "draft";
+          });
+        } else if (curStatusFilter === "submitted") {
+          list = list.filter(function (x) {
+            return String(x.Status_Pendaftaran || "").toLowerCase().trim() !== "draft";
+          });
         }
-        document.getElementById("admin-total-count").innerText =
-          'Total: ' + (list.length) + ' Peserta';
+
+        // 3. Filter by Search Query
+        if (search) {
+          list = list.filter(function (x) {
+            return (
+              String(x.Nama || "").toLowerCase().includes(search) ||
+              String(x.NIM || "").toLowerCase().includes(search) ||
+              String(x.Bidang_Pilihan_1 || "").toLowerCase().includes(search)
+            );
+          });
+        }
+
+        // 4. Sort Candidates List
+        var sortMode = window.appState.adminSortCol || "default";
+        var sortSelect = document.getElementById("admin-sort-select");
+        if (sortSelect && sortSelect.value && sortSelect.value !== sortMode) {
+          sortMode = sortSelect.value;
+          window.appState.adminSortCol = sortMode;
+        }
+
+        if (sortMode === "status_submitted") {
+          list.sort(function (a, b) {
+            var sa = String(a.Status_Pendaftaran || "").toLowerCase().trim() === "draft" ? 1 : 0;
+            var sb = String(b.Status_Pendaftaran || "").toLowerCase().trim() === "draft" ? 1 : 0;
+            return sa - sb;
+          });
+        } else if (sortMode === "status_draft") {
+          list.sort(function (a, b) {
+            var sa = String(a.Status_Pendaftaran || "").toLowerCase().trim() === "draft" ? 0 : 1;
+            var sb = String(b.Status_Pendaftaran || "").toLowerCase().trim() === "draft" ? 0 : 1;
+            return sa - sb;
+          });
+        } else if (sortMode === "nama_asc") {
+          list.sort(function (a, b) {
+            return String(a.Nama || "").localeCompare(String(b.Nama || ""));
+          });
+        } else if (sortMode === "nama_desc") {
+          list.sort(function (a, b) {
+            return String(b.Nama || "").localeCompare(String(a.Nama || ""));
+          });
+        } else if (sortMode === "ipk_desc") {
+          list.sort(function (a, b) {
+            return (parseFloat(b.IPK) || 0) - (parseFloat(a.IPK) || 0);
+          });
+        } else if (sortMode === "ipk_asc") {
+          list.sort(function (a, b) {
+            return (parseFloat(a.IPK) || 0) - (parseFloat(b.IPK) || 0);
+          });
+        }
+
+        // 5. Update Header Sort Icons
+        var iconStatus = document.getElementById("sort-icon-status");
+        var iconNama = document.getElementById("sort-icon-nama");
+        var iconIpk = document.getElementById("sort-icon-ipk");
+
+        if (iconStatus) {
+          if (sortMode === "status_submitted") {
+            iconStatus.className = "fa-solid fa-arrow-down-short-wide ml-1 text-indigo-400";
+          } else if (sortMode === "status_draft") {
+            iconStatus.className = "fa-solid fa-arrow-up-wide-short ml-1 text-amber-400";
+          } else {
+            iconStatus.className = "fa-solid fa-sort ml-1 text-slate-500 group-hover:text-indigo-400";
+          }
+        }
+        if (iconNama) {
+          if (sortMode === "nama_asc") {
+            iconNama.className = "fa-solid fa-arrow-down-a-z ml-1 text-indigo-400";
+          } else if (sortMode === "nama_desc") {
+            iconNama.className = "fa-solid fa-arrow-up-z-a ml-1 text-indigo-400";
+          } else {
+            iconNama.className = "fa-solid fa-sort ml-1 text-slate-500 group-hover:text-indigo-400";
+          }
+        }
+        if (iconIpk) {
+          if (sortMode === "ipk_desc") {
+            iconIpk.className = "fa-solid fa-arrow-down-9-1 ml-1 text-amber-400";
+          } else if (sortMode === "ipk_asc") {
+            iconIpk.className = "fa-solid fa-arrow-up-1-9 ml-1 text-amber-400";
+          } else {
+            iconIpk.className = "fa-solid fa-sort ml-1 text-slate-500 group-hover:text-amber-400";
+          }
+        }
+
+        // 6. Update Total Display Text
+        var filterLabel = "";
+        if (curStatusFilter === "submitted") filterLabel = " (Filter: Submitted)";
+        else if (curStatusFilter === "draft") filterLabel = " (Filter: Draft)";
+
+        var totalEl = document.getElementById("admin-total-count");
+        if (totalEl) {
+          if (list.length !== rawList.length) {
+            totalEl.innerText = "Menampilkan " + list.length + " dari " + rawList.length + " Peserta" + filterLabel;
+          } else {
+            totalEl.innerText = "Total: " + list.length + " Peserta";
+          }
+        }
+
+        // 7. Render Table Rows
         if (list.length === 0) {
           tb.innerHTML =
-            '<tr><td colspan="5" class="p-4 text-center text-slate-500 italic">Data pendaftar tidak ditemukan.</td></tr>';
+            '<tr><td colspan="5" class="p-8 text-center text-slate-500 italic"><i class="fa-solid fa-inbox text-2xl mb-2 block opacity-40"></i>Data pendaftar tidak ditemukan untuk kriteria filter ini.</td></tr>';
           return;
         }
+
         tb.innerHTML = list
-          .map(
-            (x) =>
-              ' <tr class="hover:bg-slate-800/40 border-b border-slate-800/60 transition"> <td class="p-4 cursor-pointer hover:text-indigo-400" onclick="window.openCandidateDetail(\'' + (x.Pendaftar_ID) + '\')"> <p class="font-bold text-white text-sm">' + (x.Nama) + '</p> <p class="text-xs font-mono text-indigo-400">NPM: ' + (x.NIM) + '</p> </td> <td class="p-4 text-xs"> <p class="text-slate-300">' + (x.Prodi || "Teknik Industri") + '</p> <p class="font-bold text-amber-400">IPK: ' + (x.IPK || "3.00") + '</p> </td> <td class="p-4 text-xs text-slate-300">' + (x.Bidang_Pilihan_1 || "-") + '</td> <td class="p-4"> <span class="px-3 py-1 text-[10px] font-bold rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">' + (x.Status_Pendaftaran || "Submitted") + '</span> </td> <td class="p-4 text-center"> <div class="flex items-center justify-center gap-2"> <button type="button" onclick="window.openCandidateDetail(\'' + (x.Pendaftar_ID) + '\')" class="p-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-lg text-xs font-bold transition"> <i class="fa-solid fa-folder-open mr-1"></i> Dossier </button> <select id="status-select-' + (x.Pendaftar_ID) + '" onchange="window.promptUpdateStatus(\'' + (x.Pendaftar_ID) + '\', \'' + (x.NIM) + '\', \'' + (x.Nama || '').replace(/\'/g, '') + '\', this.value, \'' + (x.Status_Pendaftaran || 'Submitted') + '\')" class="bg-slate-900 border border-slate-700 rounded-lg text-xs text-white p-1.5 cursor-pointer"> <option value="" disabled selected>Ubah Status...</option> <option value="Submitted">Submitted</option> <option value="Lolos Seleksi Berkas">Lolos Berkas</option> <option value="Lolos Asisten Lab 2027">Lolos Asisten</option> <option value="Tidak Lolos">Tidak Lolos</option> </select> </div> </td> </tr> ',
-          )
+          .map(function (x) {
+            var statusRaw = String(x.Status_Pendaftaran || "Submitted").trim();
+            var statusLower = statusRaw.toLowerCase();
+            var badgeHtml = "";
+            if (statusLower === "draft") {
+              badgeHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm"><i class="fa-solid fa-file-pen text-[9px]"></i> Draft</span>';
+            } else if (statusLower === "submitted") {
+              badgeHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 shadow-sm"><i class="fa-solid fa-check text-[9px]"></i> Submitted</span>';
+            } else if (statusLower.includes("berkas")) {
+              badgeHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shadow-sm"><i class="fa-solid fa-file-circle-check text-[9px]"></i> ' + statusRaw + '</span>';
+            } else if (statusLower.includes("lolos") && !statusLower.includes("tidak")) {
+              badgeHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-sm"><i class="fa-solid fa-trophy text-[9px]"></i> ' + statusRaw + '</span>';
+            } else if (statusLower.includes("tidak")) {
+              badgeHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-sm"><i class="fa-solid fa-circle-xmark text-[9px]"></i> ' + statusRaw + '</span>';
+            } else {
+              badgeHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full bg-slate-800 text-slate-300 border border-slate-700 shadow-sm">' + statusRaw + '</span>';
+            }
+
+            var safeNama = String(x.Nama || "").replace(/['"]/g, "");
+            return (
+              '<tr class="hover:bg-slate-800/40 border-b border-slate-800/60 transition group">' +
+              '  <td class="p-4 cursor-pointer" onclick="window.openCandidateDetail(\'' + x.Pendaftar_ID + '\')">' +
+              '    <p class="font-bold text-white text-sm group-hover:text-indigo-400 transition">' + (x.Nama || "-") + '</p>' +
+              '    <p class="text-xs font-mono text-indigo-400">NPM: ' + (x.NIM || "-") + '</p>' +
+              '  </td>' +
+              '  <td class="p-4 text-xs">' +
+              '    <p class="text-slate-300">' + (x.Prodi || "Teknik Industri Unirow") + '</p>' +
+              '    <p class="font-bold text-amber-400">IPK: ' + (x.IPK || "3.00") + '</p>' +
+              '  </td>' +
+              '  <td class="p-4 text-xs text-slate-300">' + (x.Bidang_Pilihan_1 || "-") + '</td>' +
+              '  <td class="p-4">' + badgeHtml + '</td>' +
+              '  <td class="p-4 text-center">' +
+              '    <div class="flex items-center justify-center gap-2">' +
+              '      <button type="button" onclick="window.openCandidateDetail(\'' + x.Pendaftar_ID + '\')" class="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">' +
+              '        <i class="fa-solid fa-folder-open"></i> Dossier' +
+              '      </button>' +
+              '      <select id="status-select-' + x.Pendaftar_ID + '" onchange="window.promptUpdateStatus(\'' + x.Pendaftar_ID + '\', \'' + x.NIM + '\', \'' + safeNama + '\', this.value, \'' + statusRaw + '\')" class="bg-slate-900 border border-slate-700 hover:border-slate-600 rounded-lg text-xs text-white p-1.5 cursor-pointer focus:ring-1 focus:ring-indigo-500">' +
+              '        <option value="" disabled selected>Ubah Status...</option>' +
+              '        <option value="Submitted">Submitted</option>' +
+              '        <option value="Draft">Draft</option>' +
+              '        <option value="Lolos Seleksi Berkas">Lolos Berkas</option>' +
+              '        <option value="Lolos Asisten Lab 2027">Lolos Asisten</option>' +
+              '        <option value="Tidak Lolos">Tidak Lolos</option>' +
+              '      </select>' +
+              '    </div>' +
+              '  </td>' +
+              '</tr>'
+            );
+          })
           .join("");
       };
       window.appState.pendingStatusUpdate = null;
@@ -5052,6 +5333,15 @@
             btnSubmit.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Ya, Loloskan Berkas';
           }
           if (descBox) descBox.innerHTML = '<i class="fa-solid fa-envelope text-cyan-400 mr-1"></i> Pendaftar akan dinyatakan <strong>Lolos Seleksi Berkas</strong> dan menerima email konfirmasi bertema cyan untuk persiapan wawancara.';
+        } else if (newStatus === "Draft") {
+          if (iconBox) iconBox.className = "w-12 h-12 rounded-2xl flex items-center justify-center bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xl";
+          if (icon) icon.className = "fa-solid fa-file-pen";
+          if (badgeEl) badgeEl.className = "px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30";
+          if (btnSubmit) {
+            btnSubmit.className = "w-1/2 py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition cursor-pointer shadow-lg shadow-amber-600/30 flex items-center justify-center gap-1.5";
+            btnSubmit.innerHTML = '<i class="fa-solid fa-rotate-left mr-1"></i> Ya, Set ke Draft';
+          }
+          if (descBox) descBox.innerHTML = '<i class="fa-solid fa-file-pen text-amber-400 mr-1"></i> Status pendaftar akan diset ke <strong>Draft</strong> sehingga calon asisten dapat melengkapi atau memperbarui berkasnya.';
         } else {
           // Submitted
           if (iconBox) iconBox.className = "w-12 h-12 rounded-2xl flex items-center justify-center bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xl";
