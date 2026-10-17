@@ -98,28 +98,64 @@
       .delay-100 { transition-delay: 100ms; }
       .delay-200 { transition-delay: 200ms; }
       .delay-300 { transition-delay: 300ms; }
+      @keyframes logoPulse {
+        0%, 100% {
+          transform: scale(1);
+          filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.45));
+        }
+        50% {
+          transform: scale(1.06);
+          filter: drop-shadow(0 0 24px rgba(99, 102, 241, 0.85));
+        }
+      }
+      .animate-logo-pulse {
+        animation: logoPulse 2.2s infinite ease-in-out;
+      }
     </style>
   </head>
   <body
     class="min-h-screen flex flex-col justify-between relative overflow-x-hidden"
   >
-    <!-- OVERLAY LOADING -->
+    <!-- OVERLAY LOADING DENGAN LOGO IELA -->
     <div
       id="loading-overlay"
-      class="fixed inset-0 z-[9999] hidden items-center justify-center bg-slate-950/80 backdrop-blur-md"
+      class="fixed inset-0 z-[9999] hidden items-center justify-center bg-slate-950/85 backdrop-blur-md transition-all duration-300"
       style="display: none"
     >
-      <div class="relative flex items-center justify-center flex-col gap-3">
-        <div
-          class="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"
-        ></div>
-        <i class="fa-solid fa-flask text-indigo-400 absolute text-xl"></i>
-        <p
-          class="text-sm font-medium text-slate-300 tracking-wider mt-4"
-          id="loading-text"
-        >
-          Memuat Sistem IELA...
-        </p>
+      <div class="relative flex items-center justify-center flex-col gap-4">
+        <!-- Logo Container with Glowing Aura & Outer Spinner -->
+        <div class="relative flex items-center justify-center w-24 h-24">
+          <!-- Ambient Glow Aura -->
+          <div class="absolute inset-0 rounded-2xl bg-indigo-500/25 blur-xl animate-pulse"></div>
+
+          <!-- Rotating Outer Ring -->
+          <div class="absolute w-20 h-20 rounded-2xl border-2 border-indigo-500/20 border-t-indigo-500 border-r-indigo-400 animate-spin"></div>
+
+          <!-- Pulsing IELA Logo -->
+          <img
+            src="https://i.ibb.co/B5pjdF4v/Whats-App-Image-2026-09-30-at-18-36-50-1.jpg"
+            alt="Logo IELA"
+            class="relative z-10 w-12 h-12 object-contain rounded-xl p-1 bg-slate-900/90 border border-indigo-500/40 animate-logo-pulse"
+            onerror="
+              this.onerror = null;
+              this.src =
+                'https://placehold.co/100x100/1e293b/ffffff?text=IELA';
+            "
+          />
+        </div>
+
+        <!-- Text Indicator -->
+        <div class="flex flex-col items-center gap-1">
+          <p
+            class="text-sm font-semibold text-slate-200 tracking-wider"
+            id="loading-text"
+          >
+            Memuat Sistem IELA...
+          </p>
+          <span class="text-[10px] font-bold text-indigo-400/90 tracking-widest uppercase">
+            Laboratorium Teknik Industri
+          </span>
+        </div>
       </div>
     </div>
     <div
