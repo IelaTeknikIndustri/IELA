@@ -409,6 +409,9 @@
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- TAB 1: BERANDA -->
       <section id="tab-home" class="tab-content space-y-12">
+        <!-- BANNER PENGUMUMAN RESMI TERBARU DI BERANDA UTAMA -->
+        <div id="home-pengumuman-banner" class="hidden"></div>
+
         <div
           class="reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 p-8 sm:p-12"
         >
@@ -959,6 +962,9 @@
       </section>
       <!-- DASHBOARD PENDAFTAR -->
       <section id="dashboard-pendaftar" class="tab-content hidden space-y-8">
+        <!-- ALERT PENGUMUMAN TERBARU DI DASHBOARD PENDAFTAR -->
+        <div id="pendaftar-pengumuman-alert" class="hidden"></div>
+
         <div
           class="p-6 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl"
         >
@@ -4479,20 +4485,257 @@
           .join("");
       };
 
+      window.parsePengumumanDate = function (val) {
+        if (!val) return null;
+        if (val instanceof Date && !isNaN(val.getTime())) return val;
+        var s = String(val).trim();
+        if (!s) return null;
+
+        var indoMonths = {
+          jan: 0, januari: 0,
+          feb: 1, februari: 1,
+          mar: 2, maret: 2,
+          apr: 3, april: 3,
+          mei: 4, may: 4,
+          jun: 5, juni: 5,
+          jul: 6, juli: 6,
+          agu: 7, ags: 7, agustus: 7, aug: 7, august: 7,
+          sep: 8, september: 8,
+          okt: 9, oktober: 9, oct: 9, october: 9,
+          nov: 10, november: 10,
+          des: 11, desember: 11, dec: 11, december: 11
+        };
+
+        // Format YYYY-MM-DD atau YYYY/MM/DD dengan opsi jam
+        var ymdMatch = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:[T\s]+(\d{1,2})[:.](\d{1,2})(?:[:.](\d{1,2}))?)?/);
+        if (ymdMatch) {
+          var y = parseInt(ymdMatch[1], 10);
+          var m = parseInt(ymdMatch[2], 10) - 1;
+          var d = parseInt(ymdMatch[3], 10);
+          var hh = ymdMatch[4] ? parseInt(ymdMatch[4], 10) : 0;
+          var mm = ymdMatch[5] ? parseInt(ymdMatch[5], 10) : 0;
+          var ss = ymdMatch[6] ? parseInt(ymdMatch[6], 10) : 0;
+          var dt = new Date(y, m, d, hh, mm, ss);
+          if (!isNaN(dt.getTime())) return dt;
+        }
+
+        // Format DD/MM/YYYY atau DD-MM-YYYY dengan opsi jam
+        var dmyMatch = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:[T\s]+(\d{1,2})[:.](\d{1,2})(?:[:.](\d{1,2}))?)?/);
+        if (dmyMatch) {
+          var d1 = parseInt(dmyMatch[1], 10);
+          var m1 = parseInt(dmyMatch[2], 10) - 1;
+          var y1 = parseInt(dmyMatch[3], 10);
+          var hh1 = dmyMatch[4] ? parseInt(dmyMatch[4], 10) : 0;
+          var mm1 = dmyMatch[5] ? parseInt(dmyMatch[5], 10) : 0;
+          var ss1 = dmyMatch[6] ? parseInt(dmyMatch[6], 10) : 0;
+          var dt1 = new Date(y1, m1, d1, hh1, mm1, ss1);
+          if (!isNaN(dt1.getTime())) return dt1;
+        }
+
+        // Format nama bulan teks (cth: "17 Oct 2026 22:46" atau "17 Okt 2026, 22.46")
+        var textMonthMatch = s.match(/^(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})(?:[,\s]+(\d{1,2})[:.](\d{1,2})(?:[:.](\d{1,2}))?)?/);
+        if (textMonthMatch) {
+          var day = parseInt(textMonthMatch[1], 10);
+          var rawMonth = textMonthMatch[2].toLowerCase();
+          var year = parseInt(textMonthMatch[3], 10);
+          var hour = textMonthMatch[4] ? parseInt(textMonthMatch[4], 10) : 0;
+          var min = textMonthMatch[5] ? parseInt(textMonthMatch[5], 10) : 0;
+          var sec = textMonthMatch[6] ? parseInt(textMonthMatch[6], 10) : 0;
+
+          if (indoMonths[rawMonth] !== undefined) {
+            var dt2 = new Date(year, indoMonths[rawMonth], day, hour, min, sec);
+            if (!isNaN(dt2.getTime())) return dt2;
+          }
+        }
+
+        var parsed = new Date(s);
+        if (!isNaN(parsed.getTime())) return parsed;
+        return null;
+      };
+
+      window.formatTanggalPengumuman = function (rawDate) {
+        if (!rawDate || rawDate === "-") return "-";
+        var dt = window.parsePengumumanDate(rawDate);
+        if (!dt) return String(rawDate);
+
+        var monthsIndo = [
+          "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+          "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+        ];
+
+        var day = dt.getDate();
+        var dayStr = day < 10 ? "0" + day : String(day);
+        var monthStr = monthsIndo[dt.getMonth()];
+        var yearStr = dt.getFullYear();
+
+        var hasTime = String(rawDate).match(/\b\d{1,2}[:.]\d{2}\b/) !== null;
+
+        if (hasTime) {
+          var hours = dt.getHours();
+          var minutes = dt.getMinutes();
+          var hStr = hours < 10 ? "0" + hours : String(hours);
+          var mStr = minutes < 10 ? "0" + minutes : String(minutes);
+          return dayStr + " " + monthStr + " " + yearStr + ", " + hStr + ":" + mStr + " WIB";
+        }
+
+        return dayStr + " " + monthStr + " " + yearStr;
+      };
+
+      window.quickEditPengumuman = function (id) {
+        if (typeof window.switchTab === "function") {
+          window.switchTab("admin");
+        }
+        if (typeof window.switchAdminSubTab === "function") {
+          window.switchAdminSubTab("pengumuman");
+        }
+        setTimeout(function () {
+          window.handleEditPengumuman(id);
+        }, 120);
+      };
+
       window.renderPengumumanList = function () {
         const publicContainer = document.getElementById("pengumuman-public-container");
         const adminContainer = document.getElementById("admin-pengumuman-list");
-        const list = window.appState.data.pengumuman || [];
+        const homeBanner = document.getElementById("home-pengumuman-banner");
+        const pendaftarAlert = document.getElementById("pendaftar-pengumuman-alert");
+        const rawList = window.appState.data.pengumuman || [];
 
-        // 1. Render Public Container
+        // Urutkan pengumuman terbaru di paling atas (descending)
+        const listWithIndex = rawList.map(function (item, idx) {
+          return { item: item, originalIndex: idx };
+        });
+
+        listWithIndex.sort(function (a, b) {
+          const dateA = window.parsePengumumanDate(a.item.Tanggal_Terbit);
+          const dateB = window.parsePengumumanDate(b.item.Tanggal_Terbit);
+          const timeA = dateA ? dateA.getTime() : 0;
+          const timeB = dateB ? dateB.getTime() : 0;
+
+          if (timeA !== timeB && timeA > 0 && timeB > 0) {
+            return timeB - timeA; // Paling baru duluan
+          }
+          return b.originalIndex - a.originalIndex;
+        });
+
+        const list = listWithIndex.map(function (x) { return x.item; });
+        const latestItem = list.length > 0 ? list[0] : null;
+
+        const isAdmin = Boolean(
+          window.appState.currentUser && (
+            String(window.appState.currentUser.role).toLowerCase().includes("admin") ||
+            String(window.appState.currentUser.role).toLowerCase().includes("koordinator")
+          )
+        );
+
+        // 1. Render Banner Pengumuman Utama di Beranda Depan
+        if (homeBanner) {
+          if (!latestItem) {
+            homeBanner.classList.add("hidden");
+            homeBanner.innerHTML = "";
+          } else {
+            homeBanner.classList.remove("hidden");
+            const hJudul = latestItem.Judul || "Pengumuman Resmi";
+            const hIsi = latestItem.Isi_Pengumuman || "";
+            const hTgl = window.formatTanggalPengumuman(latestItem.Tanggal_Terbit);
+            const hId = latestItem.Pengumuman_ID || "";
+
+            let adminActionHtml = "";
+            if (isAdmin) {
+              adminActionHtml =
+                '<button type="button" onclick="window.quickEditPengumuman(\'' + hId + '\')" class="text-xs font-bold px-3 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5 transition cursor-pointer">' +
+                  '<i class="fa-solid fa-pen-to-square"></i> Edit Pengumuman' +
+                '</button>';
+            }
+
+            homeBanner.innerHTML =
+              '<div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500/15 via-indigo-950/70 to-slate-900 border border-amber-500/40 p-5 sm:p-7 shadow-2xl space-y-3.5 reveal">' +
+                '<div class="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/20 pb-3">' +
+                  '<div class="flex items-center gap-2.5">' +
+                    '<span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 text-sm shadow-sm">' +
+                      '<i class="fa-solid fa-bullhorn animate-bounce"></i>' +
+                    '</span>' +
+                    '<span class="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm">' +
+                      'Pengumuman Resmi Terbaru' +
+                    '</span>' +
+                  '</div>' +
+                  '<span class="text-xs font-mono text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700/60 flex items-center gap-1.5 shadow-sm">' +
+                    '<i class="fa-regular fa-calendar-check text-amber-400"></i>' + hTgl +
+                  '</span>' +
+                '</div>' +
+                '<div class="space-y-1.5">' +
+                  '<h3 class="text-base sm:text-xl font-black text-white hover:text-amber-300 transition cursor-pointer" onclick="window.switchTab(\'pengumuman\')">' +
+                    hJudul +
+                  '</h3>' +
+                  '<p class="text-xs sm:text-sm text-slate-200 leading-relaxed line-clamp-2">' +
+                    hIsi +
+                  '</p>' +
+                '</div>' +
+                '<div class="flex flex-wrap items-center gap-3 pt-1">' +
+                  '<button type="button" onclick="window.switchTab(\'pengumuman\')" class="text-xs font-bold px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center gap-2 shadow-lg shadow-amber-500/20 transition cursor-pointer">' +
+                    '<span>Buka Tab Pengumuman Lengkap</span> <i class="fa-solid fa-arrow-right"></i>' +
+                  '</button>' +
+                  '<button type="button" onclick="window.switchTab(\'recruitment\')" class="text-xs font-bold px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-2 transition cursor-pointer">' +
+                    '<i class="fa-solid fa-user-plus text-indigo-400"></i> <span>Daftar / Akses Oprec</span>' +
+                  '</button>' +
+                  adminActionHtml +
+                '</div>' +
+              '</div>';
+          }
+        }
+
+        // 2. Render Alert Pengumuman di Dashboard Pendaftar
+        if (pendaftarAlert) {
+          if (!latestItem) {
+            pendaftarAlert.classList.add("hidden");
+            pendaftarAlert.innerHTML = "";
+          } else {
+            pendaftarAlert.classList.remove("hidden");
+            const pJudul = latestItem.Judul || "Pengumuman Resmi";
+            const pIsi = latestItem.Isi_Pengumuman || "";
+            const pTgl = window.formatTanggalPengumuman(latestItem.Tanggal_Terbit);
+            pendaftarAlert.innerHTML =
+              '<div class="p-5 rounded-2xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-amber-500/30 shadow-lg space-y-2">' +
+                '<div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">' +
+                  '<div class="flex items-center gap-2">' +
+                    '<i class="fa-solid fa-bullhorn text-amber-400 text-sm"></i>' +
+                    '<span class="text-[11px] font-bold text-amber-300 uppercase tracking-wider">Pengumuman Panitia Terbaru</span>' +
+                  '</div>' +
+                  '<span class="text-[11px] font-mono text-slate-400">' + pTgl + '</span>' +
+                '</div>' +
+                '<h4 class="text-sm sm:text-base font-bold text-white">' + pJudul + '</h4>' +
+                '<p class="text-xs text-slate-300 leading-relaxed whitespace-pre-line">' + pIsi + '</p>' +
+              '</div>';
+          }
+        }
+
+        // 3. Render Public Container (Tab Pengumuman)
         if (publicContainer) {
           if (list.length === 0) {
-            publicContainer.innerHTML = '';
+            publicContainer.innerHTML = '<div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 text-xs text-slate-500 italic text-center">Belum ada pengumuman resmi yang diterbitkan.</div>';
           } else {
-            publicContainer.innerHTML = list.map(function (item) {
+            publicContainer.innerHTML = list.map(function (item, idx) {
               const judul = item.Judul || "Pengumuman Resmi";
               const isi = item.Isi_Pengumuman || "";
-              const tgl = item.Tanggal_Terbit || "-";
+              const tgl = window.formatTanggalPengumuman(item.Tanggal_Terbit);
+              const pgmId = item.Pengumuman_ID || "";
+
+              const badgeTerbaru = idx === 0
+                ? '<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1 shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Terbaru</span>'
+                : '';
+
+              let adminBtns = '';
+              if (isAdmin) {
+                adminBtns =
+                  '<div class="flex items-center gap-1.5 ml-auto">' +
+                    '<button type="button" onclick="window.quickEditPengumuman(\'' + pgmId + '\')" class="text-[11px] px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/30 transition cursor-pointer flex items-center gap-1">' +
+                      '<i class="fa-solid fa-pen-to-square"></i> Edit' +
+                    '</button>' +
+                    '<button type="button" onclick="window.handleHapusPengumuman(\'' + pgmId + '\')" class="text-[11px] px-2.5 py-1 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition cursor-pointer flex items-center gap-1">' +
+                      '<i class="fa-solid fa-trash"></i> Hapus' +
+                    '</button>' +
+                  '</div>';
+              }
+
               return (
                 '<div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/40 shadow-2xl space-y-3.5 reveal">' +
                   '<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-3">' +
@@ -4501,13 +4744,19 @@
                         '<i class="fa-solid fa-bullhorn"></i>' +
                       '</span>' +
                       '<div>' +
-                        '<span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Pengumuman Resmi</span>' +
+                        '<div class="flex items-center gap-2">' +
+                          '<span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Pengumuman Resmi</span>' +
+                          badgeTerbaru +
+                        '</div>' +
                         '<h3 class="text-base sm:text-lg font-black text-white mt-0.5">' + judul + '</h3>' +
                       '</div>' +
                     '</div>' +
-                    '<span class="text-xs font-mono text-slate-400 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700/60 flex items-center gap-1.5 shadow-sm">' +
-                      '<i class="fa-regular fa-calendar-check text-indigo-400"></i>' + tgl +
-                    '</span>' +
+                    '<div class="flex items-center gap-2">' +
+                      adminBtns +
+                      '<span class="text-xs font-mono text-slate-400 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700/60 flex items-center gap-1.5 shadow-sm">' +
+                        '<i class="fa-regular fa-calendar-check text-indigo-400"></i>' + tgl +
+                      '</span>' +
+                    '</div>' +
                   '</div>' +
                   '<div class="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line pl-1 font-sans">' +
                     isi +
@@ -4518,7 +4767,7 @@
           }
         }
 
-        // 2. Render Admin Container
+        // 4. Render Admin Container (Panel Kelola Pengumuman)
         if (adminContainer) {
           if (list.length === 0) {
             adminContainer.innerHTML = '<div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-500 italic">Belum ada pengumuman yang diterbitkan.</div>';
@@ -4527,7 +4776,7 @@
               const pgmId = item.Pengumuman_ID || "";
               const judul = item.Judul || "-";
               const isi = item.Isi_Pengumuman || "";
-              const tgl = item.Tanggal_Terbit || "-";
+              const tgl = window.formatTanggalPengumuman(item.Tanggal_Terbit);
               return (
                 '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition">' +
                   '<div class="space-y-1.5">' +
@@ -4928,6 +5177,7 @@
           window.renderProfilList();
           window.renderGaleriList();
           window.renderBeritaList();
+          window.renderPengumumanList();
         } catch (e) {}
       };
       window.handleLogout = function () {
