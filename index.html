@@ -201,6 +201,7 @@
             <button
               type="button"
               onclick="window.switchTab('home')"
+              data-tab="home"
               class="px-4 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
             >
               Beranda
@@ -208,6 +209,7 @@
             <button
               type="button"
               onclick="window.switchTab('profil')"
+              data-tab="profil"
               class="px-4 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
             >
               Profil Lab
@@ -215,6 +217,7 @@
             <button
               type="button"
               onclick="window.switchTab('galeri')"
+              data-tab="galeri"
               class="px-4 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
             >
               Galeri
@@ -222,6 +225,7 @@
             <button
               type="button"
               onclick="window.switchTab('berita')"
+              data-tab="berita"
               class="px-4 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
             >
               Berita
@@ -229,6 +233,7 @@
             <button
               type="button"
               onclick="window.switchTab('recruitment')"
+              data-tab="recruitment"
               class="px-4 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
             >
               Recruitment
@@ -236,6 +241,7 @@
             <button
               type="button"
               onclick="window.switchTab('pengumuman')"
+              data-tab="pengumuman"
               class="px-4 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
             >
               Pengumuman
@@ -3545,6 +3551,14 @@
         if (!target) target = document.getElementById("dashboard-" + tabName);
         if (!target) target = document.getElementById(tabName);
         if (target) target.classList.remove("hidden");
+        document
+          .querySelectorAll("header nav button[data-tab]")
+          .forEach((button) => {
+            const isActive = button.dataset.tab === tabName;
+            button.classList.toggle("bg-indigo-600", isActive);
+            button.classList.toggle("text-white", isActive);
+            button.setAttribute("aria-current", isActive ? "page" : "false");
+          });
         window.scrollTo(0, 0);
         setTimeout(function () {
           if (typeof window.initScrollReveal === "function") window.initScrollReveal();
