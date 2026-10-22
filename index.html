@@ -6,6 +6,7 @@
     <meta name="referrer" content="no-referrer" />
     <title>IELA WebApp - Profil & Recruitment Portal 2027-2028</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -112,51 +113,74 @@
         animation: logoPulse 2.2s infinite ease-in-out;
       }
       /* ========================================================
-         VELOCITY SCROLL MARQUEE STYLES
+         VELOCITY SCROLL MARQUEE STYLES — DRAMATIC VERSION
          ======================================================== */
       .velocity-marquee-container {
-        mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
       }
       .velocity-track {
         display: flex;
         white-space: nowrap;
         will-change: transform;
+        transition: transform 0.05s linear;
+      }
+      .velocity-track-skew {
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .velocity-tag {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.35rem 0.85rem;
-        border-radius: 9999px;
-        background: rgba(15, 23, 42, 0.7);
-        border: 1px solid rgba(51, 65, 85, 0.6);
-        transition: border-color 0.2s, background-color 0.2s;
+        gap: 0.65rem;
+        padding: 0.55rem 1.15rem;
+        border-radius: 1rem;
+        background: rgba(30, 41, 59, 0.85);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        backdrop-filter: blur(6px);
+        transition: border-color 0.25s, background-color 0.25s, box-shadow 0.25s;
       }
       .velocity-tag:hover {
-        border-color: rgba(99, 102, 241, 0.6);
-        background: rgba(30, 41, 59, 0.9);
+        border-color: rgba(99, 102, 241, 0.7);
+        background: rgba(30, 41, 59, 1);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+      }
+      @keyframes velocityGlowPulse {
+        0%, 100% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.08); border-color: rgba(51, 65, 85, 0.6); }
+        50% { box-shadow: 0 0 50px rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.35); }
+      }
+      .velocity-glow-pulse {
+        animation: velocityGlowPulse 4s infinite ease-in-out;
+      }
+      .velocity-speed-indicator {
+        transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
       }
 
       /* ========================================================
-         OVERLAPPING STACKING CARDS STYLES
+         OVERLAPPING STACKING CARDS STYLES — PURE PHYSICAL STACK
          ======================================================== */
       .sublab-stack-card {
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
-        will-change: transform;
+        position: -webkit-sticky !important;
+        position: sticky !important;
+        background: #0f172a !important;
+        background: rgba(15, 23, 42, 0.96) !important;
+        box-shadow: 0 -18px 45px -10px rgba(0, 0, 0, 0.95), 0 25px 65px -15px rgba(0, 0, 0, 0.85) !important;
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    opacity 0.35s ease,
+                    filter 0.35s ease,
+                    box-shadow 0.35s ease,
+                    border-color 0.35s ease;
+        will-change: transform, opacity;
       }
       .sublab-stack-card:hover {
-        transform: translateY(-3px);
+        border-color: rgba(99, 102, 241, 0.6) !important;
       }
-      @media (min-width: 768px) {
-        .sublab-stack-card {
-          box-shadow: 0 -8px 24px -6px rgba(0, 0, 0, 0.6), 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        }
+      .sublab-progress-bar {
+        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
     </style>
   </head>
   <body
-    class="min-h-screen flex flex-col justify-between relative overflow-x-hidden"
+    class="min-h-screen flex flex-col justify-between relative overflow-x-clip"
   >
     <!-- OVERLAY LOADING DENGAN LOGO IELA -->
     <div
@@ -507,103 +531,154 @@
           </div>
         </div>
 
-        <!-- VELOCITY SCROLL BANNER (KINETIC MARQUEE) -->
+        <!-- VELOCITY SCROLL BANNER (KINETIC MARQUEE) — DRAMATIC -->
         <div
           id="home-velocity-scroll"
-          class="reveal relative overflow-hidden rounded-3xl bg-slate-900/60 border border-slate-800/90 py-3.5 sm:py-4 shadow-xl select-none group backdrop-blur-xl"
+          class="reveal relative overflow-hidden rounded-3xl border border-slate-700/60 shadow-2xl select-none velocity-glow-pulse"
+          style="background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,20,60,0.92) 50%, rgba(15,23,42,0.95) 100%);"
         >
+          <!-- Animated BG Grid Lines -->
+          <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+               style="background-image: linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px); background-size: 60px 60px;"></div>
+          <!-- Corner Glows -->
+          <div class="absolute -top-24 -left-24 w-64 h-64 rounded-full bg-indigo-600/20 blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-24 -right-24 w-64 h-64 rounded-full bg-cyan-600/15 blur-3xl pointer-events-none"></div>
+
           <!-- Gradient Edge Masks for soft fade out -->
-          <div class="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-28 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent z-10"></div>
-          <div class="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-28 bg-gradient-to-l from-slate-950 via-slate-950/80 to-transparent z-10"></div>
+          <div class="pointer-events-none absolute inset-y-0 left-0 w-20 sm:w-36 bg-gradient-to-r from-slate-950 via-slate-950/90 to-transparent z-10"></div>
+          <div class="pointer-events-none absolute inset-y-0 right-0 w-20 sm:w-36 bg-gradient-to-l from-slate-950 via-slate-950/90 to-transparent z-10"></div>
 
           <!-- Top Meta Bar -->
-          <div class="flex items-center justify-between px-4 sm:px-6 pb-2 text-[10px] font-bold uppercase tracking-widest border-b border-slate-800/60 mb-2.5">
-            <span class="flex items-center gap-2 text-indigo-400">
-              <i class="fa-solid fa-gauge-high text-xs text-indigo-400 animate-pulse"></i>
-              <span>Velocity Scroll Engine</span>
-              <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <div class="flex items-center justify-between px-5 sm:px-7 pt-4 pb-3 text-[10px] font-bold uppercase tracking-widest relative z-20">
+            <span class="flex items-center gap-2.5 text-indigo-300">
+              <span class="relative flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/40">
+                <i class="fa-solid fa-gauge-high text-[11px] text-indigo-400"></i>
+                <span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400"></span>
+              </span>
+              <span class="text-indigo-200 text-[11px]">Velocity Scroll</span>
             </span>
-            <span class="hidden md:inline-block text-slate-500 font-medium normal-case tracking-normal">
-              Akselerasi dinamis mengikuti kecepatan scroll • Hover untuk pause sejenak
-            </span>
-            <span class="text-cyan-400 font-mono text-[10px] flex items-center gap-1">
-              <i class="fa-solid fa-bolt text-[9px]"></i> KINETIC 60 FPS
+            <!-- Speed indicator bar -->
+            <div class="hidden sm:flex items-center gap-2 flex-1 mx-6">
+              <div class="flex-1 h-1 rounded-full bg-slate-800 overflow-hidden">
+                <div id="velocity-speed-bar" class="velocity-speed-indicator h-full rounded-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400" style="width: 8%"></div>
+              </div>
+              <span id="velocity-speed-text" class="text-[10px] font-mono text-slate-500 w-20 text-right">0.75 px/f</span>
+            </div>
+            <span class="text-cyan-300 font-mono text-[10px] flex items-center gap-1.5 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-lg">
+              <i class="fa-solid fa-bolt text-[9px] text-cyan-400"></i> 60 FPS
             </span>
           </div>
 
-          <!-- Dual Velocity Tracks -->
-          <div class="space-y-2 overflow-hidden velocity-marquee-container">
+          <!-- Dual Velocity Tracks (BIGGER HIGH-IMPACT TYPOGRAPHY) -->
+          <div id="velocity-skew-wrap" class="space-y-4 overflow-hidden velocity-marquee-container velocity-track-skew px-2 pb-6 pt-2 relative z-10">
             <!-- TRACK 1: Moves Left, Accelerates on Scroll -->
-            <div class="velocity-track velocity-track-1 flex gap-4 sm:gap-6 items-center text-xs sm:text-sm font-black uppercase tracking-wider text-slate-300">
-              <div class="velocity-group flex gap-4 sm:gap-6 items-center flex-shrink-0">
-                <span class="velocity-tag text-indigo-300"><i class="fa-solid fa-microchip text-indigo-400 text-xs"></i> Ergonomi & Sistem Kerja</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-cyan-300"><i class="fa-solid fa-gear text-cyan-400 text-xs"></i> Pemesinan Bubut & CNC</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-emerald-300"><i class="fa-solid fa-cube text-emerald-400 text-xs"></i> 3D Printing Additive</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-purple-300"><i class="fa-solid fa-code text-purple-400 text-xs"></i> Komputasi & Python AI</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-amber-300"><i class="fa-solid fa-chart-line text-amber-400 text-xs"></i> Statistika Mutu SPC</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-rose-300"><i class="fa-solid fa-network-wired text-rose-400 text-xs"></i> Simulasi Sistem Industri</span>
-                <span class="text-slate-600">✦</span>
+            <div class="velocity-track velocity-track-1 flex gap-8 sm:gap-12 items-center">
+              <div class="velocity-group flex gap-8 sm:gap-12 items-center flex-shrink-0">
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-slate-100 flex items-center gap-3">
+                  <i class="fa-solid fa-microchip text-indigo-400"></i> Ergonomi & Sistem Kerja
+                </span>
+                <span class="text-indigo-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-cyan-300 flex items-center gap-3">
+                  <i class="fa-solid fa-gear text-cyan-400"></i> Pemesinan Bubut & CNC
+                </span>
+                <span class="text-cyan-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-emerald-300 flex items-center gap-3">
+                  <i class="fa-solid fa-cube text-emerald-400"></i> 3D Printing Additive
+                </span>
+                <span class="text-emerald-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-purple-300 flex items-center gap-3">
+                  <i class="fa-solid fa-code text-purple-400"></i> Komputasi & Python AI
+                </span>
+                <span class="text-purple-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-amber-300 flex items-center gap-3">
+                  <i class="fa-solid fa-chart-line text-amber-400"></i> Statistika Mutu SPC
+                </span>
+                <span class="text-amber-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-rose-300 flex items-center gap-3">
+                  <i class="fa-solid fa-network-wired text-rose-400"></i> Simulasi Sistem Industri
+                </span>
+                <span class="text-rose-500/50 text-2xl font-light">✦</span>
               </div>
-              <div class="velocity-group flex gap-4 sm:gap-6 items-center flex-shrink-0" aria-hidden="true">
-                <span class="velocity-tag text-indigo-300"><i class="fa-solid fa-microchip text-indigo-400 text-xs"></i> Ergonomi & Sistem Kerja</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-cyan-300"><i class="fa-solid fa-gear text-cyan-400 text-xs"></i> Pemesinan Bubut & CNC</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-emerald-300"><i class="fa-solid fa-cube text-emerald-400 text-xs"></i> 3D Printing Additive</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-purple-300"><i class="fa-solid fa-code text-purple-400 text-xs"></i> Komputasi & Python AI</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-amber-300"><i class="fa-solid fa-chart-line text-amber-400 text-xs"></i> Statistika Mutu SPC</span>
-                <span class="text-slate-600">✦</span>
-                <span class="velocity-tag text-rose-300"><i class="fa-solid fa-network-wired text-rose-400 text-xs"></i> Simulasi Sistem Industri</span>
-                <span class="text-slate-600">✦</span>
+              <div class="velocity-group flex gap-8 sm:gap-12 items-center flex-shrink-0" aria-hidden="true">
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-slate-100 flex items-center gap-3">
+                  <i class="fa-solid fa-microchip text-indigo-400"></i> Ergonomi & Sistem Kerja
+                </span>
+                <span class="text-indigo-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-cyan-300 flex items-center gap-3">
+                  <i class="fa-solid fa-gear text-cyan-400"></i> Pemesinan Bubut & CNC
+                </span>
+                <span class="text-cyan-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-emerald-300 flex items-center gap-3">
+                  <i class="fa-solid fa-cube text-emerald-400"></i> 3D Printing Additive
+                </span>
+                <span class="text-emerald-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-purple-300 flex items-center gap-3">
+                  <i class="fa-solid fa-code text-purple-400"></i> Komputasi & Python AI
+                </span>
+                <span class="text-purple-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-amber-300 flex items-center gap-3">
+                  <i class="fa-solid fa-chart-line text-amber-400"></i> Statistika Mutu SPC
+                </span>
+                <span class="text-amber-500/50 text-2xl font-light">✦</span>
+                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-rose-300 flex items-center gap-3">
+                  <i class="fa-solid fa-network-wired text-rose-400"></i> Simulasi Sistem Industri
+                </span>
+                <span class="text-rose-500/50 text-2xl font-light">✦</span>
               </div>
             </div>
 
             <!-- TRACK 2: Moves Right, Accelerates on Scroll -->
-            <div class="velocity-track velocity-track-2 flex gap-4 sm:gap-6 items-center text-[11px] sm:text-xs font-bold uppercase tracking-widest text-slate-400">
-              <div class="velocity-group flex gap-4 sm:gap-6 items-center flex-shrink-0">
-                <span class="text-slate-200 font-extrabold"><i class="fa-solid fa-star text-amber-400 text-[10px] mr-1"></i> IELA 2027-2028</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-indigo-400 font-bold">5 Sub-Laboratorium Terakreditasi</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-cyan-400 font-bold">29 Asisten Resmi & Instruktur</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-emerald-400 font-bold">Inovasi Rekayasa Manufaktur</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-slate-300 font-bold">Fakultas Teknik Unirow Tuban</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-purple-400 font-bold">Pusat Riset & Publikasi Ilmiah</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-amber-400 font-bold">Society 5.0 & Industry 4.0</span>
-                <span class="text-slate-700">●</span>
+            <div class="velocity-track velocity-track-2 flex gap-8 sm:gap-14 items-center">
+              <div class="velocity-group flex gap-8 sm:gap-14 items-center flex-shrink-0">
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent flex items-center gap-2">
+                  <i class="fa-solid fa-star text-amber-400 text-sm"></i> IELA PUSAT RISET 2027-2028
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-slate-300/80">
+                  5 SUB-LABORATORIUM TERPADU
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-cyan-400">
+                  29 ASISTEN RESMI & INSTRUKTUR
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-emerald-400">
+                  TEKNIK INDUSTRI UNIROW TUBAN
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-purple-400">
+                  SOCIETY 5.0 & INDUSTRY 4.0
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
               </div>
-              <div class="velocity-group flex gap-4 sm:gap-6 items-center flex-shrink-0" aria-hidden="true">
-                <span class="text-slate-200 font-extrabold"><i class="fa-solid fa-star text-amber-400 text-[10px] mr-1"></i> IELA 2027-2028</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-indigo-400 font-bold">5 Sub-Laboratorium Terakreditasi</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-cyan-400 font-bold">29 Asisten Resmi & Instruktur</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-emerald-400 font-bold">Inovasi Rekayasa Manufaktur</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-slate-300 font-bold">Fakultas Teknik Unirow Tuban</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-purple-400 font-bold">Pusat Riset & Publikasi Ilmiah</span>
-                <span class="text-slate-700">●</span>
-                <span class="text-amber-400 font-bold">Society 5.0 & Industry 4.0</span>
-                <span class="text-slate-700">●</span>
+              <div class="velocity-group flex gap-8 sm:gap-14 items-center flex-shrink-0" aria-hidden="true">
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent flex items-center gap-2">
+                  <i class="fa-solid fa-star text-amber-400 text-sm"></i> IELA PUSAT RISET 2027-2028
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-slate-300/80">
+                  5 SUB-LABORATORIUM TERPADU
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-cyan-400">
+                  29 ASISTEN RESMI & INSTRUKTUR
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-emerald-400">
+                  TEKNIK INDUSTRI UNIROW TUBAN
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
+                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-purple-400">
+                  SOCIETY 5.0 & INDUSTRY 4.0
+                </span>
+                <span class="text-slate-700 text-xl">●</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4 -mt-4 sm:-mt-6 relative z-20">
           <div class="glass-card p-6 rounded-2xl border border-slate-800">
             <i class="fa-solid fa-flask text-2xl text-indigo-400 mb-2"></i>
             <p class="text-2xl font-black text-white">5 Divisi</p>
@@ -3737,7 +3812,10 @@
         window.scrollTo(0, 0);
         setTimeout(function () {
           if (typeof window.initScrollReveal === "function") window.initScrollReveal();
-          if (tabName === "home" && typeof window.initVelocityScroll === "function") window.initVelocityScroll();
+          if (tabName === "home") {
+            if (typeof window.initVelocityScroll === "function") window.initVelocityScroll();
+            if (typeof window.initSublabStackEngine === "function") window.initSublabStackEngine();
+          }
         }, 60);
       };
       window.switchAdminSubTab = function (subTab) {
@@ -4375,12 +4453,54 @@
         window.renderUsersTable();
         setTimeout(window.initScrollReveal, 100);
         setTimeout(function () {
+          if (typeof window.initSmoothScroll === "function") window.initSmoothScroll();
           if (typeof window.initVelocityScroll === "function") window.initVelocityScroll();
+          if (typeof window.initSublabStackEngine === "function") window.initSublabStackEngine();
         }, 150);
       };
 
       /* ========================================================
-         VELOCITY SCROLL ENGINE (KINETIC MARQUEE)
+         LENIS SMOOTH SCROLL VELOCITY ENGINE
+         ======================================================== */
+      window.initSmoothScroll = function () {
+        if (window._lenisInitialized) return;
+        if (typeof Lenis === "undefined") return;
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+          return;
+
+        try {
+          var lenis = new Lenis({
+            duration: 1.15,
+            easing: function (t) {
+              return Math.min(1, 1.001 - Math.pow(2, -10 * t));
+            },
+            smoothWheel: true,
+            touchMultiplier: 1.5,
+          });
+          window.lenisInstance = lenis;
+          window._lenisInitialized = true;
+
+          function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+          }
+          requestAnimationFrame(raf);
+
+          lenis.on("scroll", function (e) {
+            if (typeof window._onScrollVelocityImpulse === "function") {
+              window._onScrollVelocityImpulse(e.velocity || 0);
+            }
+          });
+        } catch (e) {
+          console.warn("Smooth scroll initialization fallback:", e);
+        }
+      };
+
+      /* ========================================================
+         VELOCITY SCROLL ENGINE (KINETIC MARQUEE) — HIGH IMPACT
          ======================================================== */
       window.initVelocityScroll = function () {
         if (window._velocityScrollInitialized) return;
@@ -4389,6 +4509,9 @@
 
         var track1 = container.querySelector(".velocity-track-1");
         var track2 = container.querySelector(".velocity-track-2");
+        var skewWrap = document.getElementById("velocity-skew-wrap");
+        var speedBar = document.getElementById("velocity-speed-bar");
+        var speedText = document.getElementById("velocity-speed-text");
         if (!track1 || !track2) return;
 
         var prefersReduced =
@@ -4401,13 +4524,20 @@
           window.pageYOffset || document.documentElement.scrollTop || 0;
         var scrollVelocity = 0;
         var currentVelocity = 0;
+        var currentSkew = 0;
         var pos1 = 0;
         var pos2 = 0;
-        var baseSpeed1 = -0.75; // Gerak ke kiri
-        var baseSpeed2 = 0.75; // Gerak ke kanan
+        var baseSpeed1 = -2.0; // Dynamic base speed
+        var baseSpeed2 = 1.8;
         var isHovered = false;
         var lastTime = performance.now();
 
+        // Lenis velocity hook
+        window._onScrollVelocityImpulse = function (v) {
+          scrollVelocity = Math.max(Math.min(v * 2.8, 55), -55);
+        };
+
+        // Standard native scroll listener (fallback & complementary)
         window.addEventListener(
           "scroll",
           function () {
@@ -4415,8 +4545,9 @@
               window.pageYOffset || document.documentElement.scrollTop || 0;
             var delta = currY - lastScrollY;
             lastScrollY = currY;
-            // Impuls kecepatan scroll kinetik
-            scrollVelocity = Math.max(Math.min(delta * 0.28, 22), -22);
+            if (!window._lenisInitialized) {
+              scrollVelocity = Math.max(Math.min(delta * 1.05, 55), -55);
+            }
           },
           { passive: true }
         );
@@ -4445,16 +4576,47 @@
         function step(now) {
           var tabHome = document.getElementById("tab-home");
           if (tabHome && !tabHome.classList.contains("hidden")) {
-            var dt = Math.min((now - lastTime) / 16.666, 2.0);
+            var dt = Math.min((now - lastTime) / 16.666, 2.5);
             lastTime = now;
 
-            // Interpolasi halus kecepatan scroll (lerp)
-            currentVelocity += (scrollVelocity - currentVelocity) * 0.12;
-            scrollVelocity *= 0.91; // Redaman gesekan
+            // Lerp velocity with high kinetic response
+            currentVelocity += (scrollVelocity - currentVelocity) * 0.16;
+            scrollVelocity *= 0.89; // Momentum decay
 
-            var hoverFactor = isHovered ? 0.35 : 1.0;
-            var v1 = (baseSpeed1 - currentVelocity) * hoverFactor * dt;
-            var v2 = (baseSpeed2 + currentVelocity) * hoverFactor * dt;
+            // Dynamic skew on scroll
+            var targetSkew = Math.max(
+              Math.min(currentVelocity * 0.14, 3.0),
+              -3.0
+            );
+            currentSkew += (targetSkew - currentSkew) * 0.1;
+            if (skewWrap) {
+              skewWrap.style.transform =
+                "skewY(" + currentSkew.toFixed(3) + "deg)";
+            }
+
+            // Live speed gauge meter
+            var absSpeed = Math.abs(currentVelocity);
+            var speedPct = Math.min(10 + absSpeed * 3.5, 100);
+            if (speedBar) {
+              speedBar.style.width = speedPct.toFixed(1) + "%";
+              if (absSpeed > 10)
+                speedBar.style.background =
+                  "linear-gradient(to right, #f43f5e, #ec4899, #a855f7)";
+              else if (absSpeed > 4)
+                speedBar.style.background =
+                  "linear-gradient(to right, #6366f1, #06b6d4, #10b981)";
+              else
+                speedBar.style.background =
+                  "linear-gradient(to right, #6366f1, #06b6d4, #10b981)";
+            }
+            if (speedText) {
+              var displaySpeed = (Math.abs(baseSpeed1) + absSpeed).toFixed(1);
+              speedText.textContent = displaySpeed + " px/f";
+            }
+
+            var hoverFactor = isHovered ? 0.25 : 1.0;
+            var v1 = (baseSpeed1 - currentVelocity * 1.6) * hoverFactor * dt;
+            var v2 = (baseSpeed2 + currentVelocity * 1.6) * hoverFactor * dt;
 
             pos1 += v1;
             pos2 += v2;
@@ -4465,13 +4627,15 @@
             if (w1 > 0) {
               if (pos1 <= -w1) pos1 += w1;
               if (pos1 > 0) pos1 -= w1;
-              track1.style.transform = "translate3d(" + pos1 + "px, 0, 0)";
+              track1.style.transform =
+                "translate3d(" + pos1.toFixed(1) + "px, 0, 0)";
             }
 
             if (w2 > 0) {
               if (pos2 >= 0) pos2 -= w2;
               if (pos2 < -w2) pos2 += w2;
-              track2.style.transform = "translate3d(" + pos2 + "px, 0, 0)";
+              track2.style.transform =
+                "translate3d(" + pos2.toFixed(1) + "px, 0, 0)";
             }
           } else {
             lastTime = now;
@@ -4480,6 +4644,91 @@
         }
 
         requestAnimationFrame(step);
+      };
+
+      /* ========================================================
+         OVERLAPPING SECTION — TRUE STICKY CARD STACK ENGINE
+         ======================================================== */
+      window._sublabStackObserver = null;
+
+      window.initSublabStackEngine = function () {
+        var cards = document.querySelectorAll(".sublab-stack-card");
+        if (!cards.length) return;
+
+        var progressDots = document.querySelectorAll(".sublab-dot");
+        var progressBar = document.getElementById("sublab-progress-fill");
+
+        function updateCardOverlap() {
+          var activeIndex = 0;
+
+          cards.forEach(function (card, i) {
+            var stickyTop = 80 + i * 24;
+            var rect = card.getBoundingClientRect();
+
+            if (rect.top <= stickyTop + 15) {
+              activeIndex = i;
+            }
+
+            // Check if subsequent card overlaps this card
+            if (i < cards.length - 1) {
+              var nextCard = cards[i + 1];
+              var nextRect = nextCard.getBoundingClientRect();
+              var nextStickyTop = 80 + (i + 1) * 24;
+
+              if (nextRect.top <= nextStickyTop + 50) {
+                var overlapRatio = Math.max(
+                  0,
+                  Math.min(1, (nextStickyTop + 50 - nextRect.top) / 50)
+                );
+                var scale = 1 - overlapRatio * 0.045;
+                var opacity = 1 - overlapRatio * 0.35;
+                var bright = 1 - overlapRatio * 0.35;
+                card.style.transform = "scale(" + scale.toFixed(3) + ")";
+                card.style.opacity = opacity.toFixed(2);
+                card.style.filter =
+                  "brightness(" +
+                  bright.toFixed(2) +
+                  ") blur(" +
+                  (overlapRatio * 1.5).toFixed(1) +
+                  "px)";
+              } else {
+                card.style.transform = "scale(1)";
+                card.style.opacity = "1";
+                card.style.filter = "brightness(1) blur(0)";
+              }
+            }
+          });
+
+          // Update active progress indicator
+          if (progressDots && progressDots.length) {
+            progressDots.forEach(function (dot, dIdx) {
+              if (dIdx <= activeIndex) {
+                dot.style.background = dot.dataset.color || "#6366f1";
+                dot.style.transform =
+                  dIdx === activeIndex ? "scale(1.4)" : "scale(1)";
+                dot.style.boxShadow =
+                  dIdx === activeIndex
+                    ? "0 0 12px " + (dot.dataset.color || "#6366f1")
+                    : "none";
+              } else {
+                dot.style.background = "#334155";
+                dot.style.transform = "scale(1)";
+                dot.style.boxShadow = "none";
+              }
+            });
+          }
+          if (progressBar) {
+            var pct = ((activeIndex + 1) / cards.length) * 100;
+            progressBar.style.width = pct + "%";
+          }
+        }
+
+        if (window._sublabScrollHandler) {
+          window.removeEventListener("scroll", window._sublabScrollHandler);
+        }
+        window._sublabScrollHandler = updateCardOverlap;
+        window.addEventListener("scroll", updateCardOverlap, { passive: true });
+        updateCardOverlap();
       };
 
       /* ========================================================
@@ -4506,6 +4755,9 @@
         }
         window.renderHomeShowcase();
         setTimeout(window.initScrollReveal, 50);
+        setTimeout(function () {
+          if (window.appState.sublabViewMode === "stack") window.initSublabStackEngine();
+        }, 100);
       };
 
       window.renderHomeShowcase = function () {
@@ -4564,8 +4816,21 @@
           ];
 
           if (isStack) {
-            subContainer.className = "relative space-y-6 sm:space-y-8 pb-8";
-            subContainer.innerHTML = list
+            var dotColors = ["#6366f1","#06b6d4","#10b981","#a855f7","#f59e0b"];
+            var progressHtml = '<div id="sublab-stack-progress" class="flex items-center gap-3 mb-6 px-2">' +
+              '<div class="flex items-center gap-2">' +
+              dotColors.slice(0, list.length).map(function(c, i) {
+                return '<div class="sublab-dot w-2.5 h-2.5 rounded-full transition-all duration-300" data-color="' + c + '" style="background: ' + (i === 0 ? c : '#334155') + '; transform: ' + (i === 0 ? 'scale(1.4)' : 'scale(1)') + ';"></div>';
+              }).join("") +
+              '</div>' +
+              '<div class="flex-1 h-1 rounded-full bg-slate-800 overflow-hidden">' +
+              '<div id="sublab-progress-fill" class="sublab-progress-bar h-full rounded-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400" style="width: ' + (100/list.length) + '%"></div>' +
+              '</div>' +
+              '<span class="text-[10px] font-mono text-slate-500">' + list.length + ' divisi</span>' +
+              '</div>';
+
+            subContainer.className = "relative pb-24";
+            subContainer.innerHTML = progressHtml + list
               .map(function (item, idx) {
                 var theme = divisionThemes[idx % divisionThemes.length];
                 var title = item.Judul || item.title || "Sub-Laboratorium";
@@ -4595,17 +4860,13 @@
                   })
                   .join(" ");
 
-                // Progressive sticky top offset: layer stack effect
-                var topOffsetDesk = 80 + idx * 22;
-
+                var stickyTop = 82 + (idx * 24); // Progressive sticky top offset
                 return (
-                  '<div class="sublab-stack-card sticky glass-card rounded-3xl border border-slate-700/70 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-300 ' +
+                  '<div class="sublab-stack-card rounded-3xl border border-slate-700/80 p-6 sm:p-8 backdrop-blur-2xl overflow-hidden ' +
                   theme.borderTop +
-                  '" style="top: ' +
-                  topOffsetDesk +
-                  "px; z-index: " +
+                  '" data-stack-idx="' + idx + '" style="position: -webkit-sticky; position: sticky; top: ' + stickyTop + 'px; z-index: ' +
                   (10 + idx) +
-                  '; margin-bottom: 2rem;">' +
+                  '; margin-bottom: 5rem;">' +
                   '<div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none ' +
                   theme.glow +
                   '"></div>' +
@@ -4622,7 +4883,6 @@
                   '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-800/90 text-slate-300 border border-slate-700">' +
                   cat +
                   "</span>" +
-                  '<span class="text-[10px] text-slate-400 font-medium">IELA Engineering</span>' +
                   "</div>" +
                   "<div>" +
                   '<h3 class="text-xl sm:text-2xl font-black text-white hover:text-indigo-300 transition cursor-pointer" onclick="window.switchTab(\'profil\')">' +
@@ -4665,6 +4925,11 @@
                 );
               })
               .join("");
+
+            // Initialize the JS-driven stack engine after DOM is populated
+            setTimeout(function () {
+              window.initSublabStackEngine();
+            }, 80);
           } else {
             subContainer.className = "grid grid-cols-1 md:grid-cols-3 gap-6";
             subContainer.innerHTML = list
@@ -7547,8 +7812,10 @@
       window.addEventListener("DOMContentLoaded", function () {
         window.initData(false);
         setTimeout(function () {
+          if (typeof window.initSmoothScroll === "function") window.initSmoothScroll();
           if (typeof window.initVelocityScroll === "function") window.initVelocityScroll();
-        }, 300);
+          if (typeof window.initSublabStackEngine === "function") window.initSublabStackEngine();
+        }, 400);
       });
     </script>
   </body>
