@@ -111,6 +111,48 @@
       .animate-logo-pulse {
         animation: logoPulse 2.2s infinite ease-in-out;
       }
+      /* ========================================================
+         VELOCITY SCROLL MARQUEE STYLES
+         ======================================================== */
+      .velocity-marquee-container {
+        mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+      }
+      .velocity-track {
+        display: flex;
+        white-space: nowrap;
+        will-change: transform;
+      }
+      .velocity-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(51, 65, 85, 0.6);
+        transition: border-color 0.2s, background-color 0.2s;
+      }
+      .velocity-tag:hover {
+        border-color: rgba(99, 102, 241, 0.6);
+        background: rgba(30, 41, 59, 0.9);
+      }
+
+      /* ========================================================
+         OVERLAPPING STACKING CARDS STYLES
+         ======================================================== */
+      .sublab-stack-card {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+        will-change: transform;
+      }
+      .sublab-stack-card:hover {
+        transform: translateY(-3px);
+      }
+      @media (min-width: 768px) {
+        .sublab-stack-card {
+          box-shadow: 0 -8px 24px -6px rgba(0, 0, 0, 0.6), 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+      }
     </style>
   </head>
   <body
@@ -464,6 +506,103 @@
             </div>
           </div>
         </div>
+
+        <!-- VELOCITY SCROLL BANNER (KINETIC MARQUEE) -->
+        <div
+          id="home-velocity-scroll"
+          class="reveal relative overflow-hidden rounded-3xl bg-slate-900/60 border border-slate-800/90 py-3.5 sm:py-4 shadow-xl select-none group backdrop-blur-xl"
+        >
+          <!-- Gradient Edge Masks for soft fade out -->
+          <div class="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-28 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent z-10"></div>
+          <div class="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-28 bg-gradient-to-l from-slate-950 via-slate-950/80 to-transparent z-10"></div>
+
+          <!-- Top Meta Bar -->
+          <div class="flex items-center justify-between px-4 sm:px-6 pb-2 text-[10px] font-bold uppercase tracking-widest border-b border-slate-800/60 mb-2.5">
+            <span class="flex items-center gap-2 text-indigo-400">
+              <i class="fa-solid fa-gauge-high text-xs text-indigo-400 animate-pulse"></i>
+              <span>Velocity Scroll Engine</span>
+              <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            </span>
+            <span class="hidden md:inline-block text-slate-500 font-medium normal-case tracking-normal">
+              Akselerasi dinamis mengikuti kecepatan scroll • Hover untuk pause sejenak
+            </span>
+            <span class="text-cyan-400 font-mono text-[10px] flex items-center gap-1">
+              <i class="fa-solid fa-bolt text-[9px]"></i> KINETIC 60 FPS
+            </span>
+          </div>
+
+          <!-- Dual Velocity Tracks -->
+          <div class="space-y-2 overflow-hidden velocity-marquee-container">
+            <!-- TRACK 1: Moves Left, Accelerates on Scroll -->
+            <div class="velocity-track velocity-track-1 flex gap-4 sm:gap-6 items-center text-xs sm:text-sm font-black uppercase tracking-wider text-slate-300">
+              <div class="velocity-group flex gap-4 sm:gap-6 items-center flex-shrink-0">
+                <span class="velocity-tag text-indigo-300"><i class="fa-solid fa-microchip text-indigo-400 text-xs"></i> Ergonomi & Sistem Kerja</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-cyan-300"><i class="fa-solid fa-gear text-cyan-400 text-xs"></i> Pemesinan Bubut & CNC</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-emerald-300"><i class="fa-solid fa-cube text-emerald-400 text-xs"></i> 3D Printing Additive</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-purple-300"><i class="fa-solid fa-code text-purple-400 text-xs"></i> Komputasi & Python AI</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-amber-300"><i class="fa-solid fa-chart-line text-amber-400 text-xs"></i> Statistika Mutu SPC</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-rose-300"><i class="fa-solid fa-network-wired text-rose-400 text-xs"></i> Simulasi Sistem Industri</span>
+                <span class="text-slate-600">✦</span>
+              </div>
+              <div class="velocity-group flex gap-4 sm:gap-6 items-center flex-shrink-0" aria-hidden="true">
+                <span class="velocity-tag text-indigo-300"><i class="fa-solid fa-microchip text-indigo-400 text-xs"></i> Ergonomi & Sistem Kerja</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-cyan-300"><i class="fa-solid fa-gear text-cyan-400 text-xs"></i> Pemesinan Bubut & CNC</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-emerald-300"><i class="fa-solid fa-cube text-emerald-400 text-xs"></i> 3D Printing Additive</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-purple-300"><i class="fa-solid fa-code text-purple-400 text-xs"></i> Komputasi & Python AI</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-amber-300"><i class="fa-solid fa-chart-line text-amber-400 text-xs"></i> Statistika Mutu SPC</span>
+                <span class="text-slate-600">✦</span>
+                <span class="velocity-tag text-rose-300"><i class="fa-solid fa-network-wired text-rose-400 text-xs"></i> Simulasi Sistem Industri</span>
+                <span class="text-slate-600">✦</span>
+              </div>
+            </div>
+
+            <!-- TRACK 2: Moves Right, Accelerates on Scroll -->
+            <div class="velocity-track velocity-track-2 flex gap-4 sm:gap-6 items-center text-[11px] sm:text-xs font-bold uppercase tracking-widest text-slate-400">
+              <div class="velocity-group flex gap-4 sm:gap-6 items-center flex-shrink-0">
+                <span class="text-slate-200 font-extrabold"><i class="fa-solid fa-star text-amber-400 text-[10px] mr-1"></i> IELA 2027-2028</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-indigo-400 font-bold">5 Sub-Laboratorium Terakreditasi</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-cyan-400 font-bold">29 Asisten Resmi & Instruktur</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-emerald-400 font-bold">Inovasi Rekayasa Manufaktur</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-slate-300 font-bold">Fakultas Teknik Unirow Tuban</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-purple-400 font-bold">Pusat Riset & Publikasi Ilmiah</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-amber-400 font-bold">Society 5.0 & Industry 4.0</span>
+                <span class="text-slate-700">●</span>
+              </div>
+              <div class="velocity-group flex gap-4 sm:gap-6 items-center flex-shrink-0" aria-hidden="true">
+                <span class="text-slate-200 font-extrabold"><i class="fa-solid fa-star text-amber-400 text-[10px] mr-1"></i> IELA 2027-2028</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-indigo-400 font-bold">5 Sub-Laboratorium Terakreditasi</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-cyan-400 font-bold">29 Asisten Resmi & Instruktur</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-emerald-400 font-bold">Inovasi Rekayasa Manufaktur</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-slate-300 font-bold">Fakultas Teknik Unirow Tuban</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-purple-400 font-bold">Pusat Riset & Publikasi Ilmiah</span>
+                <span class="text-slate-700">●</span>
+                <span class="text-amber-400 font-bold">Society 5.0 & Industry 4.0</span>
+                <span class="text-slate-700">●</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="glass-card p-6 rounded-2xl border border-slate-800">
             <i class="fa-solid fa-flask text-2xl text-indigo-400 mb-2"></i>
@@ -523,18 +662,54 @@
           </div>
         </div>
 
-        <!-- SHOWCASE 5 SUB-LABORATORIUM -->
+        <!-- SHOWCASE 5 SUB-LABORATORIUM (OVERLAPPING SECTION) -->
         <div class="reveal space-y-6">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 border-b border-slate-800 pb-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 border-b border-slate-800 pb-4">
             <div>
-              <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">Fokus Keilmuan</span>
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">Fokus Keilmuan</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
+                  <i class="fa-solid fa-layer-group text-[9px] text-indigo-400"></i> Overlapping Section
+                </span>
+              </div>
               <h2 class="text-2xl sm:text-3xl font-black text-white">5 Sub-Laboratorium Unggulan</h2>
+              <p class="text-xs text-slate-400 mt-1">
+                Scroll perlahan ke bawah untuk merasakan sensasi tumpukan kartu (*overlapping stack*) setiap divisi praktikum
+              </p>
             </div>
-            <button type="button" onclick="window.switchTab('profil')" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition cursor-pointer">
-              Lihat Detail Semua Divisi <i class="fa-solid fa-arrow-right"></i>
-            </button>
+            <div class="flex items-center gap-3">
+              <!-- View Mode Toggle: Stack vs Grid -->
+              <div class="inline-flex p-1 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+                <button
+                  type="button"
+                  id="btn-sublab-view-stack"
+                  onclick="window.toggleSublabView('stack')"
+                  class="px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-indigo-600 text-white cursor-pointer shadow-sm"
+                  title="Tampilan Kartu Menumpuk (Overlapping Cards)"
+                >
+                  <i class="fa-solid fa-layer-group text-[10px]"></i> Tumpuk
+                </button>
+                <button
+                  type="button"
+                  id="btn-sublab-view-grid"
+                  onclick="window.toggleSublabView('grid')"
+                  class="px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white cursor-pointer"
+                  title="Tampilan Kotak Grid"
+                >
+                  <i class="fa-solid fa-table-cells text-[10px]"></i> Grid
+                </button>
+              </div>
+              <button
+                type="button"
+                onclick="window.switchTab('profil')"
+                class="hidden sm:inline-flex text-xs font-bold text-indigo-400 hover:text-indigo-300 items-center gap-1.5 transition cursor-pointer"
+              >
+                Detail Semua Divisi <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
           </div>
-          <div id="home-sublabs-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+          <!-- CONTAINER SUB-LABORATORIUM (STACK ATAU GRID) -->
+          <div id="home-sublabs-container" class="relative"></div>
         </div>
 
         <!-- SHOWCASE GALERI TERBARU -->
@@ -3562,6 +3737,7 @@
         window.scrollTo(0, 0);
         setTimeout(function () {
           if (typeof window.initScrollReveal === "function") window.initScrollReveal();
+          if (tabName === "home" && typeof window.initVelocityScroll === "function") window.initVelocityScroll();
         }, 60);
       };
       window.switchAdminSubTab = function (subTab) {
@@ -4198,38 +4374,336 @@
         window.renderAdminGaleriTable();
         window.renderUsersTable();
         setTimeout(window.initScrollReveal, 100);
+        setTimeout(function () {
+          if (typeof window.initVelocityScroll === "function") window.initVelocityScroll();
+        }, 150);
+      };
+
+      /* ========================================================
+         VELOCITY SCROLL ENGINE (KINETIC MARQUEE)
+         ======================================================== */
+      window.initVelocityScroll = function () {
+        if (window._velocityScrollInitialized) return;
+        var container = document.getElementById("home-velocity-scroll");
+        if (!container) return;
+
+        var track1 = container.querySelector(".velocity-track-1");
+        var track2 = container.querySelector(".velocity-track-2");
+        if (!track1 || !track2) return;
+
+        var prefersReduced =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (prefersReduced) return;
+
+        window._velocityScrollInitialized = true;
+        var lastScrollY =
+          window.pageYOffset || document.documentElement.scrollTop || 0;
+        var scrollVelocity = 0;
+        var currentVelocity = 0;
+        var pos1 = 0;
+        var pos2 = 0;
+        var baseSpeed1 = -0.75; // Gerak ke kiri
+        var baseSpeed2 = 0.75; // Gerak ke kanan
+        var isHovered = false;
+        var lastTime = performance.now();
+
+        window.addEventListener(
+          "scroll",
+          function () {
+            var currY =
+              window.pageYOffset || document.documentElement.scrollTop || 0;
+            var delta = currY - lastScrollY;
+            lastScrollY = currY;
+            // Impuls kecepatan scroll kinetik
+            scrollVelocity = Math.max(Math.min(delta * 0.28, 22), -22);
+          },
+          { passive: true }
+        );
+
+        container.addEventListener("mouseenter", function () {
+          isHovered = true;
+        });
+        container.addEventListener("mouseleave", function () {
+          isHovered = false;
+        });
+        container.addEventListener(
+          "touchstart",
+          function () {
+            isHovered = true;
+          },
+          { passive: true }
+        );
+        container.addEventListener(
+          "touchend",
+          function () {
+            isHovered = false;
+          },
+          { passive: true }
+        );
+
+        function step(now) {
+          var tabHome = document.getElementById("tab-home");
+          if (tabHome && !tabHome.classList.contains("hidden")) {
+            var dt = Math.min((now - lastTime) / 16.666, 2.0);
+            lastTime = now;
+
+            // Interpolasi halus kecepatan scroll (lerp)
+            currentVelocity += (scrollVelocity - currentVelocity) * 0.12;
+            scrollVelocity *= 0.91; // Redaman gesekan
+
+            var hoverFactor = isHovered ? 0.35 : 1.0;
+            var v1 = (baseSpeed1 - currentVelocity) * hoverFactor * dt;
+            var v2 = (baseSpeed2 + currentVelocity) * hoverFactor * dt;
+
+            pos1 += v1;
+            pos2 += v2;
+
+            var w1 = track1.scrollWidth / 2;
+            var w2 = track2.scrollWidth / 2;
+
+            if (w1 > 0) {
+              if (pos1 <= -w1) pos1 += w1;
+              if (pos1 > 0) pos1 -= w1;
+              track1.style.transform = "translate3d(" + pos1 + "px, 0, 0)";
+            }
+
+            if (w2 > 0) {
+              if (pos2 >= 0) pos2 -= w2;
+              if (pos2 < -w2) pos2 += w2;
+              track2.style.transform = "translate3d(" + pos2 + "px, 0, 0)";
+            }
+          } else {
+            lastTime = now;
+          }
+          requestAnimationFrame(step);
+        }
+
+        requestAnimationFrame(step);
+      };
+
+      /* ========================================================
+         OVERLAPPING SECTION & SUB-LAB SHOWCASE
+         ======================================================== */
+      window.appState.sublabViewMode = window.appState.sublabViewMode || "stack";
+
+      window.toggleSublabView = function (mode) {
+        window.appState.sublabViewMode = mode;
+        var btnStack = document.getElementById("btn-sublab-view-stack");
+        var btnGrid = document.getElementById("btn-sublab-view-grid");
+        if (btnStack && btnGrid) {
+          if (mode === "stack") {
+            btnStack.className =
+              "px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-indigo-600 text-white cursor-pointer shadow-sm";
+            btnGrid.className =
+              "px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white cursor-pointer";
+          } else {
+            btnGrid.className =
+              "px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-indigo-600 text-white cursor-pointer shadow-sm";
+            btnStack.className =
+              "px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white cursor-pointer";
+          }
+        }
+        window.renderHomeShowcase();
+        setTimeout(window.initScrollReveal, 50);
       };
 
       window.renderHomeShowcase = function () {
         const subContainer = document.getElementById("home-sublabs-container");
         if (subContainer) {
-          const list = (window.appState.data.profilKonten && window.appState.data.profilKonten.length > 0)
-            ? window.appState.data.profilKonten.filter(x => String(x.Kategori || "").toLowerCase() !== "berita").slice(0, 3)
-            : window.defaultSubLabs.slice(0, 3);
-          
-          subContainer.innerHTML = list.map(function (item) {
-            var title = item.Judul || item.title || "Sub-Laboratorium";
-            var desc = item.Deskripsi || item.desc || "";
-            var cat = item.Kategori || item.category || "Divisi Unggulan";
-            var img = window.formatDriveImg(item.URL_Gambar || item.img || "");
-            return (
-              '<div class="glass-card rounded-3xl border border-slate-800 overflow-hidden flex flex-col justify-between hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 transition duration-300 group">' +
-              '<div class="relative h-48 overflow-hidden">' +
-              '<img src="' + (img || "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800") + '" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="window.handleImgError(this, \'' + cat + '\')">' +
-              '<span class="absolute top-3 left-3 px-3 py-1 text-[10px] font-black uppercase rounded-full bg-slate-900/80 backdrop-blur-md text-indigo-400 border border-slate-700">' + cat + '</span>' +
-              '</div>' +
-              '<div class="p-6 space-y-3 flex-grow flex flex-col justify-between">' +
-              '<div>' +
-              '<h3 class="font-bold text-white text-base group-hover:text-indigo-400 transition">' + title + '</h3>' +
-              '<p class="text-xs text-slate-400 mt-2 leading-relaxed line-clamp-3">' + desc + '</p>' +
-              '</div>' +
-              '<button type="button" onclick="window.switchTab(\'profil\')" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition pt-2 cursor-pointer">' +
-              'Pelajari Selengkapnya <i class="fa-solid fa-arrow-right text-[10px]"></i>' +
-              '</button>' +
-              '</div>' +
-              '</div>'
-            );
-          }).join("");
+          const isStack = window.appState.sublabViewMode !== "grid";
+          const customItems = (window.appState.data.profilKonten || []).filter(
+            (x) => String(x.Kategori || "").toLowerCase() !== "berita"
+          );
+          const list =
+            customItems.length > 0
+              ? customItems.slice(0, 5)
+              : (window.defaultSubLabs || []).slice(0, 5);
+
+          const divisionThemes = [
+            {
+              num: "01",
+              borderTop: "border-t-2 border-t-indigo-500",
+              badge: "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30",
+              glow: "bg-indigo-600/15",
+              btnColor: "text-indigo-400 hover:text-indigo-300",
+              icon: "fa-solid fa-gear",
+            },
+            {
+              num: "02",
+              borderTop: "border-t-2 border-t-cyan-500",
+              badge: "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30",
+              glow: "bg-cyan-600/15",
+              btnColor: "text-cyan-400 hover:text-cyan-300",
+              icon: "fa-solid fa-microchip",
+            },
+            {
+              num: "03",
+              borderTop: "border-t-2 border-t-emerald-500",
+              badge: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
+              glow: "bg-emerald-600/15",
+              btnColor: "text-emerald-400 hover:text-emerald-300",
+              icon: "fa-solid fa-atom",
+            },
+            {
+              num: "04",
+              borderTop: "border-t-2 border-t-purple-500",
+              badge: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
+              glow: "bg-purple-600/15",
+              btnColor: "text-purple-400 hover:text-purple-300",
+              icon: "fa-solid fa-code",
+            },
+            {
+              num: "05",
+              borderTop: "border-t-2 border-t-amber-500",
+              badge: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
+              glow: "bg-amber-600/15",
+              btnColor: "text-amber-400 hover:text-amber-300",
+              icon: "fa-solid fa-chart-line",
+            },
+          ];
+
+          if (isStack) {
+            subContainer.className = "relative space-y-6 sm:space-y-8 pb-8";
+            subContainer.innerHTML = list
+              .map(function (item, idx) {
+                var theme = divisionThemes[idx % divisionThemes.length];
+                var title = item.Judul || item.title || "Sub-Laboratorium";
+                var desc = item.Deskripsi || item.desc || "";
+                var cat = item.Kategori || item.category || "Divisi Unggulan";
+                var img = window.formatDriveImg(item.URL_Gambar || item.img || "");
+                var defaultTags =
+                  idx === 0
+                    ? ["Bubut Konvensional", "CNC Machining", "3D Printing"]
+                    : idx === 1
+                    ? ["Antropometri", "Biomekanika", "Tata Letak"]
+                    : idx === 2
+                    ? ["Mekanika Teknik", "Termofisika", "Instrumentasi Sensor"]
+                    : idx === 3
+                    ? ["Python AI", "C++", "Database SQL"]
+                    : ["Quality Control SPC", "R / SPSS", "DOE Simulasi"];
+                var tags = item.tags || defaultTags;
+
+                var tagsHtml = tags
+                  .map(function (t) {
+                    return (
+                      '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-800/80 text-slate-300 border border-slate-700/80">' +
+                      '<i class="fa-solid fa-check text-[8px] text-indigo-400"></i> ' +
+                      t +
+                      "</span>"
+                    );
+                  })
+                  .join(" ");
+
+                // Progressive sticky top offset: layer stack effect
+                var topOffsetDesk = 80 + idx * 22;
+
+                return (
+                  '<div class="sublab-stack-card sticky glass-card rounded-3xl border border-slate-700/70 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-300 ' +
+                  theme.borderTop +
+                  '" style="top: ' +
+                  topOffsetDesk +
+                  "px; z-index: " +
+                  (10 + idx) +
+                  '; margin-bottom: 2rem;">' +
+                  '<div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none ' +
+                  theme.glow +
+                  '"></div>' +
+                  '<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">' +
+                  '<div class="lg:col-span-7 space-y-4">' +
+                  '<div class="flex flex-wrap items-center gap-2">' +
+                  '<span class="px-2.5 py-1 rounded-lg text-xs font-mono font-black ' +
+                  theme.badge +
+                  '"><i class="' +
+                  theme.icon +
+                  ' mr-1"></i> DIVISI ' +
+                  theme.num +
+                  "</span>" +
+                  '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-800/90 text-slate-300 border border-slate-700">' +
+                  cat +
+                  "</span>" +
+                  '<span class="text-[10px] text-slate-400 font-medium">IELA Engineering</span>' +
+                  "</div>" +
+                  "<div>" +
+                  '<h3 class="text-xl sm:text-2xl font-black text-white hover:text-indigo-300 transition cursor-pointer" onclick="window.switchTab(\'profil\')">' +
+                  title +
+                  "</h3>" +
+                  '<p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">' +
+                  desc +
+                  "</p>" +
+                  "</div>" +
+                  '<div class="flex flex-wrap gap-1.5 pt-1">' +
+                  tagsHtml +
+                  "</div>" +
+                  '<div class="pt-2">' +
+                  '<button type="button" onclick="window.switchTab(\'profil\')" class="inline-flex items-center gap-2 text-xs font-bold ' +
+                  theme.btnColor +
+                  ' transition cursor-pointer">' +
+                  'Pelajari Modul & Fasilitas Divisi Ini <i class="fa-solid fa-arrow-right text-[10px]"></i>' +
+                  "</button>" +
+                  "</div>" +
+                  "</div>" +
+                  '<div class="lg:col-span-5 relative rounded-2xl overflow-hidden border border-slate-700/60 h-48 sm:h-56 group">' +
+                  '<img src="' +
+                  (img ||
+                    "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800") +
+                  '" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="' +
+                  title +
+                  '" onerror="window.handleImgError(this, \'' +
+                  cat +
+                  '\')">' +
+                  '<div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>' +
+                  '<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] font-bold text-white">' +
+                  '<span class="px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 text-[10px] text-emerald-300 flex items-center gap-1.5">' +
+                  '<i class="fa-solid fa-circle-check text-emerald-400"></i> Aktif Praktikum' +
+                  "</span>" +
+                  '<span class="text-slate-400 text-[10px] font-mono">2027-2028</span>' +
+                  "</div>" +
+                  "</div>" +
+                  "</div>" +
+                  "</div>"
+                );
+              })
+              .join("");
+          } else {
+            subContainer.className = "grid grid-cols-1 md:grid-cols-3 gap-6";
+            subContainer.innerHTML = list
+              .map(function (item) {
+                var title = item.Judul || item.title || "Sub-Laboratorium";
+                var desc = item.Deskripsi || item.desc || "";
+                var cat = item.Kategori || item.category || "Divisi Unggulan";
+                var img = window.formatDriveImg(item.URL_Gambar || item.img || "");
+                return (
+                  '<div class="glass-card rounded-3xl border border-slate-800 overflow-hidden flex flex-col justify-between hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 transition duration-300 group">' +
+                  '<div class="relative h-48 overflow-hidden">' +
+                  '<img src="' +
+                  (img ||
+                    "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800") +
+                  '" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="window.handleImgError(this, \'' +
+                  cat +
+                  '\')">' +
+                  '<span class="absolute top-3 left-3 px-3 py-1 text-[10px] font-black uppercase rounded-full bg-slate-900/80 backdrop-blur-md text-indigo-400 border border-slate-700">' +
+                  cat +
+                  "</span>" +
+                  "</div>" +
+                  '<div class="p-6 space-y-3 flex-grow flex flex-col justify-between">' +
+                  "<div>" +
+                  '<h3 class="font-bold text-white text-base group-hover:text-indigo-400 transition">' +
+                  title +
+                  "</h3>" +
+                  '<p class="text-xs text-slate-400 mt-2 leading-relaxed line-clamp-3">' +
+                  desc +
+                  "</p>" +
+                  "</div>" +
+                  '<button type="button" onclick="window.switchTab(\'profil\')" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition pt-2 cursor-pointer">' +
+                  'Pelajari Selengkapnya <i class="fa-solid fa-arrow-right text-[10px]"></i>' +
+                  "</button>" +
+                  "</div>" +
+                  "</div>"
+                );
+              })
+              .join("");
+          }
         }
 
         const galContainer = document.getElementById("home-galeri-container");
@@ -7072,6 +7546,9 @@
       };
       window.addEventListener("DOMContentLoaded", function () {
         window.initData(false);
+        setTimeout(function () {
+          if (typeof window.initVelocityScroll === "function") window.initVelocityScroll();
+        }, 300);
       });
     </script>
   </body>
