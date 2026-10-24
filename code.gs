@@ -1,4 +1,20 @@
 /**
+ * Helper untuk mencari indeks kolom header secara dinamis & toleran terhadap variasi penamaan
+ */
+function findHeaderColumnIndex(headers, possibleNames, defaultIndex) {
+  if (!headers || !headers.length) return defaultIndex;
+  for (var i = 0; i < headers.length; i++) {
+    var clean = String(headers[i]).trim().toLowerCase().replace(/[\s_-]+/g, "");
+    for (var k = 0; k < possibleNames.length; k++) {
+      if (clean === possibleNames[k].toLowerCase().replace(/[\s_-]+/g, "")) {
+        return i;
+      }
+    }
+  }
+  return defaultIndex;
+}
+
+/**
  * Code.gs - Main Backend Controller for Google Apps Script (GAS)
  * Web App Portal Profil & Recruitment IELA 2027-2028
  */
@@ -470,15 +486,37 @@ function submitFormPendaftaran(payload) {
     var pSheet = ss.getSheetByName("PENDAFTAR");
     var data = pSheet.getDataRange().getDisplayValues();
 
+    var headers = data[0];
+    var colStatusIdx = findHeaderColumnIndex(headers, ["Status_Pendaftaran", "Status", "StatusPendaftaran"], 29);
+    var colPIdIdx = findHeaderColumnIndex(headers, ["Pendaftar_ID", "ID_Pendaftar", "ID"], 0);
+    var colNimIdx = findHeaderColumnIndex(headers, ["NIM", "Username_NIM", "NPM"], 2);
+
+    var cleanPayloadNpm = String(payload.NIM || "").replace(/[^0-9]/g, "");
+    var cleanPayloadPId = String(payload.Pendaftar_ID || "").trim().toLowerCase();
+
     var targetRowIndex = -1;
     for (var i = 1; i < data.length; i++) {
-      if (String(data[i][0]).trim() === String(payload.Pendaftar_ID).trim() || String(data[i][2]).trim() === String(payload.NIM).trim()) {
+      var rowPId = String(data[i][colPIdIdx] || "").trim().toLowerCase();
+      var rowNim = String(data[i][colNimIdx] || "").replace(/[^0-9]/g, "");
+
+      if ((cleanPayloadPId && cleanPayloadPId !== "undefined" && rowPId === cleanPayloadPId) ||
+          (cleanPayloadNpm && rowNim === cleanPayloadNpm)) {
         targetRowIndex = i + 1;
         break;
       }
+
+      if (cleanPayloadNpm && cleanPayloadNpm.length >= 6) {
+        for (var c = 0; c < Math.min(data[i].length, 6); c++) {
+          if (String(data[i][c]).replace(/[^0-9]/g, "") === cleanPayloadNpm) {
+            targetRowIndex = i + 1;
+            break;
+          }
+        }
+        if (targetRowIndex !== -1) break;
+      }
     }
 
-    if (targetRowIndex === -1) return { success: false, message: "Data pendaftar tidak ditemukan!" };
+    if (targetRowIndex === -1) return { success: false, message: "Data pendaftar dengan NPM " + payload.NIM + " tidak ditemukan!" };
 
     var folderName = "[" + payload.NIM + "] - " + payload.Nama;
     var mainFolder;
@@ -544,6 +582,8 @@ function submitFormPendaftaran(payload) {
     ];
 
     pSheet.getRange(targetRowIndex, 1, 1, updatedRow.length).setValues([updatedRow]);
+    // Pastikan kolom Status_Pendaftaran secara eksplisit diisi "Submitted" di kolom header yang tepat
+    pSheet.getRange(targetRowIndex, colStatusIdx + 1).setValue("Submitted");
     invalidateCache("INITIAL_DATA");
 
     // Otomatis kirim email notifikasi Submitted ke pendaftar
@@ -551,9 +591,16 @@ function submitFormPendaftaran(payload) {
     var uSheet = ss.getSheetByName("USERS");
     if (uSheet) {
       var uData = uSheet.getDataRange().getDisplayValues();
+      var uHeaders = uData[0];
+      var uNimIdx = findHeaderColumnIndex(uHeaders, ["Username_NIM", "NIM", "NPM"], 1);
+      var uEmailIdx = findHeaderColumnIndex(uHeaders, ["Email", "Email_Address"], 4);
       for (var j = 1; j < uData.length; j++) {
-        if (String(uData[j][1]).trim() === String(payload.NIM).trim() || String(uData[j][0]).trim() === String(existingRow[1]).trim()) {
-          targetEmail = uData[j][4];
+        var uNim = String(uData[j][uNimIdx] || "").replace(/[^0-9]/g, "");
+        if (cleanPayloadNpm && uNim === cleanPayloadNpm) {
+          targetEmail = uData[j][uEmailIdx];
+          break;
+        } else if (String(uData[j][0]).trim() === String(existingRow[1]).trim()) {
+          targetEmail = uData[j][uEmailIdx];
           break;
         }
       }
@@ -786,24 +833,67 @@ function updatePendaftarStatusAndNotify(payload) {
     var ss = getSpreadsheet();
     var pSheet = ss.getSheetByName("PENDAFTAR");
     var data = pSheet.getDataRange().getDisplayValues();
+    if (data.length < 2) return { success: false, message: "Data lembar PENDAFTAR kosong!" };
+
+    var headers = data[0];
+    var colStatusIdx = findHeaderColumnIndex(headers, ["Status_Pendaftaran", "Status", "StatusPendaftaran"], 29);
+    var colPIdIdx = findHeaderColumnIndex(headers, ["Pendaftar_ID", "ID_Pendaftar", "ID"], 0);
+    var colNimIdx = findHeaderColumnIndex(headers, ["NIM", "Username_NIM", "NPM"], 2);
+    var colNamaIdx = findHeaderColumnIndex(headers, ["Nama", "Nama_Lengkap"], 3);
 
     var targetEmail = "";
     var targetNama = "";
+    var updatedRowsCount = 0;
+
+    var cleanPayloadNpm = String(payload.npm || "").replace(/[^0-9]/g, "");
+    var cleanPayloadPId = String(payload.pendaftarId || "").trim().toLowerCase();
 
     for (var i = 1; i < data.length; i++) {
-      if (String(data[i][0]).trim() === String(payload.pendaftarId).trim() || String(data[i][2]).trim() === String(payload.npm).trim()) {
-        pSheet.getRange(i + 1, 30).setValue(payload.newStatus);
-        targetNama = data[i][3];
-        break;
+      var rowPId = String(data[i][colPIdIdx] || "").trim().toLowerCase();
+      var rowNim = String(data[i][colNimIdx] || "").replace(/[^0-9]/g, "");
+
+      var isMatch = false;
+      if (cleanPayloadPId && cleanPayloadPId !== "undefined" && rowPId === cleanPayloadPId) {
+        isMatch = true;
+      } else if (cleanPayloadNpm && rowNim === cleanPayloadNpm) {
+        isMatch = true;
+      }
+
+      if (!isMatch && cleanPayloadNpm && cleanPayloadNpm.length >= 6) {
+        for (var c = 0; c < Math.min(data[i].length, 6); c++) {
+          if (String(data[i][c]).replace(/[^0-9]/g, "") === cleanPayloadNpm) {
+            isMatch = true;
+            break;
+          }
+        }
+      }
+
+      if (isMatch) {
+        pSheet.getRange(i + 1, colStatusIdx + 1).setValue(payload.newStatus);
+        if (!targetNama && data[i][colNamaIdx]) targetNama = data[i][colNamaIdx];
+        updatedRowsCount++;
       }
     }
 
+    if (updatedRowsCount === 0) {
+      return { success: false, message: "Data kandidat dengan NPM " + payload.npm + " tidak ditemukan di lembar PENDAFTAR!" };
+    }
+
     var uSheet = ss.getSheetByName("USERS");
-    var uData = uSheet.getDataRange().getDisplayValues();
-    for (var j = 1; j < uData.length; j++) {
-      if (String(uData[j][1]).trim() === String(payload.npm).trim()) {
-        targetEmail = uData[j][4];
-        break;
+    if (uSheet) {
+      var uData = uSheet.getDataRange().getDisplayValues();
+      var uHeaders = uData[0];
+      var uNimIdx = findHeaderColumnIndex(uHeaders, ["Username_NIM", "NIM", "NPM"], 1);
+      var uEmailIdx = findHeaderColumnIndex(uHeaders, ["Email", "Email_Address"], 4);
+      var uNamaIdx = findHeaderColumnIndex(uHeaders, ["Nama_Lengkap", "Nama"], 3);
+
+      for (var j = 1; j < uData.length; j++) {
+        var uNim = String(uData[j][uNimIdx] || "").replace(/[^0-9]/g, "");
+        if (cleanPayloadNpm && uNim === cleanPayloadNpm) {
+          targetEmail = uData[j][uEmailIdx];
+          if (!targetNama && uData[j][uNamaIdx]) targetNama = uData[j][uNamaIdx];
+          break;
+        }
       }
     }
 

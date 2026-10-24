@@ -6,7 +6,6 @@
     <meta name="referrer" content="no-referrer" />
     <title>IELA WebApp - Profil & Recruitment Portal 2027-2028</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -112,75 +111,10 @@
       .animate-logo-pulse {
         animation: logoPulse 2.2s infinite ease-in-out;
       }
-      /* ========================================================
-         VELOCITY SCROLL MARQUEE STYLES — DRAMATIC VERSION
-         ======================================================== */
-      .velocity-marquee-container {
-        mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-      }
-      .velocity-track {
-        display: flex;
-        white-space: nowrap;
-        will-change: transform;
-        transition: transform 0.05s linear;
-      }
-      .velocity-track-skew {
-        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      .velocity-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.65rem;
-        padding: 0.55rem 1.15rem;
-        border-radius: 1rem;
-        background: rgba(30, 41, 59, 0.85);
-        border: 1px solid rgba(99, 102, 241, 0.25);
-        backdrop-filter: blur(6px);
-        transition: border-color 0.25s, background-color 0.25s, box-shadow 0.25s;
-      }
-      .velocity-tag:hover {
-        border-color: rgba(99, 102, 241, 0.7);
-        background: rgba(30, 41, 59, 1);
-        box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
-      }
-      @keyframes velocityGlowPulse {
-        0%, 100% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.08); border-color: rgba(51, 65, 85, 0.6); }
-        50% { box-shadow: 0 0 50px rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.35); }
-      }
-      .velocity-glow-pulse {
-        animation: velocityGlowPulse 4s infinite ease-in-out;
-      }
-      .velocity-speed-indicator {
-        transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
-      }
-
-      /* ========================================================
-         OVERLAPPING STACKING CARDS STYLES — PURE PHYSICAL STACK
-         ======================================================== */
-      .sublab-stack-card {
-        position: -webkit-sticky !important;
-        position: sticky !important;
-        background: #0f172a !important;
-        background: rgba(15, 23, 42, 0.96) !important;
-        box-shadow: 0 -18px 45px -10px rgba(0, 0, 0, 0.95), 0 25px 65px -15px rgba(0, 0, 0, 0.85) !important;
-        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                    opacity 0.35s ease,
-                    filter 0.35s ease,
-                    box-shadow 0.35s ease,
-                    border-color 0.35s ease;
-        will-change: transform, opacity;
-      }
-      .sublab-stack-card:hover {
-        border-color: rgba(99, 102, 241, 0.6) !important;
-      }
-      .sublab-progress-bar {
-        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      }
     </style>
   </head>
   <body
-    class="min-h-screen flex flex-col justify-between relative overflow-x-clip"
+    class="min-h-screen flex flex-col justify-between relative overflow-x-hidden"
   >
     <!-- OVERLAY LOADING DENGAN LOGO IELA -->
     <div
@@ -530,155 +464,7 @@
             </div>
           </div>
         </div>
-
-        <!-- VELOCITY SCROLL BANNER (KINETIC MARQUEE) — DRAMATIC -->
-        <div
-          id="home-velocity-scroll"
-          class="reveal relative overflow-hidden rounded-3xl border border-slate-700/60 shadow-2xl select-none velocity-glow-pulse"
-          style="background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,20,60,0.92) 50%, rgba(15,23,42,0.95) 100%);"
-        >
-          <!-- Animated BG Grid Lines -->
-          <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-               style="background-image: linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px); background-size: 60px 60px;"></div>
-          <!-- Corner Glows -->
-          <div class="absolute -top-24 -left-24 w-64 h-64 rounded-full bg-indigo-600/20 blur-3xl pointer-events-none"></div>
-          <div class="absolute -bottom-24 -right-24 w-64 h-64 rounded-full bg-cyan-600/15 blur-3xl pointer-events-none"></div>
-
-          <!-- Gradient Edge Masks for soft fade out -->
-          <div class="pointer-events-none absolute inset-y-0 left-0 w-20 sm:w-36 bg-gradient-to-r from-slate-950 via-slate-950/90 to-transparent z-10"></div>
-          <div class="pointer-events-none absolute inset-y-0 right-0 w-20 sm:w-36 bg-gradient-to-l from-slate-950 via-slate-950/90 to-transparent z-10"></div>
-
-          <!-- Top Meta Bar -->
-          <div class="flex items-center justify-between px-5 sm:px-7 pt-4 pb-3 text-[10px] font-bold uppercase tracking-widest relative z-20">
-            <span class="flex items-center gap-2.5 text-indigo-300">
-              <span class="relative flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/40">
-                <i class="fa-solid fa-gauge-high text-[11px] text-indigo-400"></i>
-                <span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400"></span>
-              </span>
-              <span class="text-indigo-200 text-[11px]">Velocity Scroll</span>
-            </span>
-            <!-- Speed indicator bar -->
-            <div class="hidden sm:flex items-center gap-2 flex-1 mx-6">
-              <div class="flex-1 h-1 rounded-full bg-slate-800 overflow-hidden">
-                <div id="velocity-speed-bar" class="velocity-speed-indicator h-full rounded-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400" style="width: 8%"></div>
-              </div>
-              <span id="velocity-speed-text" class="text-[10px] font-mono text-slate-500 w-20 text-right">0.75 px/f</span>
-            </div>
-            <span class="text-cyan-300 font-mono text-[10px] flex items-center gap-1.5 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-lg">
-              <i class="fa-solid fa-bolt text-[9px] text-cyan-400"></i> 60 FPS
-            </span>
-          </div>
-
-          <!-- Dual Velocity Tracks (BIGGER HIGH-IMPACT TYPOGRAPHY) -->
-          <div id="velocity-skew-wrap" class="space-y-4 overflow-hidden velocity-marquee-container velocity-track-skew px-2 pb-6 pt-2 relative z-10">
-            <!-- TRACK 1: Moves Left, Accelerates on Scroll -->
-            <div class="velocity-track velocity-track-1 flex gap-8 sm:gap-12 items-center">
-              <div class="velocity-group flex gap-8 sm:gap-12 items-center flex-shrink-0">
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-slate-100 flex items-center gap-3">
-                  <i class="fa-solid fa-microchip text-indigo-400"></i> Ergonomi & Sistem Kerja
-                </span>
-                <span class="text-indigo-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-cyan-300 flex items-center gap-3">
-                  <i class="fa-solid fa-gear text-cyan-400"></i> Pemesinan Bubut & CNC
-                </span>
-                <span class="text-cyan-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-emerald-300 flex items-center gap-3">
-                  <i class="fa-solid fa-cube text-emerald-400"></i> 3D Printing Additive
-                </span>
-                <span class="text-emerald-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-purple-300 flex items-center gap-3">
-                  <i class="fa-solid fa-code text-purple-400"></i> Komputasi & Python AI
-                </span>
-                <span class="text-purple-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-amber-300 flex items-center gap-3">
-                  <i class="fa-solid fa-chart-line text-amber-400"></i> Statistika Mutu SPC
-                </span>
-                <span class="text-amber-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-rose-300 flex items-center gap-3">
-                  <i class="fa-solid fa-network-wired text-rose-400"></i> Simulasi Sistem Industri
-                </span>
-                <span class="text-rose-500/50 text-2xl font-light">✦</span>
-              </div>
-              <div class="velocity-group flex gap-8 sm:gap-12 items-center flex-shrink-0" aria-hidden="true">
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-slate-100 flex items-center gap-3">
-                  <i class="fa-solid fa-microchip text-indigo-400"></i> Ergonomi & Sistem Kerja
-                </span>
-                <span class="text-indigo-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-cyan-300 flex items-center gap-3">
-                  <i class="fa-solid fa-gear text-cyan-400"></i> Pemesinan Bubut & CNC
-                </span>
-                <span class="text-cyan-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-emerald-300 flex items-center gap-3">
-                  <i class="fa-solid fa-cube text-emerald-400"></i> 3D Printing Additive
-                </span>
-                <span class="text-emerald-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-purple-300 flex items-center gap-3">
-                  <i class="fa-solid fa-code text-purple-400"></i> Komputasi & Python AI
-                </span>
-                <span class="text-purple-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-amber-300 flex items-center gap-3">
-                  <i class="fa-solid fa-chart-line text-amber-400"></i> Statistika Mutu SPC
-                </span>
-                <span class="text-amber-500/50 text-2xl font-light">✦</span>
-                <span class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-wider text-rose-300 flex items-center gap-3">
-                  <i class="fa-solid fa-network-wired text-rose-400"></i> Simulasi Sistem Industri
-                </span>
-                <span class="text-rose-500/50 text-2xl font-light">✦</span>
-              </div>
-            </div>
-
-            <!-- TRACK 2: Moves Right, Accelerates on Scroll -->
-            <div class="velocity-track velocity-track-2 flex gap-8 sm:gap-14 items-center">
-              <div class="velocity-group flex gap-8 sm:gap-14 items-center flex-shrink-0">
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent flex items-center gap-2">
-                  <i class="fa-solid fa-star text-amber-400 text-sm"></i> IELA PUSAT RISET 2027-2028
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-slate-300/80">
-                  5 SUB-LABORATORIUM TERPADU
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-cyan-400">
-                  29 ASISTEN RESMI & INSTRUKTUR
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-emerald-400">
-                  TEKNIK INDUSTRI UNIROW TUBAN
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-purple-400">
-                  SOCIETY 5.0 & INDUSTRY 4.0
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-              </div>
-              <div class="velocity-group flex gap-8 sm:gap-14 items-center flex-shrink-0" aria-hidden="true">
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent flex items-center gap-2">
-                  <i class="fa-solid fa-star text-amber-400 text-sm"></i> IELA PUSAT RISET 2027-2028
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-slate-300/80">
-                  5 SUB-LABORATORIUM TERPADU
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-cyan-400">
-                  29 ASISTEN RESMI & INSTRUKTUR
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-emerald-400">
-                  TEKNIK INDUSTRI UNIROW TUBAN
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-                <span class="text-lg sm:text-2xl lg:text-3xl font-extrabold uppercase tracking-widest text-purple-400">
-                  SOCIETY 5.0 & INDUSTRY 4.0
-                </span>
-                <span class="text-slate-700 text-xl">●</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4 -mt-4 sm:-mt-6 relative z-20">
+        <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="glass-card p-6 rounded-2xl border border-slate-800">
             <i class="fa-solid fa-flask text-2xl text-indigo-400 mb-2"></i>
             <p class="text-2xl font-black text-white">5 Divisi</p>
@@ -737,54 +523,18 @@
           </div>
         </div>
 
-        <!-- SHOWCASE 5 SUB-LABORATORIUM (OVERLAPPING SECTION) -->
+        <!-- SHOWCASE 5 SUB-LABORATORIUM -->
         <div class="reveal space-y-6">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 border-b border-slate-800 pb-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 border-b border-slate-800 pb-4">
             <div>
-              <div class="flex items-center gap-2 mb-1.5">
-                <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">Fokus Keilmuan</span>
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
-                  <i class="fa-solid fa-layer-group text-[9px] text-indigo-400"></i> Overlapping Section
-                </span>
-              </div>
+              <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">Fokus Keilmuan</span>
               <h2 class="text-2xl sm:text-3xl font-black text-white">5 Sub-Laboratorium Unggulan</h2>
-              <p class="text-xs text-slate-400 mt-1">
-                Scroll perlahan ke bawah untuk merasakan sensasi tumpukan kartu (*overlapping stack*) setiap divisi praktikum
-              </p>
             </div>
-            <div class="flex items-center gap-3">
-              <!-- View Mode Toggle: Stack vs Grid -->
-              <div class="inline-flex p-1 rounded-xl bg-slate-900 border border-slate-800 text-xs">
-                <button
-                  type="button"
-                  id="btn-sublab-view-stack"
-                  onclick="window.toggleSublabView('stack')"
-                  class="px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-indigo-600 text-white cursor-pointer shadow-sm"
-                  title="Tampilan Kartu Menumpuk (Overlapping Cards)"
-                >
-                  <i class="fa-solid fa-layer-group text-[10px]"></i> Tumpuk
-                </button>
-                <button
-                  type="button"
-                  id="btn-sublab-view-grid"
-                  onclick="window.toggleSublabView('grid')"
-                  class="px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white cursor-pointer"
-                  title="Tampilan Kotak Grid"
-                >
-                  <i class="fa-solid fa-table-cells text-[10px]"></i> Grid
-                </button>
-              </div>
-              <button
-                type="button"
-                onclick="window.switchTab('profil')"
-                class="hidden sm:inline-flex text-xs font-bold text-indigo-400 hover:text-indigo-300 items-center gap-1.5 transition cursor-pointer"
-              >
-                Detail Semua Divisi <i class="fa-solid fa-arrow-right"></i>
-              </button>
-            </div>
+            <button type="button" onclick="window.switchTab('profil')" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition cursor-pointer">
+              Lihat Detail Semua Divisi <i class="fa-solid fa-arrow-right"></i>
+            </button>
           </div>
-          <!-- CONTAINER SUB-LABORATORIUM (STACK ATAU GRID) -->
-          <div id="home-sublabs-container" class="relative"></div>
+          <div id="home-sublabs-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
         </div>
 
         <!-- SHOWCASE GALERI TERBARU -->
@@ -3812,10 +3562,6 @@
         window.scrollTo(0, 0);
         setTimeout(function () {
           if (typeof window.initScrollReveal === "function") window.initScrollReveal();
-          if (tabName === "home") {
-            if (typeof window.initVelocityScroll === "function") window.initVelocityScroll();
-            if (typeof window.initSublabStackEngine === "function") window.initSublabStackEngine();
-          }
         }, 60);
       };
       window.switchAdminSubTab = function (subTab) {
@@ -4452,523 +4198,38 @@
         window.renderAdminGaleriTable();
         window.renderUsersTable();
         setTimeout(window.initScrollReveal, 100);
-        setTimeout(function () {
-          if (typeof window.initSmoothScroll === "function") window.initSmoothScroll();
-          if (typeof window.initVelocityScroll === "function") window.initVelocityScroll();
-          if (typeof window.initSublabStackEngine === "function") window.initSublabStackEngine();
-        }, 150);
-      };
-
-      /* ========================================================
-         LENIS SMOOTH SCROLL VELOCITY ENGINE
-         ======================================================== */
-      window.initSmoothScroll = function () {
-        if (window._lenisInitialized) return;
-        if (typeof Lenis === "undefined") return;
-        if (
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        )
-          return;
-
-        try {
-          var lenis = new Lenis({
-            duration: 1.15,
-            easing: function (t) {
-              return Math.min(1, 1.001 - Math.pow(2, -10 * t));
-            },
-            smoothWheel: true,
-            touchMultiplier: 1.5,
-          });
-          window.lenisInstance = lenis;
-          window._lenisInitialized = true;
-
-          function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-          }
-          requestAnimationFrame(raf);
-
-          lenis.on("scroll", function (e) {
-            if (typeof window._onScrollVelocityImpulse === "function") {
-              window._onScrollVelocityImpulse(e.velocity || 0);
-            }
-          });
-        } catch (e) {
-          console.warn("Smooth scroll initialization fallback:", e);
-        }
-      };
-
-      /* ========================================================
-         VELOCITY SCROLL ENGINE (KINETIC MARQUEE) — HIGH IMPACT
-         ======================================================== */
-      window.initVelocityScroll = function () {
-        if (window._velocityScrollInitialized) return;
-        var container = document.getElementById("home-velocity-scroll");
-        if (!container) return;
-
-        var track1 = container.querySelector(".velocity-track-1");
-        var track2 = container.querySelector(".velocity-track-2");
-        var skewWrap = document.getElementById("velocity-skew-wrap");
-        var speedBar = document.getElementById("velocity-speed-bar");
-        var speedText = document.getElementById("velocity-speed-text");
-        if (!track1 || !track2) return;
-
-        var prefersReduced =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (prefersReduced) return;
-
-        window._velocityScrollInitialized = true;
-        var lastScrollY =
-          window.pageYOffset || document.documentElement.scrollTop || 0;
-        var scrollVelocity = 0;
-        var currentVelocity = 0;
-        var currentSkew = 0;
-        var pos1 = 0;
-        var pos2 = 0;
-        var baseSpeed1 = -2.0; // Dynamic base speed
-        var baseSpeed2 = 1.8;
-        var isHovered = false;
-        var lastTime = performance.now();
-
-        // Lenis velocity hook
-        window._onScrollVelocityImpulse = function (v) {
-          scrollVelocity = Math.max(Math.min(v * 2.8, 55), -55);
-        };
-
-        // Standard native scroll listener (fallback & complementary)
-        window.addEventListener(
-          "scroll",
-          function () {
-            var currY =
-              window.pageYOffset || document.documentElement.scrollTop || 0;
-            var delta = currY - lastScrollY;
-            lastScrollY = currY;
-            if (!window._lenisInitialized) {
-              scrollVelocity = Math.max(Math.min(delta * 1.05, 55), -55);
-            }
-          },
-          { passive: true }
-        );
-
-        container.addEventListener("mouseenter", function () {
-          isHovered = true;
-        });
-        container.addEventListener("mouseleave", function () {
-          isHovered = false;
-        });
-        container.addEventListener(
-          "touchstart",
-          function () {
-            isHovered = true;
-          },
-          { passive: true }
-        );
-        container.addEventListener(
-          "touchend",
-          function () {
-            isHovered = false;
-          },
-          { passive: true }
-        );
-
-        function step(now) {
-          var tabHome = document.getElementById("tab-home");
-          if (tabHome && !tabHome.classList.contains("hidden")) {
-            var dt = Math.min((now - lastTime) / 16.666, 2.5);
-            lastTime = now;
-
-            // Lerp velocity with high kinetic response
-            currentVelocity += (scrollVelocity - currentVelocity) * 0.16;
-            scrollVelocity *= 0.89; // Momentum decay
-
-            // Dynamic skew on scroll
-            var targetSkew = Math.max(
-              Math.min(currentVelocity * 0.14, 3.0),
-              -3.0
-            );
-            currentSkew += (targetSkew - currentSkew) * 0.1;
-            if (skewWrap) {
-              skewWrap.style.transform =
-                "skewY(" + currentSkew.toFixed(3) + "deg)";
-            }
-
-            // Live speed gauge meter
-            var absSpeed = Math.abs(currentVelocity);
-            var speedPct = Math.min(10 + absSpeed * 3.5, 100);
-            if (speedBar) {
-              speedBar.style.width = speedPct.toFixed(1) + "%";
-              if (absSpeed > 10)
-                speedBar.style.background =
-                  "linear-gradient(to right, #f43f5e, #ec4899, #a855f7)";
-              else if (absSpeed > 4)
-                speedBar.style.background =
-                  "linear-gradient(to right, #6366f1, #06b6d4, #10b981)";
-              else
-                speedBar.style.background =
-                  "linear-gradient(to right, #6366f1, #06b6d4, #10b981)";
-            }
-            if (speedText) {
-              var displaySpeed = (Math.abs(baseSpeed1) + absSpeed).toFixed(1);
-              speedText.textContent = displaySpeed + " px/f";
-            }
-
-            var hoverFactor = isHovered ? 0.25 : 1.0;
-            var v1 = (baseSpeed1 - currentVelocity * 1.6) * hoverFactor * dt;
-            var v2 = (baseSpeed2 + currentVelocity * 1.6) * hoverFactor * dt;
-
-            pos1 += v1;
-            pos2 += v2;
-
-            var w1 = track1.scrollWidth / 2;
-            var w2 = track2.scrollWidth / 2;
-
-            if (w1 > 0) {
-              if (pos1 <= -w1) pos1 += w1;
-              if (pos1 > 0) pos1 -= w1;
-              track1.style.transform =
-                "translate3d(" + pos1.toFixed(1) + "px, 0, 0)";
-            }
-
-            if (w2 > 0) {
-              if (pos2 >= 0) pos2 -= w2;
-              if (pos2 < -w2) pos2 += w2;
-              track2.style.transform =
-                "translate3d(" + pos2.toFixed(1) + "px, 0, 0)";
-            }
-          } else {
-            lastTime = now;
-          }
-          requestAnimationFrame(step);
-        }
-
-        requestAnimationFrame(step);
-      };
-
-      /* ========================================================
-         OVERLAPPING SECTION — TRUE STICKY CARD STACK ENGINE
-         ======================================================== */
-      window._sublabStackObserver = null;
-
-      window.initSublabStackEngine = function () {
-        var cards = document.querySelectorAll(".sublab-stack-card");
-        if (!cards.length) return;
-
-        var progressDots = document.querySelectorAll(".sublab-dot");
-        var progressBar = document.getElementById("sublab-progress-fill");
-
-        function updateCardOverlap() {
-          var activeIndex = 0;
-
-          cards.forEach(function (card, i) {
-            var stickyTop = 80 + i * 24;
-            var rect = card.getBoundingClientRect();
-
-            if (rect.top <= stickyTop + 15) {
-              activeIndex = i;
-            }
-
-            // Check if subsequent card overlaps this card
-            if (i < cards.length - 1) {
-              var nextCard = cards[i + 1];
-              var nextRect = nextCard.getBoundingClientRect();
-              var nextStickyTop = 80 + (i + 1) * 24;
-
-              if (nextRect.top <= nextStickyTop + 50) {
-                var overlapRatio = Math.max(
-                  0,
-                  Math.min(1, (nextStickyTop + 50 - nextRect.top) / 50)
-                );
-                var scale = 1 - overlapRatio * 0.045;
-                var opacity = 1 - overlapRatio * 0.35;
-                var bright = 1 - overlapRatio * 0.35;
-                card.style.transform = "scale(" + scale.toFixed(3) + ")";
-                card.style.opacity = opacity.toFixed(2);
-                card.style.filter =
-                  "brightness(" +
-                  bright.toFixed(2) +
-                  ") blur(" +
-                  (overlapRatio * 1.5).toFixed(1) +
-                  "px)";
-              } else {
-                card.style.transform = "scale(1)";
-                card.style.opacity = "1";
-                card.style.filter = "brightness(1) blur(0)";
-              }
-            }
-          });
-
-          // Update active progress indicator
-          if (progressDots && progressDots.length) {
-            progressDots.forEach(function (dot, dIdx) {
-              if (dIdx <= activeIndex) {
-                dot.style.background = dot.dataset.color || "#6366f1";
-                dot.style.transform =
-                  dIdx === activeIndex ? "scale(1.4)" : "scale(1)";
-                dot.style.boxShadow =
-                  dIdx === activeIndex
-                    ? "0 0 12px " + (dot.dataset.color || "#6366f1")
-                    : "none";
-              } else {
-                dot.style.background = "#334155";
-                dot.style.transform = "scale(1)";
-                dot.style.boxShadow = "none";
-              }
-            });
-          }
-          if (progressBar) {
-            var pct = ((activeIndex + 1) / cards.length) * 100;
-            progressBar.style.width = pct + "%";
-          }
-        }
-
-        if (window._sublabScrollHandler) {
-          window.removeEventListener("scroll", window._sublabScrollHandler);
-        }
-        window._sublabScrollHandler = updateCardOverlap;
-        window.addEventListener("scroll", updateCardOverlap, { passive: true });
-        updateCardOverlap();
-      };
-
-      /* ========================================================
-         OVERLAPPING SECTION & SUB-LAB SHOWCASE
-         ======================================================== */
-      window.appState.sublabViewMode = window.appState.sublabViewMode || "stack";
-
-      window.toggleSublabView = function (mode) {
-        window.appState.sublabViewMode = mode;
-        var btnStack = document.getElementById("btn-sublab-view-stack");
-        var btnGrid = document.getElementById("btn-sublab-view-grid");
-        if (btnStack && btnGrid) {
-          if (mode === "stack") {
-            btnStack.className =
-              "px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-indigo-600 text-white cursor-pointer shadow-sm";
-            btnGrid.className =
-              "px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white cursor-pointer";
-          } else {
-            btnGrid.className =
-              "px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-indigo-600 text-white cursor-pointer shadow-sm";
-            btnStack.className =
-              "px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white cursor-pointer";
-          }
-        }
-        window.renderHomeShowcase();
-        setTimeout(window.initScrollReveal, 50);
-        setTimeout(function () {
-          if (window.appState.sublabViewMode === "stack") window.initSublabStackEngine();
-        }, 100);
       };
 
       window.renderHomeShowcase = function () {
         const subContainer = document.getElementById("home-sublabs-container");
         if (subContainer) {
-          const isStack = window.appState.sublabViewMode !== "grid";
-          const customItems = (window.appState.data.profilKonten || []).filter(
-            (x) => String(x.Kategori || "").toLowerCase() !== "berita"
-          );
-          const list =
-            customItems.length > 0
-              ? customItems.slice(0, 5)
-              : (window.defaultSubLabs || []).slice(0, 5);
-
-          const divisionThemes = [
-            {
-              num: "01",
-              borderTop: "border-t-2 border-t-indigo-500",
-              badge: "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30",
-              glow: "bg-indigo-600/15",
-              btnColor: "text-indigo-400 hover:text-indigo-300",
-              icon: "fa-solid fa-gear",
-            },
-            {
-              num: "02",
-              borderTop: "border-t-2 border-t-cyan-500",
-              badge: "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30",
-              glow: "bg-cyan-600/15",
-              btnColor: "text-cyan-400 hover:text-cyan-300",
-              icon: "fa-solid fa-microchip",
-            },
-            {
-              num: "03",
-              borderTop: "border-t-2 border-t-emerald-500",
-              badge: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
-              glow: "bg-emerald-600/15",
-              btnColor: "text-emerald-400 hover:text-emerald-300",
-              icon: "fa-solid fa-atom",
-            },
-            {
-              num: "04",
-              borderTop: "border-t-2 border-t-purple-500",
-              badge: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
-              glow: "bg-purple-600/15",
-              btnColor: "text-purple-400 hover:text-purple-300",
-              icon: "fa-solid fa-code",
-            },
-            {
-              num: "05",
-              borderTop: "border-t-2 border-t-amber-500",
-              badge: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
-              glow: "bg-amber-600/15",
-              btnColor: "text-amber-400 hover:text-amber-300",
-              icon: "fa-solid fa-chart-line",
-            },
-          ];
-
-          if (isStack) {
-            var dotColors = ["#6366f1","#06b6d4","#10b981","#a855f7","#f59e0b"];
-            var progressHtml = '<div id="sublab-stack-progress" class="flex items-center gap-3 mb-6 px-2">' +
-              '<div class="flex items-center gap-2">' +
-              dotColors.slice(0, list.length).map(function(c, i) {
-                return '<div class="sublab-dot w-2.5 h-2.5 rounded-full transition-all duration-300" data-color="' + c + '" style="background: ' + (i === 0 ? c : '#334155') + '; transform: ' + (i === 0 ? 'scale(1.4)' : 'scale(1)') + ';"></div>';
-              }).join("") +
+          const list = (window.appState.data.profilKonten && window.appState.data.profilKonten.length > 0)
+            ? window.appState.data.profilKonten.filter(x => String(x.Kategori || "").toLowerCase() !== "berita").slice(0, 3)
+            : window.defaultSubLabs.slice(0, 3);
+          
+          subContainer.innerHTML = list.map(function (item) {
+            var title = item.Judul || item.title || "Sub-Laboratorium";
+            var desc = item.Deskripsi || item.desc || "";
+            var cat = item.Kategori || item.category || "Divisi Unggulan";
+            var img = window.formatDriveImg(item.URL_Gambar || item.img || "");
+            return (
+              '<div class="glass-card rounded-3xl border border-slate-800 overflow-hidden flex flex-col justify-between hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 transition duration-300 group">' +
+              '<div class="relative h-48 overflow-hidden">' +
+              '<img src="' + (img || "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800") + '" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="window.handleImgError(this, \'' + cat + '\')">' +
+              '<span class="absolute top-3 left-3 px-3 py-1 text-[10px] font-black uppercase rounded-full bg-slate-900/80 backdrop-blur-md text-indigo-400 border border-slate-700">' + cat + '</span>' +
               '</div>' +
-              '<div class="flex-1 h-1 rounded-full bg-slate-800 overflow-hidden">' +
-              '<div id="sublab-progress-fill" class="sublab-progress-bar h-full rounded-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400" style="width: ' + (100/list.length) + '%"></div>' +
+              '<div class="p-6 space-y-3 flex-grow flex flex-col justify-between">' +
+              '<div>' +
+              '<h3 class="font-bold text-white text-base group-hover:text-indigo-400 transition">' + title + '</h3>' +
+              '<p class="text-xs text-slate-400 mt-2 leading-relaxed line-clamp-3">' + desc + '</p>' +
               '</div>' +
-              '<span class="text-[10px] font-mono text-slate-500">' + list.length + ' divisi</span>' +
-              '</div>';
-
-            subContainer.className = "relative pb-24";
-            subContainer.innerHTML = progressHtml + list
-              .map(function (item, idx) {
-                var theme = divisionThemes[idx % divisionThemes.length];
-                var title = item.Judul || item.title || "Sub-Laboratorium";
-                var desc = item.Deskripsi || item.desc || "";
-                var cat = item.Kategori || item.category || "Divisi Unggulan";
-                var img = window.formatDriveImg(item.URL_Gambar || item.img || "");
-                var defaultTags =
-                  idx === 0
-                    ? ["Bubut Konvensional", "CNC Machining", "3D Printing"]
-                    : idx === 1
-                    ? ["Antropometri", "Biomekanika", "Tata Letak"]
-                    : idx === 2
-                    ? ["Mekanika Teknik", "Termofisika", "Instrumentasi Sensor"]
-                    : idx === 3
-                    ? ["Python AI", "C++", "Database SQL"]
-                    : ["Quality Control SPC", "R / SPSS", "DOE Simulasi"];
-                var tags = item.tags || defaultTags;
-
-                var tagsHtml = tags
-                  .map(function (t) {
-                    return (
-                      '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-800/80 text-slate-300 border border-slate-700/80">' +
-                      '<i class="fa-solid fa-check text-[8px] text-indigo-400"></i> ' +
-                      t +
-                      "</span>"
-                    );
-                  })
-                  .join(" ");
-
-                var stickyTop = 82 + (idx * 24); // Progressive sticky top offset
-                return (
-                  '<div class="sublab-stack-card rounded-3xl border border-slate-700/80 p-6 sm:p-8 backdrop-blur-2xl overflow-hidden ' +
-                  theme.borderTop +
-                  '" data-stack-idx="' + idx + '" style="position: -webkit-sticky; position: sticky; top: ' + stickyTop + 'px; z-index: ' +
-                  (10 + idx) +
-                  '; margin-bottom: 5rem;">' +
-                  '<div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none ' +
-                  theme.glow +
-                  '"></div>' +
-                  '<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">' +
-                  '<div class="lg:col-span-7 space-y-4">' +
-                  '<div class="flex flex-wrap items-center gap-2">' +
-                  '<span class="px-2.5 py-1 rounded-lg text-xs font-mono font-black ' +
-                  theme.badge +
-                  '"><i class="' +
-                  theme.icon +
-                  ' mr-1"></i> DIVISI ' +
-                  theme.num +
-                  "</span>" +
-                  '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-800/90 text-slate-300 border border-slate-700">' +
-                  cat +
-                  "</span>" +
-                  "</div>" +
-                  "<div>" +
-                  '<h3 class="text-xl sm:text-2xl font-black text-white hover:text-indigo-300 transition cursor-pointer" onclick="window.switchTab(\'profil\')">' +
-                  title +
-                  "</h3>" +
-                  '<p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">' +
-                  desc +
-                  "</p>" +
-                  "</div>" +
-                  '<div class="flex flex-wrap gap-1.5 pt-1">' +
-                  tagsHtml +
-                  "</div>" +
-                  '<div class="pt-2">' +
-                  '<button type="button" onclick="window.switchTab(\'profil\')" class="inline-flex items-center gap-2 text-xs font-bold ' +
-                  theme.btnColor +
-                  ' transition cursor-pointer">' +
-                  'Pelajari Modul & Fasilitas Divisi Ini <i class="fa-solid fa-arrow-right text-[10px]"></i>' +
-                  "</button>" +
-                  "</div>" +
-                  "</div>" +
-                  '<div class="lg:col-span-5 relative rounded-2xl overflow-hidden border border-slate-700/60 h-48 sm:h-56 group">' +
-                  '<img src="' +
-                  (img ||
-                    "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800") +
-                  '" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="' +
-                  title +
-                  '" onerror="window.handleImgError(this, \'' +
-                  cat +
-                  '\')">' +
-                  '<div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>' +
-                  '<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] font-bold text-white">' +
-                  '<span class="px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 text-[10px] text-emerald-300 flex items-center gap-1.5">' +
-                  '<i class="fa-solid fa-circle-check text-emerald-400"></i> Aktif Praktikum' +
-                  "</span>" +
-                  '<span class="text-slate-400 text-[10px] font-mono">2027-2028</span>' +
-                  "</div>" +
-                  "</div>" +
-                  "</div>" +
-                  "</div>"
-                );
-              })
-              .join("");
-
-            // Initialize the JS-driven stack engine after DOM is populated
-            setTimeout(function () {
-              window.initSublabStackEngine();
-            }, 80);
-          } else {
-            subContainer.className = "grid grid-cols-1 md:grid-cols-3 gap-6";
-            subContainer.innerHTML = list
-              .map(function (item) {
-                var title = item.Judul || item.title || "Sub-Laboratorium";
-                var desc = item.Deskripsi || item.desc || "";
-                var cat = item.Kategori || item.category || "Divisi Unggulan";
-                var img = window.formatDriveImg(item.URL_Gambar || item.img || "");
-                return (
-                  '<div class="glass-card rounded-3xl border border-slate-800 overflow-hidden flex flex-col justify-between hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 transition duration-300 group">' +
-                  '<div class="relative h-48 overflow-hidden">' +
-                  '<img src="' +
-                  (img ||
-                    "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800") +
-                  '" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="window.handleImgError(this, \'' +
-                  cat +
-                  '\')">' +
-                  '<span class="absolute top-3 left-3 px-3 py-1 text-[10px] font-black uppercase rounded-full bg-slate-900/80 backdrop-blur-md text-indigo-400 border border-slate-700">' +
-                  cat +
-                  "</span>" +
-                  "</div>" +
-                  '<div class="p-6 space-y-3 flex-grow flex flex-col justify-between">' +
-                  "<div>" +
-                  '<h3 class="font-bold text-white text-base group-hover:text-indigo-400 transition">' +
-                  title +
-                  "</h3>" +
-                  '<p class="text-xs text-slate-400 mt-2 leading-relaxed line-clamp-3">' +
-                  desc +
-                  "</p>" +
-                  "</div>" +
-                  '<button type="button" onclick="window.switchTab(\'profil\')" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition pt-2 cursor-pointer">' +
-                  'Pelajari Selengkapnya <i class="fa-solid fa-arrow-right text-[10px]"></i>' +
-                  "</button>" +
-                  "</div>" +
-                  "</div>"
-                );
-              })
-              .join("");
-          }
+              '<button type="button" onclick="window.switchTab(\'profil\')" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition pt-2 cursor-pointer">' +
+              'Pelajari Selengkapnya <i class="fa-solid fa-arrow-right text-[10px]"></i>' +
+              '</button>' +
+              '</div>' +
+              '</div>'
+            );
+          }).join("");
         }
 
         const galContainer = document.getElementById("home-galeri-container");
@@ -6055,6 +5316,19 @@
               window.showLoading(false);
               if (res && res.success) {
                 window.showToast(res.message);
+                if (window.appState && window.appState.data && Array.isArray(window.appState.data.pendaftar)) {
+                  var submNpm = String(payload.npm || payload.NIM || "").replace(/[^0-9]/g, "");
+                  window.appState.data.pendaftar.forEach(function (cand) {
+                    if (String(cand.NIM || "").replace(/[^0-9]/g, "") === submNpm) {
+                      cand.Status_Pendaftaran = payload.newStatus || "Submitted";
+                    }
+                  });
+                }
+                var stBadge = document.getElementById("badge-status-pendaftaran");
+                if (stBadge) {
+                  stBadge.innerText = "Status: Submitted";
+                  stBadge.className = "px-4 py-2 text-xs font-bold rounded-full bg-slate-800 text-indigo-400 border border-indigo-500/30";
+                }
                 window.initData(true);
               } else {
                 window.showToast(
@@ -6417,28 +5691,60 @@
         if (!newStatus) return;
         window.showLoading(true, "Memperbarui Status & Mengirim Email...");
         const payload = { pendaftarId, npm, newStatus, sendEmail: true };
+
+        // Optimistic UI Update: Langsung ubah state lokal agar tabel admin segera terupdate
+        if (window.appState && window.appState.data && Array.isArray(window.appState.data.pendaftar)) {
+          var cleanNpm = String(npm || "").replace(/[^0-9]/g, "");
+          window.appState.data.pendaftar.forEach(function (cand) {
+            var candNim = String(cand.NIM || "").replace(/[^0-9]/g, "");
+            if (
+              (pendaftarId && String(cand.Pendaftar_ID).trim() === String(pendaftarId).trim()) ||
+              (cleanNpm && candNim === cleanNpm)
+            ) {
+              cand.Status_Pendaftaran = newStatus;
+            }
+          });
+          window.renderAdminTable();
+        }
+
         if (window.checkIsGAS()) {
           google.script.run
             .withSuccessHandler(function (res) {
               window.showLoading(false);
               if (res && res.success) {
                 window.showToast(res.message);
+                if (window.appState && window.appState.data && Array.isArray(window.appState.data.pendaftar)) {
+                  var submNpm = String(payload.npm || payload.NIM || "").replace(/[^0-9]/g, "");
+                  window.appState.data.pendaftar.forEach(function (cand) {
+                    if (String(cand.NIM || "").replace(/[^0-9]/g, "") === submNpm) {
+                      cand.Status_Pendaftaran = payload.newStatus || "Submitted";
+                    }
+                  });
+                }
+                var stBadge = document.getElementById("badge-status-pendaftaran");
+                if (stBadge) {
+                  stBadge.innerText = "Status: Submitted";
+                  stBadge.className = "px-4 py-2 text-xs font-bold rounded-full bg-slate-800 text-indigo-400 border border-indigo-500/30";
+                }
                 window.initData(true);
               } else {
                 window.showToast(
                   "Gagal ubah status: " + (res ? res.message : "Error"),
                 );
+                window.initData(true);
               }
             })
             .withFailureHandler(function (err) {
               window.showLoading(false);
               window.showToast("Error Status: " + err.toString());
+              window.initData(true);
             })
             .updatePendaftarStatusAndNotify(payload);
         } else {
           setTimeout(function () {
             window.showLoading(false);
             window.showToast("Status Diperbarui ke: " + newStatus);
+            window.renderAdminTable();
           }, 500);
         }
       };
@@ -7811,11 +7117,6 @@
       };
       window.addEventListener("DOMContentLoaded", function () {
         window.initData(false);
-        setTimeout(function () {
-          if (typeof window.initSmoothScroll === "function") window.initSmoothScroll();
-          if (typeof window.initVelocityScroll === "function") window.initVelocityScroll();
-          if (typeof window.initSublabStackEngine === "function") window.initSublabStackEngine();
-        }, 400);
       });
     </script>
   </body>
