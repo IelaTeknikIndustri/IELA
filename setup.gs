@@ -88,7 +88,16 @@ function setupDatabase() {
     { name: "PENILAIAN_REKAP", headers: ["Penilaian_ID", "Pendaftar_ID", "User_ID_Penilai", "Skor_Pengetahuan", "Skor_Keterampilan", "Skor_Kedisiplinan", "Skor_Attitude", "Nilai_Bobot_Total", "Catatan_Evaluasi", "Tanggal_Penilaian"], initialData: [] },
     { name: "SELEKSI_LOG", headers: ["Log_ID", "Pendaftar_ID", "Tahap", "Status_Tahap", "Nilai_Akhir_Rata2", "Catatan_Final", "Tanggal_Update"], initialData: [] },
     { name: "PENGUMUMAN", headers: ["Pengumuman_ID", "Judul", "Isi_Pengumuman", "Tanggal_Terbit", "Status_Publish"], initialData: [["PGM-001", "Pendaftaran IELA 2027-2028 Resmi Dibuka", "Segera lengkapi berkas Anda sebelum batas waktu pendaftaran.", "2026-01-01", "true"]] },
-    { name: "PENGATURAN", headers: ["Param_ID", "Key_Name", "Value_Text"], initialData: [["PRM-001", "LINK_WA_GROUP", "https://chat.whatsapp.com/demo"], ["PRM-002", "MIN_IPK", "3.00"], ["PRM-003", "STATUS_PENDAFTARAN", "BUKA"], ["PRM-004", "PESAN_PENDAFTARAN_DITUTUP", "Pendaftaran Calon Asisten Laboratorium IELA periode ini saat ini sedang ditutup. Terima kasih atas antusiasme rekan-rekan mahasiswa. Pantau terus akun sosial media resmi kami untuk pengumuman tahap berikutnya."]] }
+    { name: "PENGATURAN", headers: ["Param_ID", "Key_Name", "Value_Text"], initialData: [["PRM-001", "LINK_WA_GROUP", "https://chat.whatsapp.com/demo"], ["PRM-002", "MIN_IPK", "3.00"], ["PRM-003", "STATUS_PENDAFTARAN", "BUKA"], ["PRM-004", "PESAN_PENDAFTARAN_DITUTUP", "Pendaftaran Calon Asisten Laboratorium IELA periode ini saat ini sedang ditutup. Terima kasih atas antusiasme rekan-rekan mahasiswa. Pantau terus akun sosial media resmi kami untuk pengumuman tahap berikutnya."]] },
+    {
+      name: "PUBLIKASI",
+      headers: ["Publikasi_ID", "Nama_Penulis", "Judul_Artikel", "Link_Artikel", "Nama_Jurnal", "Tahun", "Bidang_Sublab", "Tanggal_Input"],
+      initialData: [
+        ["PUB-001", "M. Luqman Firdaus & Amelia Agustin", "Optimasi Parameter Proses 3D Printing FDM Menggunakan Metode Taguchi untuk Peningkatan Akurasi Dimensi Prototipe Industri", "https://scholar.google.com", "Jurnal Rekayasa Sistem Manufaktur", "2026", "4. Manufaktur", "2026-02-10"],
+        ["PUB-002", "Khinanti Mutiara Dewi & Titin Rizqi Maulida", "Analisis Beban Kerja Mental dan Fisik Praktikan Menggunakan Metode NASA-TLX dan REBA pada Laboratorium Ergonomi", "https://scholar.google.com", "Jurnal Ergonomi & PSK", "2025", "2. Ergonomi", "2025-11-15"],
+        ["PUB-003", "Marisa Anggun Aulia & Shohibul Makrom", "Penerapan Algoritma Genetika dan Machine Learning dalam Optimasi Rute Distribusi Logistik UMKM Jawa Timur", "https://scholar.google.com", "Jurnal Ilmiah Komputasi Industri", "2026", "5. Algoritma", "2026-03-01"]
+      ]
+    }
   ];
 
   schemas.forEach(function(schema) {

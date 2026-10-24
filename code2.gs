@@ -118,7 +118,7 @@ function getInitialData(forceRefresh) {
     var ss = getSpreadsheet();
     if (!ss) return { success: false, message: "Spreadsheet database tidak ditemukan!" };
 
-    var sheetNames = ["USERS", "PROFIL_KONTEN", "GALERI_KEGIATAN", "PENDAFTAR", "PENILAIAN_REKAP", "SELEKSI_LOG", "PENGUMUMAN", "PENGATURAN"];
+    var sheetNames = ["USERS", "PROFIL_KONTEN", "GALERI_KEGIATAN", "PENDAFTAR", "PENILAIAN_REKAP", "SELEKSI_LOG", "PENGUMUMAN", "PENGATURAN", "PUBLIKASI"];
     var result = {};
 
     sheetNames.forEach(function(sName) {
@@ -1130,5 +1130,95 @@ function hapusPengumuman(pengumumanId) {
     return { success: false, message: "Pengumuman tidak ditemukan." };
   } catch (err) {
     return { success: false, message: "Gagal menghapus pengumuman: " + err.toString() };
+  }
+}
+
+/**
+ * Memastikan sheet PUBLIKASI ada di database dengan header dan sample data awal jika baru dibuat
+ */
+function getOrInitPublikasiSheet(ss) {
+  var sheet = ss.getSheetByName("PUBLIKASI");
+  if (!sheet) {
+    sheet = ss.insertSheet("PUBLIKASI");
+    var headers = ["Publikasi_ID", "Nama_Penulis", "Judul_Artikel", "Link_Artikel", "Nama_Jurnal", "Tahun", "Bidang_Sublab", "Tanggal_Input"];
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#1E293B").setFontColor("#F8FAFC");
+    
+    // Sample awal riset terpublikasi dari Asisten & Dosen IELA
+    var sampleData = [
+      ["PUB-001", "M. Luqman Firdaus & Amelia Agustin", "Optimasi Parameter Proses 3D Printing FDM Menggunakan Metode Taguchi untuk Peningkatan Akurasi Dimensi Prototipe Industri", "https://scholar.google.com", "Jurnal Rekayasa Sistem Manufaktur", "2026", "4. Manufaktur", "2026-02-10"],
+      ["PUB-002", "Khinanti Mutiara Dewi & Titin Rizqi Maulida", "Analisis Beban Kerja Mental dan Fisik Praktikan Menggunakan Metode NASA-TLX dan REBA pada Laboratorium Ergonomi", "https://scholar.google.com", "Jurnal Ergonomi & PSK", "2025", "2. Ergonomi", "2025-11-15"],
+      ["PUB-003", "Marisa Anggun Aulia & Shohibul Makrom", "Penerapan Algoritma Genetika dan Machine Learning dalam Optimasi Rute Distribusi Logistik UMKM Jawa Timur", "https://scholar.google.com", "Jurnal Ilmiah Komputasi Industri", "2026", "5. Algoritma", "2026-03-01"]
+    ];
+    sampleData.forEach(function(row) { sheet.appendRow(row); });
+  }
+  return sheet;
+}
+
+function simpanPublikasi(payload) {
+  try {
+    var ss = getSpreadsheet();
+    if (!ss) return { success: false, message: "Database spreadsheet tidak ditemukan." };
+    
+    var sheet = getOrInitPublikasiSheet(ss);
+    var pId = (payload && payload.id) ? String(payload.id).trim() : "";
+    var nama = (payload && payload.nama) ? String(payload.nama).trim() : "";
+    var judul = (payload && payload.judul) ? String(payload.judul).trim() : "";
+    var link = (payload && payload.link) ? String(payload.link).trim() : "";
+    var jurnal = (payload && payload.jurnal) ? String(payload.jurnal).trim() : "-";
+    var tahun = (payload && payload.tahun) ? String(payload.tahun).trim() : String(new Date().getFullYear());
+    var bidang = (payload && payload.bidang) ? String(payload.bidang).trim() : "Umum";
+    var tglInput = Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyy-MM-dd HH:mm");
+
+    if (!nama || !judul || !link) {
+      return { success: false, message: "Nama penulis, judul artikel, dan link artikel wajib diisi!" };
+    }
+
+    var data = sheet.getDataRange().getDisplayValues();
+    var foundIndex = -1;
+    if (pId) {
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]).trim() === pId) {
+          foundIndex = i + 1;
+          break;
+        }
+      }
+    }
+
+    if (foundIndex > 0) {
+      sheet.getRange(foundIndex, 1, 1, 8).setValues([[
+        pId, nama, judul, link, jurnal, tahun, bidang, tglInput
+      ]]);
+      invalidateCache("INITIAL_DATA");
+      return { success: true, message: "Publikasi artikel berhasil diperbarui!" };
+    } else {
+      var newId = pId || ("PUB-" + Math.floor(1000 + Math.random() * 9000));
+      sheet.appendRow([newId, nama, judul, link, jurnal, tahun, bidang, tglInput]);
+      invalidateCache("INITIAL_DATA");
+      return { success: true, message: "Publikasi artikel baru berhasil ditambahkan!" };
+    }
+  } catch (err) {
+    return { success: false, message: "Gagal menyimpan publikasi: " + err.toString() };
+  }
+}
+
+function hapusPublikasi(publikasiId) {
+  try {
+    var ss = getSpreadsheet();
+    if (!ss) return { success: false, message: "Database spreadsheet tidak ditemukan." };
+    var sheet = ss.getSheetByName("PUBLIKASI");
+    if (!sheet) return { success: false, message: "Sheet PUBLIKASI tidak ditemukan." };
+
+    var data = sheet.getDataRange().getDisplayValues();
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][0]).trim() === String(publikasiId).trim()) {
+        sheet.deleteRow(i + 1);
+        invalidateCache("INITIAL_DATA");
+        return { success: true, message: "Publikasi artikel berhasil dihapus!" };
+      }
+    }
+    return { success: false, message: "Publikasi artikel tidak ditemukan." };
+  } catch (err) {
+    return { success: false, message: "Gagal menghapus publikasi: " + err.toString() };
   }
 }
