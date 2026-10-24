@@ -12,6 +12,21 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
     <script>
+      window.handleImgError = function (imgEl, category) {
+        if (!imgEl || imgEl.dataset.fallbackApplied) return;
+        imgEl.dataset.fallbackApplied = "true";
+        var cat = (category || "").toLowerCase();
+        var fallbacks = {
+          "fisika": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800",
+          "ergonomi": "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800",
+          "riset": "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800",
+          "praktikum": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800",
+          "workshop": "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800",
+          "fasilitas": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800",
+          "default": "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800"
+        };
+        imgEl.src = fallbacks[cat] || fallbacks["default"];
+      };
       tailwind.config = {
         darkMode: "class",
         theme: {
@@ -1020,28 +1035,39 @@
                 Kompilasi artikel jurnal ilmiah, riset terapan, dan prosiding seminar karya Asisten Laboratorium &amp; Dosen IELA Unirow.
               </p>
             </div>
+            <!-- Tombol Tambah hanya tampil jika login sebagai Administrator -->
             <button
               type="button"
+              id="btn-tambah-publikasi-profil"
               onclick="window.openModalPublikasi()"
-              class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-amber-600/25 transition shrink-0"
+              class="admin-only-btn hidden bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-amber-600/25 transition shrink-0"
+              style="display: none"
             >
               <i class="fa-solid fa-plus"></i> Tambah Publikasi Artikel
             </button>
           </div>
 
-          <!-- FILTER KATEGORI SUB-LAB PUBLIKASI -->
-          <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-            <button type="button" onclick="window.filterPublikasi('all')" id="pub-filter-all" class="px-3.5 py-1.5 rounded-xl font-bold bg-amber-600 text-white cursor-pointer transition">Semua (<span id="pub-count-all">0</span>)</button>
-            <button type="button" onclick="window.filterPublikasi('Fisika')" id="pub-filter-Fisika" class="px-3.5 py-1.5 rounded-xl font-bold bg-slate-800 text-slate-400 hover:text-white cursor-pointer transition">1. Fisika</button>
-            <button type="button" onclick="window.filterPublikasi('Ergonomi')" id="pub-filter-Ergonomi" class="px-3.5 py-1.5 rounded-xl font-bold bg-slate-800 text-slate-400 hover:text-white cursor-pointer transition">2. Ergonomi</button>
-            <button type="button" onclick="window.filterPublikasi('Statistika')" id="pub-filter-Statistika" class="px-3.5 py-1.5 rounded-xl font-bold bg-slate-800 text-slate-400 hover:text-white cursor-pointer transition">3. Statistika</button>
-            <button type="button" onclick="window.filterPublikasi('Manufaktur')" id="pub-filter-Manufaktur" class="px-3.5 py-1.5 rounded-xl font-bold bg-slate-800 text-slate-400 hover:text-white cursor-pointer transition">4. Manufaktur</button>
-            <button type="button" onclick="window.filterPublikasi('Algoritma')" id="pub-filter-Algoritma" class="px-3.5 py-1.5 rounded-xl font-bold bg-slate-800 text-slate-400 hover:text-white cursor-pointer transition">5. Algoritma</button>
+          <!-- PENCARIAN PUBLIKASI UMUM (TANPA BATASAN KATEGORI KAKU) -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-2xl border border-slate-800/80">
+            <div class="relative flex-grow">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+              <input
+                type="text"
+                id="pub-search-input"
+                oninput="window.handlePublikasiSearch(this.value)"
+                placeholder="Cari berdasarkan judul publikasi, nama penulis, jurnal, atau topik riset..."
+                class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-amber-500/50"
+              />
+            </div>
+            <div class="flex items-center gap-2 shrink-0 text-xs">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 font-mono text-[11px] font-bold text-amber-300">
+                <i class="fa-solid fa-layer-group text-[10px]"></i> Total: <span id="pub-count-total">0</span> Artikel
+              </span>
+            </div>
           </div>
 
           <!-- GRID DAFTAR PUBLIKASI -->
-          <div id="publikasi-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1"></div>
-        </div>
+          <div id="publikasi-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1"></div>        </div>
       </section>
 
       <!-- TAB 3: GALERI -->
@@ -2224,7 +2250,7 @@
                 secara dinamis
               </p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <button
                 type="button"
                 onclick="window.openModalKonten('Profil Lab')"
@@ -2245,6 +2271,13 @@
                 class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/20"
               >
                 <i class="fa-solid fa-plus"></i> Tambah Galeri
+              </button>
+              <button
+                type="button"
+                onclick="window.openModalPublikasi()"
+                class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-amber-600/20"
+              >
+                <i class="fa-solid fa-plus"></i> Tambah Publikasi
               </button>
             </div>
           </div>
@@ -2300,6 +2333,37 @@
                       id="admin-galeri-table-body"
                       class="divide-y divide-slate-800/60"
                     ></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!-- TABEL MANAJEMEN PUBLIKASI ARTIKEL ILMIAH (ADMINISTRATOR ONLY) -->
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="text-sm font-bold text-amber-400">
+                  <i class="fa-solid fa-book-open mr-1"></i> Daftar Publikasi Artikel Ilmiah
+                </h4>
+                <button
+                  type="button"
+                  onclick="window.openModalPublikasi()"
+                  class="text-xs bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 cursor-pointer border border-amber-500/30"
+                >
+                  <i class="fa-solid fa-plus"></i> Tambah Artikel
+                </button>
+              </div>
+              <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-900/80 uppercase font-bold text-slate-400 border-b border-slate-800">
+                      <tr>
+                        <th class="p-3">Penulis</th>
+                        <th class="p-3">Judul Artikel &amp; Jurnal</th>
+                        <th class="p-3">Tahun / Topik</th>
+                        <th class="p-3 text-center">Tautan</th>
+                        <th class="p-3 text-center">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-publikasi-table-body" class="divide-y divide-slate-800/60"></tbody>
                   </table>
                 </div>
               </div>
@@ -3407,19 +3471,17 @@
 
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">
-              Fokus Sub-Laboratorium Terkait*
+              Bidang / Topik Riset (Opsional)
             </label>
-            <select
+            <input
+              type="text"
               id="pub-bidang"
-              class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-xs focus:ring-1 focus:ring-amber-500 cursor-pointer"
-            >
-              <option value="4. Manufaktur">4. Manufaktur &amp; 3D Printing</option>
-              <option value="2. Ergonomi">2. Ergonomi &amp; PSK</option>
-              <option value="5. Algoritma">5. Algoritma, AI &amp; Komputasi</option>
-              <option value="3. Statistika">3. Statistika &amp; Pemodelan</option>
-              <option value="1. Fisika">1. Fisika Dasar &amp; Terapan</option>
-              <option value="Umum">Umum / Teknik Industri Terpadu</option>
-            </select>
+              placeholder="Contoh: Otomasi Industri, Supply Chain, Ergonomi, AI, Lean, dll."
+              class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-xs focus:ring-1 focus:ring-amber-500"
+            />
+            <span class="text-[10px] text-slate-500 mt-1 block">
+              Dapat diisi topik riset umum apa saja, tidak terbatas pada sub-laboratorium tertentu.
+            </span>
           </div>
 
           <div class="pt-2 flex items-center gap-3">
@@ -4036,6 +4098,11 @@
         if (subTab === "wawancara") {
           window.renderInterviewQueue();
         }
+        if (subTab === "konten") {
+          window.renderAdminProfilTable();
+          window.renderAdminGaleriTable();
+          if (typeof window.renderAdminPublikasiTable === "function") window.renderAdminPublikasiTable();
+        }
         
         if (subTab === "pengaturan") {
           const pWa = window.appState.data.pengaturan.find(function(x) { return String(x.Key_Name).trim() === "LINK_WA_GROUP"; });
@@ -4643,6 +4710,7 @@
         window.renderPengujiTable();
         window.renderAdminProfilTable();
         window.renderAdminGaleriTable();
+        if (typeof window.renderAdminPublikasiTable === "function") window.renderAdminPublikasiTable();
         window.renderUsersTable();
         setTimeout(window.initScrollReveal, 100);
         setTimeout(function () {
@@ -8121,24 +8189,28 @@
         var headerBadge = document.getElementById("publikasi-header-badge");
         if (headerBadge) headerBadge.innerText = totalCount + " Artikel";
 
-        var countAllEl = document.getElementById("pub-count-all");
-        if (countAllEl) countAllEl.innerText = totalCount;
+        var countTotalEl = document.getElementById("pub-count-total");
+        if (countTotalEl) countTotalEl.innerText = totalCount;
 
         if (!container) return;
 
-        // 2. FILTER BERDASARKAN KATEGORI SUB-LAB
-        var curFilter = window.appState.activePublikasiFilter || "all";
+        // 2. FILTER PENCARIAN FLEKSIBEL (JUDUL, PENULIS, JURNAL, TOPIK RISET BEBAS)
+        var query = (window.appState.publikasiSearchQuery || "").trim().toLowerCase();
         var filteredList = list.filter(function (x) {
-          if (curFilter === "all") return true;
+          if (!query) return true;
+          var t = String(x.Judul_Artikel || x.judul || "").toLowerCase();
+          var p = String(x.Nama_Penulis || x.nama || "").toLowerCase();
+          var j = String(x.Nama_Jurnal || x.jurnal || "").toLowerCase();
           var b = String(x.Bidang_Sublab || x.bidang || "").toLowerCase();
-          return b.includes(curFilter.toLowerCase());
+          var y = String(x.Tahun || x.tahun || "").toLowerCase();
+          return t.includes(query) || p.includes(query) || j.includes(query) || b.includes(query) || y.includes(query);
         });
 
-        // 3. CEK HAK AKSES USER UNTUK EDIT & HAPUS
+        // 3. CEK HAK AKSES: HANYA ADMINISTRATOR YANG BISA EDIT & HAPUS
         var canManage = false;
         if (window.appState.currentUser) {
           var role = String(window.appState.currentUser.role || "").toLowerCase();
-          if (role.includes("admin") || role.includes("koordinator") || role.includes("anggota")) {
+          if (role.includes("admin")) {
             canManage = true;
           }
         }
@@ -8147,7 +8219,7 @@
           container.innerHTML =
             '<div class="col-span-full p-10 text-center text-slate-500 italic bg-slate-900/30 rounded-2xl border border-dashed border-slate-800">' +
             '  <i class="fa-solid fa-book-open text-3xl mb-2 text-slate-600 block"></i>' +
-            '  Belum ada artikel publikasi pada kategori ini.' +
+            '  Tidak ada artikel publikasi yang sesuai dengan pencarian.' +
             '</div>';
           return;
         }
@@ -8159,16 +8231,16 @@
           var link = pub.Link_Artikel || pub.link || "#";
           var jurnal = pub.Nama_Jurnal || pub.jurnal || "";
           var tahun = pub.Tahun || pub.tahun || "2026";
-          var bidang = pub.Bidang_Sublab || pub.bidang || "Umum";
+          var bidang = pub.Bidang_Sublab || pub.bidang || "";
 
           var manageBtns = "";
           if (canManage) {
             manageBtns =
               '<div class="flex items-center gap-1.5 pt-2 border-t border-slate-800/80">' +
-              '  <button type="button" onclick="window.openModalPublikasi('' + id + '')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white transition flex items-center gap-1 cursor-pointer">' +
+              '  <button type="button" onclick="window.openModalPublikasi(\'' + id + '\')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white transition flex items-center gap-1 cursor-pointer">' +
               '    <i class="fa-solid fa-pen-to-square"></i> Edit' +
               '  </button>' +
-              '  <button type="button" onclick="window.handleDeletePublikasi('' + id + '')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white transition flex items-center gap-1 cursor-pointer">' +
+              '  <button type="button" onclick="window.handleDeletePublikasi(\'' + id + '\')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white transition flex items-center gap-1 cursor-pointer">' +
               '    <i class="fa-solid fa-trash"></i> Hapus' +
               '  </button>' +
               '</div>';
@@ -8179,13 +8251,24 @@
             jurnalInfo = '<p class="text-xs text-slate-400 italic flex items-center gap-1.5"><i class="fa-solid fa-book-open text-[10px] text-amber-400"></i> ' + jurnal + '</p>';
           }
 
+          var bidangBadge = "";
+          if (bidang && bidang !== "-" && bidang !== "Umum") {
+            bidangBadge =
+              '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">' +
+              '  <i class="fa-solid fa-tag text-[9px]"></i> ' + bidang +
+              '</span>';
+          } else {
+            bidangBadge =
+              '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700">' +
+              '  <i class="fa-solid fa-file-lines text-[9px]"></i> Riset Ilmiah' +
+              '</span>';
+          }
+
           return (
             '<div class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-amber-500/40 transition duration-300 flex flex-col justify-between space-y-3 group">' +
             '  <div class="space-y-2">' +
             '    <div class="flex items-center justify-between gap-2 flex-wrap">' +
-            '      <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">' +
-            '        <i class="fa-solid fa-microscope text-[9px]"></i> ' + bidang +
-            '      </span>' +
+            '      ' + bidangBadge +
             '      <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700">' +
             '        ' + tahun +
             '      </span>' +
@@ -8211,7 +8294,51 @@
         }).join("");
       };
 
+      window.handlePublikasiSearch = function (query) {
+        window.appState.publikasiSearchQuery = (query || "").trim().toLowerCase();
+        window.renderPublikasiList();
+      };
+
+      window.renderAdminPublikasiTable = function () {
+        const tb = document.getElementById("admin-publikasi-table-body");
+        if (!tb) return;
+        const rawList = window.appState.data.publikasi;
+        const list = (rawList && rawList.length > 0) ? rawList : (window.checkIsGAS() ? (rawList || []) : window.defaultPublikasi);
+        if (!list || list.length === 0) {
+          tb.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500 italic">Belum ada data publikasi artikel ilmiah.</td></tr>';
+          return;
+        }
+        tb.innerHTML = list.map(function (x) {
+          var id = x.Publikasi_ID || x.id || "";
+          var nama = x.Nama_Penulis || x.nama || "-";
+          var judul = x.Judul_Artikel || x.judul || "-";
+          var link = x.Link_Artikel || x.link || "#";
+          var jurnal = x.Nama_Jurnal || x.jurnal || "-";
+          var tahun = x.Tahun || x.tahun || "2026";
+          var bidang = x.Bidang_Sublab || x.bidang || "-";
+          return (
+            '<tr class="hover:bg-slate-800/40 border-b border-slate-800/60">' +
+            '<td class="p-3 font-semibold text-white whitespace-nowrap">' + nama + '</td>' +
+            '<td class="p-3"><div class="font-bold text-white text-xs">' + judul + '</div>' + (jurnal && jurnal !== '-' ? '<div class="text-[11px] text-amber-400/90 italic">' + jurnal + '</div>' : '') + '</td>' +
+            '<td class="p-3 whitespace-nowrap"><span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700 mr-1.5">' + tahun + '</span>' + (bidang && bidang !== '-' ? '<span class="text-[11px] text-slate-400">' + bidang + '</span>' : '') + '</td>' +
+            '<td class="p-3 text-center whitespace-nowrap"><a href="' + link + '" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 inline-flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Buka</a></td>' +
+            '<td class="p-3 text-center whitespace-nowrap">' +
+            '<button type="button" onclick="window.openModalPublikasi(\'' + id + '\')" class="p-2 bg-amber-500/20 hover:bg-amber-500/40 text-amber-400 rounded-lg text-xs font-bold transition mr-1.5 cursor-pointer" title="Edit Publikasi"><i class="fa-solid fa-pen-to-square"></i></button>' +
+            '<button type="button" onclick="window.handleDeletePublikasi(\'' + id + '\')" class="p-2 bg-rose-500/20 hover:bg-rose-500/40 text-rose-400 rounded-lg text-xs font-bold transition cursor-pointer" title="Hapus Publikasi"><i class="fa-solid fa-trash"></i></button>' +
+            '</td>' +
+            '</tr>'
+          );
+        }).join("");
+      };
+
       window.openModalPublikasi = function (editId) {
+        // HANYA ROLE ADMINISTRATOR YANG DIPERBOLEHKAN
+        var isAdmin = window.appState.currentUser && String(window.appState.currentUser.role || "").toLowerCase().includes("admin");
+        if (!isAdmin) {
+          window.showToast("Fitur penambahan dan pengeditan publikasi artikel hanya dapat diakses oleh peran Administrator.", "error");
+          return;
+        }
+
         var form = document.getElementById("form-publikasi");
         if (form) form.reset();
 
@@ -8234,31 +8361,37 @@
             document.getElementById("pub-link").value = item.Link_Artikel || item.link || "";
             document.getElementById("pub-jurnal").value = item.Nama_Jurnal || item.jurnal || "";
             document.getElementById("pub-tahun").value = item.Tahun || item.tahun || "2026";
-            document.getElementById("pub-bidang").value = item.Bidang_Sublab || item.bidang || "4. Manufaktur";
+            document.getElementById("pub-bidang").value = item.Bidang_Sublab || item.bidang || "";
           }
         } else {
           if (hiddenId) hiddenId.value = "";
           if (titleEl) titleEl.innerText = "Tambah Publikasi Artikel";
           if (btnLabel) btnLabel.innerText = "Simpan Publikasi";
 
-          // Auto-isi nama jika ada user yang login
           if (window.appState.currentUser && window.appState.currentUser.nama) {
             document.getElementById("pub-nama").value = window.appState.currentUser.nama;
           }
           document.getElementById("pub-tahun").value = new Date().getFullYear();
+          document.getElementById("pub-bidang").value = "";
         }
 
         window.openModal("modal-publikasi");
       };
 
       window.handleSubmitPublikasi = function () {
+        var isAdmin = window.appState.currentUser && String(window.appState.currentUser.role || "").toLowerCase().includes("admin");
+        if (!isAdmin) {
+          window.showToast("Hanya Administrator yang berwenang menyimpan publikasi artikel.", "error");
+          return;
+        }
+
         var pId = document.getElementById("pub-id-hidden").value;
         var nama = document.getElementById("pub-nama").value.trim();
         var judul = document.getElementById("pub-judul").value.trim();
         var link = document.getElementById("pub-link").value.trim();
         var jurnal = document.getElementById("pub-jurnal").value.trim();
         var tahun = document.getElementById("pub-tahun").value.trim();
-        var bidang = document.getElementById("pub-bidang").value;
+        var bidang = document.getElementById("pub-bidang").value.trim();
 
         if (!nama || !judul || !link) {
           window.showToast("Nama penulis, judul artikel, dan link artikel wajib diisi!");
@@ -8276,13 +8409,12 @@
           link: link,
           jurnal: jurnal || "-",
           tahun: tahun || String(new Date().getFullYear()),
-          bidang: bidang
+          bidang: bidang || "-"
         };
 
         window.showLoading(true, "Menyimpan Publikasi Artikel...");
         window.closeModal("modal-publikasi");
 
-        // Optimistic UI update: langsung tambahkan / update di lokal agar angka counter terupdate seketika
         if (!window.appState.data.publikasi) window.appState.data.publikasi = [];
         if (pId) {
           var found = false;
@@ -8314,6 +8446,7 @@
           });
         }
         window.renderPublikasiList();
+        if (typeof window.renderAdminPublikasiTable === "function") window.renderAdminPublikasiTable();
 
         if (window.checkIsGAS()) {
           google.script.run
@@ -8342,15 +8475,21 @@
       };
 
       window.handleDeletePublikasi = function (pubId) {
+        var isAdmin = window.appState.currentUser && String(window.appState.currentUser.role || "").toLowerCase().includes("admin");
+        if (!isAdmin) {
+          window.showToast("Hanya Administrator yang berwenang menghapus publikasi artikel.", "error");
+          return;
+        }
+
         if (!confirm("Apakah Anda yakin ingin menghapus publikasi artikel ini?")) return;
         window.showLoading(true, "Menghapus Publikasi...");
 
-        // Optimistic UI update: hapus dari list lokal langsung
         if (window.appState.data && window.appState.data.publikasi) {
           window.appState.data.publikasi = window.appState.data.publikasi.filter(function (x) {
             return String(x.Publikasi_ID || x.id) !== String(pubId);
           });
           window.renderPublikasiList();
+          if (typeof window.renderAdminPublikasiTable === "function") window.renderAdminPublikasiTable();
         }
 
         if (window.checkIsGAS()) {
