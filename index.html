@@ -2365,6 +2365,7 @@
           </p>
         </div>
         <form
+          autocomplete="on"
           onsubmit="
             event.preventDefault();
             window.handleLoginSubmit(event);
@@ -2378,6 +2379,10 @@
             ><input
               type="text"
               id="login-username"
+              name="username"
+              autocomplete="username"
+              autocapitalize="off"
+              spellcheck="false"
               required
               placeholder="Masukkan NPM / username"
               class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-xs"
@@ -2386,13 +2391,40 @@
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1"
               >Password*</label
-            ><input
-              type="password"
-              id="login-password"
-              required
-              placeholder="••••••••"
-              class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-xs"
-            />
+            >
+            <div class="relative">
+              <input
+                type="password"
+                id="login-password"
+                name="password"
+                autocomplete="current-password"
+                required
+                placeholder="••••••••"
+                class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-4 pr-12 py-3 text-white text-xs"
+              />
+              <button
+                type="button"
+                id="toggle-login-password"
+                onclick="window.toggleLoginPassword()"
+                aria-label="Lihat password"
+                aria-pressed="false"
+                title="Lihat password"
+                class="absolute inset-y-0 right-0 px-4 text-slate-400 hover:text-white transition cursor-pointer"
+              >
+                <i class="fa-solid fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-3 text-xs">
+            <label for="login-remember" class="flex items-center gap-2 text-slate-300 cursor-pointer">
+              <input
+                type="checkbox"
+                id="login-remember"
+                class="accent-indigo-500"
+              />
+              Ingat ID saya di perangkat ini
+            </label>
+            <span class="text-[10px] text-slate-500 text-right">Password dikelola browser</span>
           </div>
           <button
             type="submit"
@@ -5323,7 +5355,36 @@
           }, 500);
         }
       };
-
+      window.toggleLoginPassword = function () {
+        const input = document.getElementById("login-password");
+        const button = document.getElementById("toggle-login-password");
+        const icon = button ? button.querySelector("i") : null;
+        if (!input || !button) return;
+        const showPassword = input.type === "password";
+        input.type = showPassword ? "text" : "password";
+        button.setAttribute("aria-pressed", String(showPassword));
+        button.setAttribute(
+          "aria-label",
+          showPassword ? "Sembunyikan password" : "Lihat password",
+        );
+        button.title = showPassword ? "Sembunyikan password" : "Lihat password";
+        if (icon) {
+          icon.classList.toggle("fa-eye", !showPassword);
+          icon.classList.toggle("fa-eye-slash", showPassword);
+        }
+      };
+      window.saveRememberedLogin = function (username) {
+        try {
+          if (document.getElementById("login-remember").checked) {
+            localStorage.setItem("iela_remembered_username", username);
+          } else {
+            localStorage.removeItem("iela_remembered_username");
+          }
+        } catch (err) {
+          console.error("Gagal menyimpan preferensi ID login:", err);
+          window.showToast("Login berhasil, tetapi ID tidak dapat disimpan di browser.");
+        }
+      };
       window.handleLoginSubmit = function (e) {
         const u = document.getElementById("login-username").value.trim();
         const p = document.getElementById("login-password").value.trim();
@@ -5337,6 +5398,7 @@
             .withSuccessHandler(function (res) {
               window.showLoading(false);
               if (res && res.success) {
+                window.saveRememberedLogin(u);
                 window.appState.currentUser = res.user;
                 window.updateUserUI();
                 window.closeModal("modal-login");
@@ -5354,6 +5416,7 @@
         } else {
           setTimeout(function () {
             window.showLoading(false);
+            window.saveRememberedLogin(u);
             let mockRole = "Pendaftar";
             if (u.toLowerCase().includes("admin")) mockRole = "Admin";
             else if (u.toLowerCase().includes("penguji")) mockRole = "Penguji";
@@ -5478,11 +5541,24 @@
         }
       };
       window.populatePendaftarForm = function (user) {
-        const pData = window.appState.data.pendaftar.find(
-          (x) =>
-            String(x.NIM).trim() === String(user.username).trim() ||
-            String(x.User_ID).trim() === String(user.userId).trim(),
-        );
+        const username = String(user.username || "").trim();
+        const userId = String(user.userId || "").trim();
+        const pendaftarList = window.appState.data.pendaftar || [];
+        const pData =
+          (username
+            ? pendaftarList.find(
+                (x) => String(x.NIM || "").trim() === username,
+              )
+            : null) ||
+          (userId
+            ? pendaftarList.find((x) => {
+                const recordNim = String(x.NIM || "").trim();
+                return (
+                  String(x.User_ID || "").trim() === userId &&
+                  (!recordNim || recordNim === username)
+                );
+              })
+            : null);
         
         const waLinkObj = window.appState.data.pengaturan.find(function(x) { return String(x.Key_Name).trim() === "LINK_WA_GROUP"; });
         if (waLinkObj && document.getElementById("btn-wa-group-link")) {
@@ -5531,8 +5607,25 @@
               "Status: " + (pData.Status_Pendaftaran || "Draft");
           }
         } else {
+          const form = document.getElementById("form-pendaftaran-pendaftar");
+          if (form) form.reset();
+          document.getElementById("pendaftar-id-hidden").value = "";
+          Object.keys(window.appState.files).forEach(function (key) {
+            window.appState.files[key] = null;
+            const previewText = document.getElementById(
+              "preview-" + key + "-text",
+            );
+            if (previewText) previewText.innerText = "Belum dipilih";
+          });
+          const fotoPreview = document.getElementById("preview-foto-img");
+          if (fotoPreview) {
+            fotoPreview.src = "";
+            fotoPreview.classList.add("hidden");
+          }
           document.getElementById("p-npm").value = user.username;
           document.getElementById("p-nama").value = user.nama;
+          const stBadge = document.getElementById("badge-status-pendaftaran");
+          if (stBadge) stBadge.innerText = "Status: Draft";
         }
       };
       window.handlePendaftaranSubmit = function (e) {
@@ -7378,6 +7471,19 @@
         }
       };
       window.addEventListener("DOMContentLoaded", function () {
+        let rememberedUsername = "";
+        try {
+          rememberedUsername =
+            localStorage.getItem("iela_remembered_username") || "";
+        } catch (err) {
+          console.error("Gagal membaca preferensi ID login:", err);
+        }
+        const usernameInput = document.getElementById("login-username");
+        const rememberCheckbox = document.getElementById("login-remember");
+        if (rememberedUsername && usernameInput && rememberCheckbox) {
+          usernameInput.value = rememberedUsername;
+          rememberCheckbox.checked = true;
+        }
         window.initData(false);
       });
 
