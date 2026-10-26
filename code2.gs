@@ -118,6 +118,9 @@ function getInitialData(forceRefresh) {
     var ss = getSpreadsheet();
     if (!ss) return { success: false, message: "Spreadsheet database tidak ditemukan!" };
 
+    // Otomatis pastikan tab sheet LOLOS_BERKAS dan CALON_IELA terbuat di spreadsheet
+    initSelectionSheets(ss);
+
     var sheetNames = ["USERS", "PROFIL_KONTEN", "GALERI_KEGIATAN", "PENDAFTAR", "PENILAIAN_REKAP", "SELEKSI_LOG", "PENGUMUMAN", "PENGATURAN", "PUBLIKASI"];
     var result = {};
 
@@ -855,6 +858,75 @@ function buildStatusEmailHtml(targetNama, npm, status, customNote) {
     "</div></body></html>";
 
   return html;
+}
+
+function initSelectionSheets(ss) {
+  try {
+    if (!ss) ss = getSpreadsheet();
+    if (!ss) return;
+
+    var pSheet = ss.getSheetByName("PENDAFTAR");
+    if (!pSheet) return;
+    var pData = pSheet.getDataRange().getDisplayValues();
+    if (pData.length < 1) return;
+
+    var headers = pData[0];
+    var colStatusIdx = findHeaderColumnIndex(headers, ["Status_Pendaftaran", "Status", "StatusPendaftaran"], 29);
+    var colNimIdx = findHeaderColumnIndex(headers, ["NIM", "Username_NIM", "NPM"], 2);
+
+    // 1. Pastikan tab LOLOS_BERKAS ada
+    var berkasSheet = ss.getSheetByName("LOLOS_BERKAS");
+    if (!berkasSheet) {
+      berkasSheet = ss.insertSheet("LOLOS_BERKAS");
+      berkasSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      berkasSheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#0891B2").setFontColor("#FFFFFF");
+      berkasSheet.setFrozenRows(1);
+    }
+
+    // 2. Pastikan tab CALON_IELA ada
+    var ielaSheet = ss.getSheetByName("CALON_IELA");
+    if (!ielaSheet) {
+      ielaSheet = ss.insertSheet("CALON_IELA");
+      ielaSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      ielaSheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#059669").setFontColor("#FFFFFF");
+      ielaSheet.setFrozenRows(1);
+    }
+
+    // 3. Pindai PENDAFTAR dan otomatis salin peserta yang sudah berstatus Lolos Berkas / Lolos IELA
+    var bData = berkasSheet.getDataRange().getDisplayValues();
+    var bNims = {};
+    for (var bi = 1; bi < bData.length; bi++) {
+      var bn = String(bData[bi][colNimIdx] || "").replace(/[^0-9]/g, "");
+      if (bn) bNims[bn] = true;
+    }
+
+    var iData = ielaSheet.getDataRange().getDisplayValues();
+    var iNims = {};
+    for (var ii = 1; ii < iData.length; ii++) {
+      var in_ = String(iData[ii][colNimIdx] || "").replace(/[^0-9]/g, "");
+      if (in_) iNims[in_] = true;
+    }
+
+    for (var r = 1; r < pData.length; r++) {
+      var row = pData[r];
+      var nim = String(row[colNimIdx] || "").replace(/[^0-9]/g, "");
+      var status = String(row[colStatusIdx] || "").toLowerCase().trim();
+
+      if (status.includes("berkas") && !status.includes("tidak")) {
+        if (!bNims[nim]) {
+          berkasSheet.appendRow(row);
+          bNims[nim] = true;
+        }
+      } else if ((status.includes("asisten") || status.includes("iela") || status.includes("lolos")) && !status.includes("tidak") && !status.includes("berkas")) {
+        if (!iNims[nim]) {
+          ielaSheet.appendRow(row);
+          iNims[nim] = true;
+        }
+      }
+    }
+  } catch (err) {
+    Logger.log("initSelectionSheets error: " + err.toString());
+  }
 }
 
 function getOrInitSubSheet(ss, sheetName) {

@@ -85,29 +85,20 @@ function setupDatabase() {
       ]
     },
     { name: "PENDAFTAR", headers: ["Pendaftar_ID", "User_ID", "NIM", "Nama", "Nama_Panggilan", "Jenis_Kelamin", "TTL", "Alamat_Asal", "Alamat_Sekarang", "No_HP", "Hobby", "Cita_Cita", "Motto_Hidup", "Semester", "Prodi", "IPK", "Bidang_Pilihan_1", "Bidang_Pilihan_2", "Keterampilan", "Motivasi", "Target_IELA", "Riwayat_Organisasi", "Pelatihan_Diikuti", "Buku_Diresume", "URL_Foto", "URL_KHS", "URL_CV", "URL_Sertifikat", "URL_Resume", "Status_Pendaftaran", "QR_Code_ID", "URL_Jurnal_Referensi"], initialData: [] },
+    { name: "LOLOS_BERKAS", headers: ["Pendaftar_ID", "User_ID", "NIM", "Nama", "Nama_Panggilan", "Jenis_Kelamin", "TTL", "Alamat_Asal", "Alamat_Sekarang", "No_HP", "Hobby", "Cita_Cita", "Motto_Hidup", "Semester", "Prodi", "IPK", "Bidang_Pilihan_1", "Bidang_Pilihan_2", "Keterampilan", "Motivasi", "Target_IELA", "Riwayat_Organisasi", "Pelatihan_Diikuti", "Buku_Diresume", "URL_Foto", "URL_KHS", "URL_CV", "URL_Sertifikat", "URL_Resume", "Status_Pendaftaran", "QR_Code_ID", "URL_Jurnal_Referensi"], initialData: [] },
+    { name: "CALON_IELA", headers: ["Pendaftar_ID", "User_ID", "NIM", "Nama", "Nama_Panggilan", "Jenis_Kelamin", "TTL", "Alamat_Asal", "Alamat_Sekarang", "No_HP", "Hobby", "Cita_Cita", "Motto_Hidup", "Semester", "Prodi", "IPK", "Bidang_Pilihan_1", "Bidang_Pilihan_2", "Keterampilan", "Motivasi", "Target_IELA", "Riwayat_Organisasi", "Pelatihan_Diikuti", "Buku_Diresume", "URL_Foto", "URL_KHS", "URL_CV", "URL_Sertifikat", "URL_Resume", "Status_Pendaftaran", "QR_Code_ID", "URL_Jurnal_Referensi"], initialData: [] },
     { name: "PENILAIAN_REKAP", headers: ["Penilaian_ID", "Pendaftar_ID", "User_ID_Penilai", "Skor_Pengetahuan", "Skor_Keterampilan", "Skor_Kedisiplinan", "Skor_Attitude", "Nilai_Bobot_Total", "Catatan_Evaluasi", "Tanggal_Penilaian"], initialData: [] },
     { name: "SELEKSI_LOG", headers: ["Log_ID", "Pendaftar_ID", "Tahap", "Status_Tahap", "Nilai_Akhir_Rata2", "Catatan_Final", "Tanggal_Update"], initialData: [] },
     { name: "PENGUMUMAN", headers: ["Pengumuman_ID", "Judul", "Isi_Pengumuman", "Tanggal_Terbit", "Status_Publish"], initialData: [["PGM-001", "Pendaftaran IELA 2027-2028 Resmi Dibuka", "Segera lengkapi berkas Anda sebelum batas waktu pendaftaran.", "2026-01-01", "true"]] },
-    { 
-      name: "PENGATURAN", 
-      headers: ["Param_ID", "Key_Name", "Value_Text"], 
+    { name: "PENGATURAN", headers: ["Param_ID", "Key_Name", "Value_Text"], initialData: [["PRM-001", "LINK_WA_GROUP", "https://chat.whatsapp.com/demo"], ["PRM-002", "MIN_IPK", "3.00"], ["PRM-003", "STATUS_PENDAFTARAN", "BUKA"], ["PRM-004", "PESAN_PENDAFTARAN_DITUTUP", "Pendaftaran Calon Asisten Laboratorium IELA periode ini saat ini sedang ditutup. Terima kasih atas antusiasme rekan-rekan mahasiswa. Pantau terus akun sosial media resmi kami untuk pengumuman tahap berikutnya."]] },
+    {
+      name: "PUBLIKASI",
+      headers: ["Publikasi_ID", "Nama_Penulis", "Judul_Artikel", "Link_Artikel", "Nama_Jurnal", "Tahun", "Bidang_Sublab", "Tanggal_Input"],
       initialData: [
-        ["PRM-001", "LINK_WA_GROUP", "https://chat.whatsapp.com/demo"],
-        ["PRM-002", "MIN_IPK", "3.00"],
-        ["PRM-003", "STATUS_PENDAFTARAN", "BUKA"],
-        ["PRM-004", "PESAN_PENDAFTARAN_DITUTUP", "Pendaftaran Calon Asisten Laboratorium IELA periode ini saat ini sedang ditutup. Terima kasih atas antusiasme rekan-rekan mahasiswa. Pantau terus akun sosial media resmi kami untuk pengumuman tahap berikutnya."],
-        ["PRM-005", "MODE_PORTAL", "REKRUTMEN"],
-        ["PRM-006", "TAHUN_PERIODE", "2027/2028"],
-        ["PRM-007", "NAMA_PORTAL", "Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban"],
-        ["PRM-008", "MIN_SEMESTER", "Semester 3"],
-        ["PRM-009", "TIMELINE_BUKA", "01 Januari 2027"],
-        ["PRM-010", "TIMELINE_TUTUP", "15 Februari 2027"],
-        ["PRM-011", "TIMELINE_WAWANCARA", "20 Februari 2027"],
-        ["PRM-012", "TIMELINE_PENGUMUMAN", "01 Maret 2027"],
-        ["PRM-013", "HOTLINE_WA", "085934457912"],
-        ["PRM-014", "LAB_EMAIL", "iela@unirow.ac.id"],
-        ["PRM-015", "LAB_INSTAGRAM", "@iela_unirow"]
-      ] 
+        ["PUB-001", "M. Luqman Firdaus & Amelia Agustin", "Optimasi Parameter Proses 3D Printing FDM Menggunakan Metode Taguchi untuk Peningkatan Akurasi Dimensi Prototipe Industri", "https://scholar.google.com", "Jurnal Rekayasa Sistem Manufaktur", "2026", "4. Manufaktur", "2026-02-10"],
+        ["PUB-002", "Khinanti Mutiara Dewi & Titin Rizqi Maulida", "Analisis Beban Kerja Mental dan Fisik Praktikan Menggunakan Metode NASA-TLX dan REBA pada Laboratorium Ergonomi", "https://scholar.google.com", "Jurnal Ergonomi & PSK", "2025", "2. Ergonomi", "2025-11-15"],
+        ["PUB-003", "Marisa Anggun Aulia & Shohibul Makrom", "Penerapan Algoritma Genetika dan Machine Learning dalam Optimasi Rute Distribusi Logistik UMKM Jawa Timur", "https://scholar.google.com", "Jurnal Ilmiah Komputasi Industri", "2026", "5. Algoritma", "2026-03-01"]
+      ]
     }
   ];
 
