@@ -494,6 +494,26 @@ function submitFormPendaftaran(payload) {
     var cleanPayloadNpm = String(payload.NIM || "").replace(/[^0-9]/g, "");
     var cleanPayloadPId = String(payload.Pendaftar_ID || "").trim().toLowerCase();
 
+    // 1. CEK APAKAH STATUS PENDAFTARAN SEDANG DITUTUP
+    var regStatus = "BUKA";
+    var settSheet = ss.getSheetByName("PENGATURAN");
+    if (settSheet) {
+      var sData = settSheet.getDataRange().getDisplayValues();
+      for (var s = 1; s < sData.length; s++) {
+        if (String(sData[s][1]).trim().toUpperCase() === "STATUS_PENDAFTARAN" && sData[s][2]) {
+          regStatus = String(sData[s][2]).trim().toUpperCase();
+          break;
+        }
+      }
+    }
+
+    if (regStatus === "TUTUP") {
+      return { 
+        success: false, 
+        message: "Mohon maaf, periode pendaftaran telah resmi DITUTUP. Pengiriman formulir dan pengubahan berkas sudah tidak diperkenankan." 
+      };
+    }
+
     var targetRowIndex = -1;
     for (var i = 1; i < data.length; i++) {
       var rowPId = String(data[i][colPIdIdx] || "").trim().toLowerCase();
@@ -517,6 +537,15 @@ function submitFormPendaftaran(payload) {
     }
 
     if (targetRowIndex === -1) return { success: false, message: "Data pendaftar dengan NPM " + payload.NIM + " tidak ditemukan!" };
+
+    // 2. CEK APAKAH PESERTA SUDAH PERNAH SUBMIT
+    var currentStatus = String(data[targetRowIndex - 1][colStatusIdx] || "Draft").trim().toLowerCase();
+    if (currentStatus !== "draft" && currentStatus !== "") {
+      return {
+        success: false,
+        message: "Formulir Anda sudah berstatus '" + data[targetRowIndex - 1][colStatusIdx] + "' dan telah dikunci permanen. Pengeditan tidak dapat dilakukan."
+      };
+    }
 
     var folderName = "[" + payload.NIM + "] - " + payload.Nama;
     var mainFolder;
@@ -828,6 +857,74 @@ function buildStatusEmailHtml(targetNama, npm, status, customNote) {
   return html;
 }
 
+function getOrInitSubSheet(ss, sheetName) {
+  var sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    var pSheet = ss.getSheetByName("PENDAFTAR");
+    if (pSheet && pSheet.getLastColumn() > 0) {
+      var headers = pSheet.getRange(1, 1, 1, pSheet.getLastColumn()).getValues();
+      sheet.getRange(1, 1, 1, headers[0].length).setValues(headers);
+      sheet.getRange(1, 1, 1, headers[0].length).setFontWeight("bold");
+      try {
+        sheet.getRange(1, 1, 1, headers[0].length).setBackground("#1e293b").setFontColor("#f8fafc");
+      } catch(e) {}
+      sheet.setFrozenRows(1);
+    }
+  }
+  return sheet;
+}
+
+function syncCandidateToSheet(ss, sheetName, rowValues, cleanNpm, cleanPId) {
+  try {
+    var sheet = getOrInitSubSheet(ss, sheetName);
+    var data = sheet.getDataRange().getDisplayValues();
+    var headers = data[0] || [];
+    var colNimIdx = findHeaderColumnIndex(headers, ["NIM", "Username_NIM", "NPM"], 2);
+    var colPIdIdx = findHeaderColumnIndex(headers, ["Pendaftar_ID", "ID_Pendaftar", "ID"], 0);
+
+    var existingRowIdx = -1;
+    for (var r = 1; r < data.length; r++) {
+      var rNim = String(data[r][colNimIdx] || "").replace(/[^0-9]/g, "");
+      var rPId = String(data[r][colPIdIdx] || "").trim().toLowerCase();
+      if ((cleanPId && cleanPId !== "undefined" && rPId === cleanPId) || (cleanNpm && rNim === cleanNpm)) {
+        existingRowIdx = r + 1;
+        break;
+      }
+    }
+
+    if (existingRowIdx > 0) {
+      sheet.getRange(existingRowIdx, 1, 1, rowValues.length).setValues([rowValues]);
+    } else {
+      sheet.appendRow(rowValues);
+    }
+  } catch (err) {
+    Logger.log("Gagal sync ke sheet " + sheetName + ": " + err.toString());
+  }
+}
+
+function removeCandidateFromSheet(ss, sheetName, cleanNpm, cleanPId) {
+  try {
+    var sheet = ss.getSheetByName(sheetName);
+    if (!sheet) return;
+    var data = sheet.getDataRange().getDisplayValues();
+    if (data.length < 2) return;
+    var headers = data[0] || [];
+    var colNimIdx = findHeaderColumnIndex(headers, ["NIM", "Username_NIM", "NPM"], 2);
+    var colPIdIdx = findHeaderColumnIndex(headers, ["Pendaftar_ID", "ID_Pendaftar", "ID"], 0);
+
+    for (var r = data.length - 1; r >= 1; r--) {
+      var rNim = String(data[r][colNimIdx] || "").replace(/[^0-9]/g, "");
+      var rPId = String(data[r][colPIdIdx] || "").trim().toLowerCase();
+      if ((cleanPId && cleanPId !== "undefined" && rPId === cleanPId) || (cleanNpm && rNim === cleanNpm)) {
+        sheet.deleteRow(r + 1);
+      }
+    }
+  } catch (err) {
+    Logger.log("Gagal remove dari sheet " + sheetName + ": " + err.toString());
+  }
+}
+
 function updatePendaftarStatusAndNotify(payload) {
   try {
     var ss = getSpreadsheet();
@@ -872,6 +969,22 @@ function updatePendaftarStatusAndNotify(payload) {
         pSheet.getRange(i + 1, colStatusIdx + 1).setValue(payload.newStatus);
         if (!targetNama && data[i][colNamaIdx]) targetNama = data[i][colNamaIdx];
         updatedRowsCount++;
+
+        // Sinkronisasi Tab Database: LOLOS_BERKAS dan CALON_IELA
+        var matchedRow = data[i].slice();
+        matchedRow[colStatusIdx] = payload.newStatus;
+        var sLower = String(payload.newStatus || "").toLowerCase();
+
+        if (sLower.includes("berkas")) {
+          syncCandidateToSheet(ss, "LOLOS_BERKAS", matchedRow, cleanPayloadNpm, cleanPayloadPId);
+          removeCandidateFromSheet(ss, "CALON_IELA", cleanPayloadNpm, cleanPayloadPId);
+        } else if (sLower.includes("asisten") || sLower.includes("iela")) {
+          syncCandidateToSheet(ss, "CALON_IELA", matchedRow, cleanPayloadNpm, cleanPayloadPId);
+          removeCandidateFromSheet(ss, "LOLOS_BERKAS", cleanPayloadNpm, cleanPayloadPId);
+        } else if (sLower.includes("tidak lolos")) {
+          removeCandidateFromSheet(ss, "LOLOS_BERKAS", cleanPayloadNpm, cleanPayloadPId);
+          removeCandidateFromSheet(ss, "CALON_IELA", cleanPayloadNpm, cleanPayloadPId);
+        }
       }
     }
 
@@ -927,10 +1040,35 @@ function updatePendaftarStatusAndNotify(payload) {
       }
     }
 
+    // JIKA STATUS "TIDAK LOLOS": OTOMATIS HAPUS AKUN DARI SHEET USERS
+    var sLowerCheck = String(payload.newStatus || "").toLowerCase();
+    var userDeletedText = "";
+    if (sLowerCheck.includes("tidak lolos") && uSheet) {
+      try {
+        var freshUData = uSheet.getDataRange().getDisplayValues();
+        var freshUHeaders = freshUData[0];
+        var uNimCol = findHeaderColumnIndex(freshUHeaders, ["Username_NIM", "NIM", "NPM"], 1);
+        var uPIdCol = findHeaderColumnIndex(freshUHeaders, ["User_ID", "ID_User", "ID"], 0);
+
+        for (var uj = freshUData.length - 1; uj >= 1; uj--) {
+          var uNimVal = String(freshUData[uj][uNimCol] || "").replace(/[^0-9]/g, "");
+          var uPIdVal = String(freshUData[uj][uPIdCol] || "").trim().toLowerCase();
+
+          if ((cleanPayloadPId && uPIdVal === cleanPayloadPId) || (cleanPayloadNpm && uNimVal === cleanPayloadNpm)) {
+            uSheet.deleteRow(uj + 1);
+            userDeletedText = " (Akun portal pengguna telah otomatis dihapus dari database USERS)";
+            break;
+          }
+        }
+      } catch (delErr) {
+        Logger.log("Gagal hapus akun user tidak lolos: " + delErr.toString());
+      }
+    }
+
     invalidateCache("INITIAL_DATA");
     return {
       success: true,
-      message: "Status diubah menjadi '" + payload.newStatus + "'. " + emailStatusText
+      message: "Status diubah menjadi '" + payload.newStatus + "'. " + emailStatusText + userDeletedText
     };
   } catch (err) {
     return { success: false, message: err.toString() };

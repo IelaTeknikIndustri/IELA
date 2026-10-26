@@ -1935,13 +1935,13 @@
               </p>
             </div>
             <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-              <!-- Filter Status Pills: Semua, Submitted, Draft -->
-              <div class="inline-flex items-center p-1 bg-slate-900/90 border border-slate-800 rounded-xl text-xs shadow-inner">
+              <!-- Filter Status Pills: Semua, Submitted, Draft, Lolos Berkas, Lolos IELA, Tidak Lolos -->
+              <div class="inline-flex items-center p-1 bg-slate-900/90 border border-slate-800 rounded-xl text-xs shadow-inner overflow-x-auto max-w-full">
                 <button
                   type="button"
                   id="admin-filter-pill-all"
                   onclick="window.setAdminStatusFilter('all')"
-                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 cursor-pointer"
+                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 cursor-pointer whitespace-nowrap"
                 >
                   <span>Semua</span>
                   <span id="admin-count-all" class="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 font-mono">0</span>
@@ -1950,7 +1950,7 @@
                   type="button"
                   id="admin-filter-pill-submitted"
                   onclick="window.setAdminStatusFilter('submitted')"
-                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer"
+                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer whitespace-nowrap"
                 >
                   <span class="inline-block w-2 h-2 rounded-full bg-indigo-400"></span>
                   <span>Submitted</span>
@@ -1960,11 +1960,41 @@
                   type="button"
                   id="admin-filter-pill-draft"
                   onclick="window.setAdminStatusFilter('draft')"
-                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer"
+                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer whitespace-nowrap"
                 >
                   <span class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
                   <span>Draft</span>
                   <span id="admin-count-draft" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-amber-300 font-mono">0</span>
+                </button>
+                <button
+                  type="button"
+                  id="admin-filter-pill-lolos_berkas"
+                  onclick="window.setAdminStatusFilter('lolos_berkas')"
+                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer whitespace-nowrap"
+                >
+                  <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+                  <span>Lolos Berkas</span>
+                  <span id="admin-count-lolos-berkas" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-cyan-300 font-mono">0</span>
+                </button>
+                <button
+                  type="button"
+                  id="admin-filter-pill-lolos_iela"
+                  onclick="window.setAdminStatusFilter('lolos_iela')"
+                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer whitespace-nowrap"
+                >
+                  <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span>Lolos IELA</span>
+                  <span id="admin-count-lolos-iela" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-emerald-300 font-mono">0</span>
+                </button>
+                <button
+                  type="button"
+                  id="admin-filter-pill-tidak_lolos"
+                  onclick="window.setAdminStatusFilter('tidak_lolos')"
+                  class="px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer whitespace-nowrap"
+                >
+                  <span class="inline-block w-2 h-2 rounded-full bg-rose-400"></span>
+                  <span>Tidak Lolos</span>
+                  <span id="admin-count-tidak-lolos" class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-rose-300 font-mono">0</span>
                 </button>
               </div>
 
@@ -1978,6 +2008,9 @@
                   <option value="default">Urutkan: Default</option>
                   <option value="status_submitted">Status: Submitted Dulu</option>
                   <option value="status_draft">Status: Draft Dulu</option>
+                  <option value="status_lolos_berkas">Status: Lolos Berkas Dulu</option>
+                  <option value="status_lolos_iela">Status: Lolos IELA Dulu</option>
+                  <option value="status_tidak_lolos">Status: Tidak Lolos Dulu</option>
                   <option value="nama_asc">Nama (A &rarr; Z)</option>
                   <option value="nama_desc">Nama (Z &rarr; A)</option>
                   <option value="ipk_desc">IPK Tertinggi</option>
@@ -6367,8 +6400,96 @@
           const stBadge = document.getElementById("badge-status-pendaftaran");
           if (stBadge) stBadge.innerText = "Status: Draft";
         }
+
+        // =========================================================
+        // LOGIKA PENGUNCIAN FORMULIR PENDAFTARAN (FORM LOCKDOWN)
+        // =========================================================
+        var curRegStatus = "BUKA";
+        try {
+          curRegStatus = (window.getPengaturanVal ? window.getPengaturanVal("STATUS_PENDAFTARAN", "BUKA") : "BUKA").trim().toUpperCase();
+        } catch(e) {}
+
+        var currentCandStatus = (pData ? String(pData.Status_Pendaftaran || "Draft") : "Draft").trim();
+        var isCandSubmitted = (currentCandStatus.toLowerCase() !== "draft" && currentCandStatus !== "");
+        var isRegClosed = (curRegStatus === "TUTUP");
+        var shouldLockForm = isRegClosed || isCandSubmitted;
+
+        var formEl = document.getElementById("form-pendaftaran-pendaftar");
+        if (formEl) {
+          var allInputs = formEl.querySelectorAll("input:not([type=hidden]), select, textarea");
+          allInputs.forEach(function (el) {
+            if (el.id === "p-npm") return;
+            el.disabled = shouldLockForm;
+            if (shouldLockForm) {
+              el.classList.add("opacity-75", "cursor-not-allowed", "bg-slate-900/60");
+            } else {
+              el.classList.remove("opacity-75", "cursor-not-allowed", "bg-slate-900/60");
+            }
+          });
+
+          var uploadZones = formEl.querySelectorAll(".file-drop-zone, .border-dashed, input[type=file]");
+          uploadZones.forEach(function (zone) {
+            if (shouldLockForm) {
+              zone.style.pointerEvents = "none";
+              zone.classList.add("opacity-50", "cursor-not-allowed");
+            } else {
+              zone.style.pointerEvents = "auto";
+              zone.classList.remove("opacity-50", "cursor-not-allowed");
+            }
+          });
+        }
+
+        var lockBanner = document.getElementById("pendaftar-lock-banner");
+        if (!lockBanner && formEl) {
+          lockBanner = document.createElement("div");
+          lockBanner.id = "pendaftar-lock-banner";
+          formEl.parentNode.insertBefore(lockBanner, formEl);
+        }
+
+        var submitBtn = document.getElementById("btn-submit-form");
+        if (lockBanner) {
+          if (isCandSubmitted) {
+            lockBanner.className = "p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 text-indigo-300 text-xs flex items-center gap-3 mb-6 shadow-lg";
+            lockBanner.innerHTML = '<i class="fa-solid fa-lock text-base text-indigo-400 shrink-0"></i><div><p class="font-bold text-white">Formulir Pendaftaran Terkunci &amp; Tersimpan Permanen</p><p class="text-[11px] text-slate-400 mt-0.5">Berkas dan data pendaftaran Anda telah berhasil disubmit dengan status <strong class="text-indigo-300">' + currentCandStatus + '</strong>. Formulir kini dikunci untuk menjaga integritas data dalam proses seleksi tim penguji.</p></div>';
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.className = "w-full bg-slate-800 text-slate-400 border border-slate-700 font-bold py-4 rounded-xl cursor-not-allowed text-xs sm:text-sm flex items-center justify-center gap-2";
+              submitBtn.innerHTML = '<i class="fa-solid fa-lock text-slate-500"></i> Formulir Telah Dikunci Permanen (' + currentCandStatus + ')';
+            }
+          } else if (isRegClosed) {
+            lockBanner.className = "p-4 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-3 mb-6 shadow-lg";
+            lockBanner.innerHTML = '<i class="fa-solid fa-ban text-base text-rose-400 shrink-0"></i><div><p class="font-bold text-white">Pendaftaran Telah Resmi Ditutup</p><p class="text-[11px] text-slate-400 mt-0.5">Batas waktu pengisian dan pengiriman berkas rekrutmen telah berakhir. Akun yang belum melakukan submit tidak lagi dapat mengirimkan formulir.</p></div>';
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.className = "w-full bg-slate-800 text-rose-400/80 border border-rose-900/50 font-bold py-4 rounded-xl cursor-not-allowed text-xs sm:text-sm flex items-center justify-center gap-2";
+              submitBtn.innerHTML = '<i class="fa-solid fa-ban text-rose-500"></i> Pendaftaran Ditutup (Tidak Dapat Submit)';
+            }
+          } else {
+            lockBanner.className = "hidden";
+            lockBanner.innerHTML = "";
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition cursor-pointer shadow-lg shadow-emerald-600/20 text-xs sm:text-sm";
+              submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Submit Formulir &amp; Unggah Semua Berkas ke Google Drive';
+            }
+          }
+        }
       };
       window.handlePendaftaranSubmit = function (e) {
+        var curRegStatus = "BUKA";
+        try {
+          curRegStatus = (window.getPengaturanVal ? window.getPengaturanVal("STATUS_PENDAFTARAN", "BUKA") : "BUKA").trim().toUpperCase();
+        } catch(e) {}
+        var stBadge = document.getElementById("badge-status-pendaftaran");
+        var curSt = stBadge ? stBadge.innerText : "";
+        if (curRegStatus === "TUTUP") {
+          window.showToast("Mohon maaf, periode pendaftaran telah resmi DITUTUP. Pengiriman formulir tidak dapat diproses.", "error");
+          return;
+        }
+        if (curSt.toLowerCase().includes("submitted") || curSt.toLowerCase().includes("lolos")) {
+          window.showToast("Formulir Anda sudah disubmit sebelumnya dan telah dikunci permanen.", "error");
+          return;
+        }
         window.showLoading(
           true,
           "Mengunggah Berkas ke Drive & Menyimpan Form...",
@@ -6447,17 +6568,24 @@
 
       window.setAdminStatusFilter = function (status) {
         window.appState.adminStatusFilter = status;
-        ["all", "submitted", "draft"].forEach(function (key) {
+        var pillKeys = ["all", "submitted", "draft", "lolos_berkas", "lolos_iela", "tidak_lolos"];
+        pillKeys.forEach(function (key) {
           var btn = document.getElementById("admin-filter-pill-" + key);
           if (!btn) return;
           if (key === status) {
             if (key === "draft") {
-              btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-amber-600 text-white shadow-sm shadow-amber-600/30 cursor-pointer";
+              btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-amber-600 text-white shadow-sm shadow-amber-600/30 cursor-pointer whitespace-nowrap";
+            } else if (key === "lolos_berkas") {
+              btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-cyan-600 text-white shadow-sm shadow-cyan-600/30 cursor-pointer whitespace-nowrap";
+            } else if (key === "lolos_iela") {
+              btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm shadow-emerald-600/30 cursor-pointer whitespace-nowrap";
+            } else if (key === "tidak_lolos") {
+              btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-rose-600 text-white shadow-sm shadow-rose-600/30 cursor-pointer whitespace-nowrap";
             } else {
-              btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 cursor-pointer";
+              btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 cursor-pointer whitespace-nowrap";
             }
           } else {
-            btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer";
+            btn.className = "px-3 py-1.5 font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer whitespace-nowrap";
           }
         });
         window.renderAdminTable();
@@ -6504,13 +6632,24 @@
         const searchInput = document.getElementById("admin-search-input");
         const search = ((searchInput ? searchInput.value : "") || "").toLowerCase().trim();
 
-        // 1. Calculate status statistics across all participants
-        let totalDraft = 0;
+        // 1. Calculate status statistics across all participants (6 categories)
+        let totalAll = rawList.length;
         let totalSubmitted = 0;
+        let totalDraft = 0;
+        let totalLolosBerkas = 0;
+        let totalLolosIELA = 0;
+        let totalTidakLolos = 0;
+
         rawList.forEach(function (x) {
           var s = String(x.Status_Pendaftaran || "").toLowerCase().trim();
           if (s === "draft") {
             totalDraft++;
+          } else if (s.includes("tidak")) {
+            totalTidakLolos++;
+          } else if (s.includes("berkas")) {
+            totalLolosBerkas++;
+          } else if (s.includes("asisten") || s.includes("iela")) {
+            totalLolosIELA++;
           } else {
             totalSubmitted++;
           }
@@ -6519,11 +6658,18 @@
         const countAllEl = document.getElementById("admin-count-all");
         const countSubmittedEl = document.getElementById("admin-count-submitted");
         const countDraftEl = document.getElementById("admin-count-draft");
-        if (countAllEl) countAllEl.innerText = rawList.length;
+        const countLolosBerkasEl = document.getElementById("admin-count-lolos-berkas");
+        const countLolosIELAEl = document.getElementById("admin-count-lolos-iela");
+        const countTidakLolosEl = document.getElementById("admin-count-tidak-lolos");
+
+        if (countAllEl) countAllEl.innerText = totalAll;
         if (countSubmittedEl) countSubmittedEl.innerText = totalSubmitted;
         if (countDraftEl) countDraftEl.innerText = totalDraft;
+        if (countLolosBerkasEl) countLolosBerkasEl.innerText = totalLolosBerkas;
+        if (countLolosIELAEl) countLolosIELAEl.innerText = totalLolosIELA;
+        if (countTidakLolosEl) countTidakLolosEl.innerText = totalTidakLolos;
 
-        // 2. Filter by Status (all / submitted / draft)
+        // 2. Filter by Status (all / submitted / draft / lolos_berkas / lolos_iela / tidak_lolos)
         let list = rawList.slice();
         const curStatusFilter = window.appState.adminStatusFilter || "all";
         if (curStatusFilter === "draft") {
@@ -6532,7 +6678,23 @@
           });
         } else if (curStatusFilter === "submitted") {
           list = list.filter(function (x) {
-            return String(x.Status_Pendaftaran || "").toLowerCase().trim() !== "draft";
+            var s = String(x.Status_Pendaftaran || "").toLowerCase().trim();
+            return s !== "draft" && !s.includes("berkas") && !s.includes("asisten") && !s.includes("iela") && !s.includes("tidak");
+          });
+        } else if (curStatusFilter === "lolos_berkas") {
+          list = list.filter(function (x) {
+            var s = String(x.Status_Pendaftaran || "").toLowerCase().trim();
+            return s.includes("berkas") && !s.includes("tidak");
+          });
+        } else if (curStatusFilter === "lolos_iela") {
+          list = list.filter(function (x) {
+            var s = String(x.Status_Pendaftaran || "").toLowerCase().trim();
+            return (s.includes("asisten") || s.includes("iela")) && !s.includes("tidak");
+          });
+        } else if (curStatusFilter === "tidak_lolos") {
+          list = list.filter(function (x) {
+            var s = String(x.Status_Pendaftaran || "").toLowerCase().trim();
+            return s.includes("tidak");
           });
         }
 
@@ -6557,14 +6719,32 @@
 
         if (sortMode === "status_submitted") {
           list.sort(function (a, b) {
-            var sa = String(a.Status_Pendaftaran || "").toLowerCase().trim() === "draft" ? 1 : 0;
-            var sb = String(b.Status_Pendaftaran || "").toLowerCase().trim() === "draft" ? 1 : 0;
+            var sa = String(a.Status_Pendaftaran || "").toLowerCase().trim() === "submitted" ? 0 : 1;
+            var sb = String(b.Status_Pendaftaran || "").toLowerCase().trim() === "submitted" ? 0 : 1;
             return sa - sb;
           });
         } else if (sortMode === "status_draft") {
           list.sort(function (a, b) {
             var sa = String(a.Status_Pendaftaran || "").toLowerCase().trim() === "draft" ? 0 : 1;
             var sb = String(b.Status_Pendaftaran || "").toLowerCase().trim() === "draft" ? 0 : 1;
+            return sa - sb;
+          });
+        } else if (sortMode === "status_lolos_berkas") {
+          list.sort(function (a, b) {
+            var sa = String(a.Status_Pendaftaran || "").toLowerCase().includes("berkas") ? 0 : 1;
+            var sb = String(b.Status_Pendaftaran || "").toLowerCase().includes("berkas") ? 0 : 1;
+            return sa - sb;
+          });
+        } else if (sortMode === "status_lolos_iela") {
+          list.sort(function (a, b) {
+            var sa = (String(a.Status_Pendaftaran || "").toLowerCase().includes("asisten") || String(a.Status_Pendaftaran || "").toLowerCase().includes("iela")) ? 0 : 1;
+            var sb = (String(b.Status_Pendaftaran || "").toLowerCase().includes("asisten") || String(b.Status_Pendaftaran || "").toLowerCase().includes("iela")) ? 0 : 1;
+            return sa - sb;
+          });
+        } else if (sortMode === "status_tidak_lolos") {
+          list.sort(function (a, b) {
+            var sa = String(a.Status_Pendaftaran || "").toLowerCase().includes("tidak") ? 0 : 1;
+            var sb = String(b.Status_Pendaftaran || "").toLowerCase().includes("tidak") ? 0 : 1;
             return sa - sb;
           });
         } else if (sortMode === "nama_asc") {
@@ -6622,6 +6802,9 @@
         var filterLabel = "";
         if (curStatusFilter === "submitted") filterLabel = " (Filter: Submitted)";
         else if (curStatusFilter === "draft") filterLabel = " (Filter: Draft)";
+        else if (curStatusFilter === "lolos_berkas") filterLabel = " (Filter: Lolos Berkas)";
+        else if (curStatusFilter === "lolos_iela") filterLabel = " (Filter: Lolos IELA)";
+        else if (curStatusFilter === "tidak_lolos") filterLabel = " (Filter: Tidak Lolos)";
 
         var totalEl = document.getElementById("admin-total-count");
         if (totalEl) {
