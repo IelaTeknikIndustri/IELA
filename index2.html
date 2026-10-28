@@ -3998,7 +3998,7 @@
               rows="4"
               required
               placeholder="Tuliskan deskripsi lengkap di sini..."
-              class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white"
+              class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-justify"
             ></textarea>
           </div>
           <div>
@@ -5310,7 +5310,7 @@
               '<div class="p-4 space-y-1">' +
               '<span class="text-[9px] uppercase font-bold text-emerald-400 tracking-wider">' + cat + '</span>' +
               '<h4 class="font-bold text-white text-xs truncate">' + title + '</h4>' +
-              '<p class="text-[11px] text-slate-400 line-clamp-2">' + desc + '</p>' +
+              '<p class="text-[11px] text-slate-400 line-clamp-2 text-justify">' + desc + '</p>' +
               '</div>' +
               '</div>'
             );
@@ -5549,7 +5549,7 @@
           if (desc) {
             descHtml =
               '<div class="text-xs text-slate-400 leading-relaxed mt-1">' +
-                '<p id="galeri-desc-' + safeId + '" class="line-clamp-2 transition-all duration-300 whitespace-pre-line">' + desc + '</p>' +
+                '<p id="galeri-desc-' + safeId + '" class="line-clamp-2 transition-all duration-300 whitespace-pre-line text-justify">' + desc + '</p>' +
                 (isLongDesc
                   ? '<button type="button" onclick="event.stopPropagation(); window.toggleGaleriDesc(\'' + safeId + '\')" class="mt-1 text-emerald-400 hover:text-emerald-300 font-bold text-[11px] inline-flex items-center gap-1 cursor-pointer transition active:scale-95">' +
                       '<span id="galeri-desc-btn-' + safeId + '">Selengkapnya ▾</span>' +
