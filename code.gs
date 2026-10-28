@@ -85,6 +85,98 @@ function invalidateCache(key) {
   } catch (e) {}
 }
 
+function tambahkanKolomNamaRekapPenilaian() {
+  var ss = getSpreadsheet();
+  if (!ss) throw new Error("Database spreadsheet tidak ditemukan.");
+
+  var penilaianSheet = ss.getSheetByName("PENILAIAN_REKAP");
+  var pendaftarSheet = ss.getSheetByName("PENDAFTAR");
+  var usersSheet = ss.getSheetByName("USERS");
+  if (!penilaianSheet || !pendaftarSheet || !usersSheet) {
+    throw new Error("Sheet PENILAIAN_REKAP, PENDAFTAR, atau USERS tidak ditemukan.");
+  }
+
+  var penilaianLastRow = penilaianSheet.getLastRow();
+  if (penilaianLastRow < 2) return "Tidak ada data penilaian untuk diperbarui.";
+
+  var penilaianLastColumn = penilaianSheet.getLastColumn();
+  var penilaianHeaders = penilaianSheet.getRange(1, 1, 1, penilaianLastColumn).getDisplayValues()[0];
+  var pendaftarData = pendaftarSheet.getDataRange().getDisplayValues();
+  var usersData = usersSheet.getDataRange().getDisplayValues();
+
+  var pendaftarIdColumn = findHeaderColumnIndex(pendaftarData[0], ["Pendaftar_ID"], -1);
+  var pendaftarNamaColumn = findHeaderColumnIndex(pendaftarData[0], ["Nama"], -1);
+  var userIdColumn = findHeaderColumnIndex(usersData[0], ["User_ID"], -1);
+  var userNamaColumn = findHeaderColumnIndex(usersData[0], ["Nama_Lengkap"], -1);
+  var penilaianPendaftarColumn = findHeaderColumnIndex(penilaianHeaders, ["Pendaftar_ID"], -1);
+  var penilaianUserColumn = findHeaderColumnIndex(penilaianHeaders, ["User_ID_Penilai"], -1);
+
+  if ([pendaftarIdColumn, pendaftarNamaColumn, userIdColumn, userNamaColumn, penilaianPendaftarColumn, penilaianUserColumn].some(function(index) {
+    return index < 0;
+  })) {
+    throw new Error("Header ID atau nama yang diperlukan tidak ditemukan.");
+  }
+
+  var pendaftarNames = {};
+  for (var p = 1; p < pendaftarData.length; p++) {
+    var pendaftarId = String(pendaftarData[p][pendaftarIdColumn] || "").trim();
+    var pendaftarNama = String(pendaftarData[p][pendaftarNamaColumn] || "").trim();
+    if (pendaftarId && pendaftarNama) pendaftarNames[pendaftarId] = pendaftarNama;
+  }
+
+  var userNames = {};
+  for (var u = 1; u < usersData.length; u++) {
+    var userId = String(usersData[u][userIdColumn] || "").trim();
+    var userNama = String(usersData[u][userNamaColumn] || "").trim();
+    if (userId && userNama) userNames[userId] = userNama;
+  }
+
+  var penilaianData = penilaianSheet.getRange(2, 1, penilaianLastRow - 1, penilaianLastColumn).getDisplayValues();
+  var unresolvedPendaftar = {};
+  var unresolvedUsers = {};
+  for (var r = 0; r < penilaianData.length; r++) {
+    var rowPendaftarId = String(penilaianData[r][penilaianPendaftarColumn] || "").trim();
+    var rowUserId = String(penilaianData[r][penilaianUserColumn] || "").trim();
+    if (rowPendaftarId && !pendaftarNames[rowPendaftarId]) unresolvedPendaftar[rowPendaftarId] = true;
+    if (rowUserId && !userNames[rowUserId]) unresolvedUsers[rowUserId] = true;
+  }
+
+  var missingIds = Object.keys(unresolvedPendaftar).concat(Object.keys(unresolvedUsers));
+  if (missingIds.length) {
+    throw new Error("Nama tidak ditemukan untuk ID berikut; spreadsheet tidak diubah: " + missingIds.join(", "));
+  }
+
+  var namaPendaftarColumn = findHeaderColumnIndex(penilaianHeaders, ["Nama_Pendaftar"], -1);
+  var namaPenilaiColumn = findHeaderColumnIndex(penilaianHeaders, ["Nama_Penilai"], -1);
+  var columnsToAdd = [];
+  if (namaPendaftarColumn < 0) columnsToAdd.push({ header: "Nama_Pendaftar", key: "pendaftar" });
+  if (namaPenilaiColumn < 0) columnsToAdd.push({ header: "Nama_Penilai", key: "penilai" });
+
+  if (columnsToAdd.length) {
+    penilaianSheet.insertColumnsAfter(penilaianLastColumn, columnsToAdd.length);
+    for (var c = 0; c < columnsToAdd.length; c++) {
+      var newColumn = penilaianLastColumn + c + 1;
+      penilaianSheet.getRange(1, newColumn).setValue(columnsToAdd[c].header);
+      if (columnsToAdd[c].key === "pendaftar") namaPendaftarColumn = newColumn - 1;
+      if (columnsToAdd[c].key === "penilai") namaPenilaiColumn = newColumn - 1;
+    }
+  }
+
+  var namaPendaftarValues = [];
+  var namaPenilaiValues = [];
+  for (var i = 0; i < penilaianData.length; i++) {
+    var applicantId = String(penilaianData[i][penilaianPendaftarColumn] || "").trim();
+    var evaluatorId = String(penilaianData[i][penilaianUserColumn] || "").trim();
+    namaPendaftarValues.push([applicantId ? pendaftarNames[applicantId] : ""]);
+    namaPenilaiValues.push([evaluatorId ? userNames[evaluatorId] : ""]);
+  }
+
+  penilaianSheet.getRange(2, namaPendaftarColumn + 1, namaPendaftarValues.length, 1).setValues(namaPendaftarValues);
+  penilaianSheet.getRange(2, namaPenilaiColumn + 1, namaPenilaiValues.length, 1).setValues(namaPenilaiValues);
+
+  return "Kolom Nama_Pendaftar dan Nama_Penilai berhasil diisi untuk " + penilaianData.length + " baris. Kolom ID tetap dipertahankan.";
+}
+
 /**
  * Generate secure SHA-256 hash for passwords.
  * @param {string} str
@@ -1186,7 +1278,27 @@ function saveOrUpdateKonten(payload) {
       }
     }
 
-    var imageUrl = saveImageBase64(payload.gambarBase64);
+    // Koleksi semua URL foto yang diunggah (mendukung banyak foto sekaligus / multi-photo album)
+    var uploadedUrls = [];
+    if (Array.isArray(payload.gambarBase64List) && payload.gambarBase64List.length > 0) {
+      for (var b = 0; b < payload.gambarBase64List.length; b++) {
+        var sUrl = saveImageBase64(payload.gambarBase64List[b]);
+        if (sUrl) uploadedUrls.push(sUrl);
+      }
+    } else if (payload.gambarBase64) {
+      var sSingle = saveImageBase64(payload.gambarBase64);
+      if (sSingle) uploadedUrls.push(sSingle);
+    }
+
+    // Dukungan input URL manual (bisa dipisah '||', koma, atau baris baru)
+    var rawUrlInput = String(payload.urlFoto || payload.urlGambar || "").trim();
+    if (rawUrlInput) {
+      var splitUrls = rawUrlInput.split(/[,\n\|]+/).map(function(s) { return s.trim(); }).filter(function(s) { return s.indexOf("http") === 0; });
+      splitUrls.forEach(function(u) {
+        if (uploadedUrls.indexOf(u) === -1) uploadedUrls.push(u);
+      });
+    }
+
     var data = sheet.getDataRange().getDisplayValues();
     var targetRowIndex = -1;
 
@@ -1202,7 +1314,8 @@ function saveOrUpdateKonten(payload) {
     var dateStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
 
     if (isGaleri) {
-      var finalFoto = imageUrl || payload.urlFoto || payload.urlGambar || (targetRowIndex !== -1 ? (data[targetRowIndex - 1][4] || data[targetRowIndex - 1][3]) : "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=600");
+      var combinedUrls = uploadedUrls.length > 0 ? uploadedUrls.join("||") : "";
+      var finalFoto = combinedUrls || (targetRowIndex !== -1 ? (data[targetRowIndex - 1][4] || data[targetRowIndex - 1][3]) : "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=600");
       var finalKat = payload.kategori || "Galeri";
       if (targetRowIndex !== -1) {
         sheet.getRange(targetRowIndex, 1, 1, 6).setValues([[
@@ -1213,7 +1326,7 @@ function saveOrUpdateKonten(payload) {
         sheet.appendRow([newId, payload.judul, payload.deskripsi, dateStr, finalFoto, finalKat]);
       }
     } else {
-      var finalGambar = imageUrl || payload.urlGambar || payload.urlFoto || (targetRowIndex !== -1 ? data[targetRowIndex - 1][4] : "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=600");
+      var finalGambar = (uploadedUrls.length > 0 ? uploadedUrls[0] : "") || (targetRowIndex !== -1 ? data[targetRowIndex - 1][4] : "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=600");
       if (targetRowIndex !== -1) {
         sheet.getRange(targetRowIndex, 1, 1, 6).setValues([[
           payload.id, payload.judul, payload.kategori || "Profil Lab", payload.deskripsi, finalGambar, dateStr

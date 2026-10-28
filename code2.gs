@@ -1186,7 +1186,27 @@ function saveOrUpdateKonten(payload) {
       }
     }
 
-    var imageUrl = saveImageBase64(payload.gambarBase64);
+    // Koleksi semua URL foto yang diunggah (mendukung banyak foto sekaligus / multi-photo album)
+    var uploadedUrls = [];
+    if (Array.isArray(payload.gambarBase64List) && payload.gambarBase64List.length > 0) {
+      for (var b = 0; b < payload.gambarBase64List.length; b++) {
+        var sUrl = saveImageBase64(payload.gambarBase64List[b]);
+        if (sUrl) uploadedUrls.push(sUrl);
+      }
+    } else if (payload.gambarBase64) {
+      var sSingle = saveImageBase64(payload.gambarBase64);
+      if (sSingle) uploadedUrls.push(sSingle);
+    }
+
+    // Dukungan input URL manual (bisa dipisah '||', koma, atau baris baru)
+    var rawUrlInput = String(payload.urlFoto || payload.urlGambar || "").trim();
+    if (rawUrlInput) {
+      var splitUrls = rawUrlInput.split(/[,\n\|]+/).map(function(s) { return s.trim(); }).filter(function(s) { return s.indexOf("http") === 0; });
+      splitUrls.forEach(function(u) {
+        if (uploadedUrls.indexOf(u) === -1) uploadedUrls.push(u);
+      });
+    }
+
     var data = sheet.getDataRange().getDisplayValues();
     var targetRowIndex = -1;
 
@@ -1202,7 +1222,8 @@ function saveOrUpdateKonten(payload) {
     var dateStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
 
     if (isGaleri) {
-      var finalFoto = imageUrl || payload.urlFoto || payload.urlGambar || (targetRowIndex !== -1 ? (data[targetRowIndex - 1][4] || data[targetRowIndex - 1][3]) : "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=600");
+      var combinedUrls = uploadedUrls.length > 0 ? uploadedUrls.join("||") : "";
+      var finalFoto = combinedUrls || (targetRowIndex !== -1 ? (data[targetRowIndex - 1][4] || data[targetRowIndex - 1][3]) : "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=600");
       var finalKat = payload.kategori || "Galeri";
       if (targetRowIndex !== -1) {
         sheet.getRange(targetRowIndex, 1, 1, 6).setValues([[
@@ -1213,7 +1234,7 @@ function saveOrUpdateKonten(payload) {
         sheet.appendRow([newId, payload.judul, payload.deskripsi, dateStr, finalFoto, finalKat]);
       }
     } else {
-      var finalGambar = imageUrl || payload.urlGambar || payload.urlFoto || (targetRowIndex !== -1 ? data[targetRowIndex - 1][4] : "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=600");
+      var finalGambar = (uploadedUrls.length > 0 ? uploadedUrls[0] : "") || (targetRowIndex !== -1 ? data[targetRowIndex - 1][4] : "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=600");
       if (targetRowIndex !== -1) {
         sheet.getRange(targetRowIndex, 1, 1, 6).setValues([[
           payload.id, payload.judul, payload.kategori || "Profil Lab", payload.deskripsi, finalGambar, dateStr
