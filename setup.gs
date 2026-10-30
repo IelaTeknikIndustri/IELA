@@ -51,10 +51,20 @@ function setupDatabase() {
     { npm: "1411230083", nama: "Abdul Rokhim", phone: "081246380131", bidang: "1. Fisika", jabatan: "Pembimbing Praktikum" }
   ];
 
+  function formatSeedJabBid_(jab, bid) {
+    var jClean = String(jab || "").replace(/\s*Sub-Lab$/i, "").trim();
+    var bClean = String(bid || "").trim();
+    if (/bubut/i.test(bClean)) bClean = "Bubut";
+    else if (/3d\s*printing/i.test(bClean)) bClean = "3D Printing";
+    else if (/cnc/i.test(bClean)) bClean = "CNC";
+    else bClean = bClean.replace(/^\d+\.\s*/, "").trim();
+    return (jClean && bClean && bClean !== "-") ? (jClean + " / " + bClean) : (jClean || bClean || "-");
+  }
+
   var initialUsers = [
-    ["USR-001", "admin", "das12345", "Koordinator Utama IELA", "admin@iela.unirow.ac.id", "Admin", true, "Manajemen Lab", "Koordinator Utama"],
-    ["USR-002", "penguji1", "das12345", "Ir. Budi Santoso, M.T.", "budi@iela.unirow.ac.id", "Anggota", true, "1. Fisika", "Penguji Wawancara"],
-    ["USR-003", "penguji2", "das12345", "Siti Aminah, S.T., M.T.", "siti@iela.unirow.ac.id", "Anggota", true, "2. Ergonomi", "Penguji Wawancara"]
+    ["USR-001", "admin", "das12345", "Koordinator Utama IELA", "admin@iela.unirow.ac.id", "Admin", true, "Manajemen Lab", "Koordinator Utama", "Koordinator Utama / Manajemen Lab"],
+    ["USR-002", "penguji1", "das12345", "Ir. Budi Santoso, M.T.", "budi@iela.unirow.ac.id", "Penguji", true, "1. Fisika", "Penguji Wawancara", "Penguji Wawancara / Fisika"],
+    ["USR-003", "penguji2", "das12345", "Siti Aminah, S.T., M.T.", "siti@iela.unirow.ac.id", "Penguji", true, "2. Ergonomi", "Penguji Wawancara", "Penguji Wawancara / Ergonomi"]
   ];
 
   for (var k = 0; k < aslabList.length; k++) {
@@ -62,13 +72,13 @@ function setupDatabase() {
     var uId = "USR-" + String(100 + k);
     var emailVal = "mhs" + item.npm + "@student.unirow.ac.id";
     initialUsers.push([
-      uId, item.npm, "das12345", item.nama, emailVal, "Anggota", true, item.bidang, item.jabatan
+      uId, item.npm, "das12345", item.nama, emailVal, "Anggota", true, item.bidang, item.jabatan, formatSeedJabBid_(item.jabatan, item.bidang)
     ]);
   }
 
   // UPDATE: Kolom URL_Jurnal_Referensi diletakkan paling belakang agar tidak menggeser kolom status
   var schemas = [
-    { name: "USERS", headers: ["User_ID", "Username_NIM", "Password", "Nama_Lengkap", "Email", "Role", "Status_Aktif", "Bidang_Divisi", "Jabatan_Divisi"], initialData: initialUsers },
+    { name: "USERS", headers: ["User_ID", "Username_NIM", "Password", "Nama_Lengkap", "Email", "Role", "Status_Aktif", "Bidang_Divisi", "Jabatan_Divisi", "Jabatan_Bidang"], initialData: initialUsers },
     {
       name: "PROFIL_KONTEN", headers: ["Konten_ID", "Judul", "Kategori", "Deskripsi", "URL_Gambar", "Tanggal_Publish"],
       initialData: [
@@ -117,5 +127,88 @@ function setupDatabase() {
     Logger.log('Sheet ' + schema.name + ' berhasil dibuat / diverifikasi');
   });
 
+  try { seedCmsSettings(); } catch (e) { Logger.log("seedCmsSettings dilewati: " + e.message); }
+
   return "Database IELA Berhasil Dinisialisasi!";
+}
+
+/**
+ * Menyiapkan kunci pengaturan tampilan web (CMS) di sheet PENGATURAN.
+ * AMAN dijalankan berkali-kali: hanya menambah key yang belum ada, tidak pernah
+ * menghapus atau menimpa data. Opsional: web tetap jalan tanpa ini karena
+ * frontend punya nilai bawaan. Gunanya merapikan sheet dan memberi keterangan.
+ */
+function seedCmsSettings() {
+  var ss = getSpreadsheet();
+  if (!ss) return "Spreadsheet database tidak ditemukan.";
+  var sheet = ss.getSheetByName("PENGATURAN");
+  if (!sheet) return "Sheet PENGATURAN tidak ditemukan. Jalankan setupDatabase terlebih dahulu.";
+
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function (h) { return String(h).trim(); });
+  var idCol = headers.indexOf("Param_ID");
+  var keyCol = headers.indexOf("Key_Name");
+  var valCol = headers.indexOf("Value_Text");
+  if (keyCol === -1 || valCol === -1) return "Kolom PENGATURAN tidak valid.";
+
+  var ketCol = headers.indexOf("Keterangan");
+  if (ketCol === -1) {
+    ketCol = headers.length;
+    headers.push("Keterangan");
+    sheet.getRange(1, ketCol + 1).setValue("Keterangan")
+      .setFontWeight("bold").setBackground("#1E293B").setFontColor("#F8FAFC");
+  }
+
+  var existing = {};
+  for (var i = 1; i < data.length; i++) existing[String(data[i][keyCol]).trim()] = i + 1;
+
+  var seeds = [
+    ["ACTIVE_PERIODE", "2027-2028", "Periode aktif. Menggantikan {{PERIODE}} di seluruh teks web."],
+    ["HERO_BADGE_SHOW", "", "Lencana di atas judul beranda. 1 = tampil, 0 = sembunyi. Kosong = otomatis (tampil saat pendaftaran BUKA)."],
+    ["HERO_CTA1_SHOW", "", "Tombol utama hero. 1 = tampil, 0 = sembunyi. Kosong = tampil."],
+    ["HERO_CTA2_SHOW", "", "Tombol kedua hero. 1 = tampil, 0 = sembunyi. Kosong = tampil."],
+    ["NAV_SHOW_RECRUITMENT", "", "Menu Recruitment di navbar. 1 = tampil, 0 = sembunyi. Kosong = tampil."],
+    ["NAV_SHOW_PENGUMUMAN", "", "Menu Pengumuman di navbar. 1 = tampil, 0 = sembunyi. Kosong = tampil."],
+    ["SHOW_HOME_STATS", "", "Baris statistik beranda. 1 = tampil, 0 = sembunyi. Kosong = tampil."],
+    ["SHOW_HOME_VISIMISI", "", "Visi & Misi beranda. 1 = tampil, 0 = sembunyi. Kosong = tampil."],
+    ["SHOW_HOME_SUBLABS", "", "Seksi Sub-Laboratorium beranda. 1 = tampil, 0 = sembunyi. Kosong = tampil."],
+    ["SHOW_HOME_GALERI", "", "Seksi Galeri beranda. 1 = tampil, 0 = sembunyi. Kosong = tampil."],
+    ["SHOW_HOME_BERITA", "", "Seksi Berita beranda. 1 = tampil, 0 = sembunyi. Kosong = tampil."],
+    ["USER_ROLE_OPTIONS", "", "Daftar opsi Role tambahan hasil input Admin pada Manajemen User (JSON array)."],
+    ["USER_JABATAN_BIDANG_OPTIONS", "", "Daftar opsi Jabatan/Bidang tambahan hasil input Admin pada Manajemen User (JSON array)."]
+  ];
+
+  // Pastikan kolom Jabatan_Bidang tersedia pada sheet USERS tanpa menimpa data lama
+  var uSheet = ss.getSheetByName("USERS");
+  if (uSheet && uSheet.getLastRow() >= 1) {
+    var uData = uSheet.getDataRange().getDisplayValues();
+    var uHeaders = uData[0].map(function (h) { return String(h).trim(); });
+    if (uHeaders.indexOf("Jabatan_Bidang") === -1) {
+      var newCol = uHeaders.length + 1;
+      uSheet.getRange(1, newCol).setValue("Jabatan_Bidang")
+        .setFontWeight("bold").setBackground("#1E293B").setFontColor("#F8FAFC");
+    }
+  }
+
+  var added = 0;
+  var described = 0;
+  seeds.forEach(function (s) {
+    if (existing[s[0]]) {
+      var cell = sheet.getRange(existing[s[0]], ketCol + 1);
+      if (!String(cell.getValue()).trim()) { cell.setValue(s[2]); described++; }
+      return;
+    }
+    var row = [];
+    for (var c = 0; c < headers.length; c++) row.push("");
+    if (idCol !== -1) row[idCol] = "PRM-" + Math.floor(1000 + Math.random() * 9000);
+    row[keyCol] = s[0];
+    row[valCol] = s[1];
+    row[ketCol] = s[2];
+    var r = sheet.getLastRow() + 1;
+    sheet.getRange(r, 1, 1, headers.length).setNumberFormat("@").setValues([row]);
+    added++;
+  });
+
+  invalidateCache("INITIAL_DATA");
+  return "Pengaturan tampilan siap. Ditambahkan: " + added + ", keterangan dilengkapi: " + described + ".";
 }

@@ -126,6 +126,59 @@
       .animate-logo-pulse {
         animation: logoPulse 2.2s infinite ease-in-out;
       }
+          /* ===== CMS TAMPILAN WEB & LAPISAN GERAK ===== */
+      .cms-hidden { display: none !important; }
+      #scroll-progress {
+        position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 60;
+        background: #818cf8; transform-origin: 0 50%; transform: scaleX(0);
+        pointer-events: none;
+      }
+      .hero-rise {
+        opacity: 0; transform: translateY(18px);
+        animation: heroRise 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: var(--d, 0ms);
+      }
+      @keyframes heroRise { to { opacity: 1; transform: none; } }
+      .hero-aurora { animation: auroraDrift 18s ease-in-out infinite alternate; will-change: transform; }
+      .hero-aurora-b { animation-duration: 24s; animation-direction: alternate-reverse; }
+      @keyframes auroraDrift {
+        from { transform: translate3d(0, 0, 0) scale(1); }
+        to { transform: translate3d(-48px, 34px, 0) scale(1.18); }
+      }
+      .hero-spot {
+        opacity: 0; transition: opacity 0.5s ease;
+        background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(129, 140, 248, 0.16), transparent 62%);
+      }
+      #hero-stage:hover .hero-spot { opacity: 1; }
+      .stagger-in > * {
+        opacity: 0; transform: translateY(16px);
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .stagger-in.is-revealed > * { opacity: 1; transform: none; }
+      .stagger-in > *:nth-child(2) { transition-delay: 70ms; }
+      .stagger-in > *:nth-child(3) { transition-delay: 140ms; }
+      .stagger-in > *:nth-child(4) { transition-delay: 210ms; }
+      .stagger-in > *:nth-child(5) { transition-delay: 280ms; }
+      .stagger-in > *:nth-child(n + 6) { transition-delay: 350ms; }
+      @media (hover: hover) {
+        #home-sublabs-container > *,
+        #home-galeri-container > *,
+        #home-berita-container > *,
+        #galeri-list-container > * {
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        #home-sublabs-container > *:hover,
+        #home-galeri-container > *:hover,
+        #home-berita-container > *:hover,
+        #galeri-list-container > *:hover { transform: translateY(-4px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .hero-rise { opacity: 1; transform: none; animation: none; }
+        .hero-aurora { animation: none; }
+        .hero-spot { display: none; }
+        .stagger-in > * { opacity: 1; transform: none; transition: none; }
+        #scroll-progress { display: none; }
+      }
     </style>
   </head>
   <body
@@ -177,6 +230,7 @@
       id="toast-container"
       class="fixed top-5 right-5 z-[9999] flex flex-col gap-3 max-w-sm pointer-events-none"
     ></div>
+    <div id="scroll-progress" aria-hidden="true"></div>
     <!-- HEADER NAVBAR -->
     <header class="sticky top-0 z-40 glass-nav">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -201,11 +255,11 @@
             </div>
             <div>
               <span
-                class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent"
+                class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent" data-cms="BRAND_NAME"
                 >IELA UNIROW</span
               >
               <span
-                class="block text-[10px] uppercase tracking-widest text-indigo-400 font-bold"
+                class="block text-[10px] uppercase tracking-widest text-indigo-400 font-bold" data-cms="BRAND_TAGLINE"
                 >Lab Teknik Industri</span
               >
             </div>
@@ -248,19 +302,15 @@
             <button
               type="button"
               onclick="window.switchTab('recruitment')"
-              data-tab="recruitment"
+              data-tab="recruitment" data-cms-show="NAV_SHOW_RECRUITMENT" data-cms="NAV_LABEL_RECRUITMENT"
               class="px-4 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
-            >
-              Recruitment
-            </button>
+            >Recruitment</button>
             <button
               type="button"
               onclick="window.switchTab('pengumuman')"
-              data-tab="pengumuman"
+              data-tab="pengumuman" data-cms-show="NAV_SHOW_PENGUMUMAN" data-cms="NAV_LABEL_PENGUMUMAN"
               class="px-4 py-2 rounded-lg hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
-            >
-              Pengumuman
-            </button>
+            >Pengumuman</button>
           </nav>
           <div class="flex items-center gap-3">
             <div id="auth-btn-area">
@@ -397,19 +447,15 @@
             <button
               type="button"
               onclick="window.switchTab('recruitment')"
-              class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white transition text-left cursor-pointer"
+              class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white transition text-left cursor-pointer" data-cms-show="NAV_SHOW_RECRUITMENT"
             >
-              <i class="fa-solid fa-user-plus w-5 text-indigo-400"></i>
-              Recruitment
-            </button>
+              <i class="fa-solid fa-user-plus w-5 text-indigo-400"></i> <span data-cms="NAV_LABEL_RECRUITMENT">Recruitment</span></button>
             <button
               type="button"
               onclick="window.switchTab('pengumuman')"
-              class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white transition text-left cursor-pointer"
+              class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white transition text-left cursor-pointer" data-cms-show="NAV_SHOW_PENGUMUMAN"
             >
-              <i class="fa-solid fa-bullhorn w-5 text-indigo-400"></i>
-              Pengumuman
-            </button>
+              <i class="fa-solid fa-bullhorn w-5 text-indigo-400"></i> <span data-cms="NAV_LABEL_PENGUMUMAN">Pengumuman</span></button>
           </nav>
         </div>
         <div class="pt-6 border-t border-slate-800 space-y-3">
@@ -431,74 +477,94 @@
       <!-- TAB 1: BERANDA -->
       <section id="tab-home" class="tab-content space-y-12">
         <!-- BANNER PENGUMUMAN RESMI TERBARU DI BERANDA UTAMA -->
-        <div id="home-pengumuman-banner" class="hidden"></div>
+                <div id="home-pengumuman-banner" class="hidden"></div>
 
         <div
+          id="hero-stage"
           class="reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 p-8 sm:p-12"
         >
           <div
-            class="absolute -right-20 -top-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"
+            class="hero-aurora absolute -right-20 -top-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"
           ></div>
+          <div
+            class="hero-aurora hero-aurora-b absolute -left-24 -bottom-32 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"
+          ></div>
+          <div class="hero-spot absolute inset-0 pointer-events-none"></div>
           <div class="relative z-10 max-w-3xl space-y-6">
             <span
-              class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+              id="hero-badge"
+              data-cms-show="HERO_BADGE_SHOW"
+              class="hero-rise inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+              style="--d: 0ms"
             >
               <i class="fa-solid fa-circle-dot text-[8px] animate-pulse"></i>
-              Open Recruitment IELA 2027-2028
+              <span data-cms="HERO_BADGE_TEXT">Open Recruitment IELA {{PERIODE}}</span>
             </span>
             <h1
-              class="text-3xl sm:text-5xl font-black text-white leading-tight"
+              class="hero-rise text-3xl sm:text-5xl font-black text-white leading-tight"
+              style="--d: 90ms"
             >
-              Pusat Keunggulan Riset & Simulation
+              <span data-cms="HERO_TITLE_PRE">Pusat Keunggulan Riset &amp; Simulation</span>
               <span
+                data-cms="HERO_TITLE_ACCENT"
                 class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent"
                 >Teknik Industri</span
               >
-              Unirow
+              <span data-cms="HERO_TITLE_POST">Unirow</span>
             </h1>
-            <p class="text-slate-400 text-base sm:text-lg leading-relaxed">
+            <p
+              data-cms="HERO_SUBTITLE"
+              class="hero-rise text-slate-400 text-base sm:text-lg leading-relaxed"
+              style="--d: 180ms"
+            >
               Menyelenggarakan praktikum unggulan Ergonomi, Fisika Dasar, Statistika, Proses Manufaktur (Bubut, 3D Printing, CNC), dan
               Algoritma Pemrograman.
             </p>
-            <div class="flex flex-wrap gap-4 pt-2">
+            <div
+              id="hero-cta-row"
+              class="hero-rise flex flex-wrap gap-4 pt-2"
+              style="--d: 270ms"
+            >
               <button
                 type="button"
+                id="hero-cta-1"
+                data-cms-show="HERO_CTA1_SHOW"
                 onclick="window.switchTab('recruitment')"
-                class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer"
+                class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer"
               >
-                <i class="fa-solid fa-user-plus"></i> Daftar Asisten Sekarang
+                <i class="fa-solid fa-user-plus"></i>
+                <span data-cms="HERO_CTA1_TEXT">Daftar Asisten Sekarang</span>
               </button>
               <button
                 type="button"
+                id="hero-cta-2"
+                data-cms-show="HERO_CTA2_SHOW"
                 onclick="window.switchTab('profil')"
-                class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-6 py-3.5 rounded-xl border border-slate-700 transition flex items-center gap-2 cursor-pointer"
+                class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 font-bold px-6 py-3.5 rounded-xl border border-slate-700 transition flex items-center gap-2 cursor-pointer"
               >
-                <i class="fa-solid fa-circle-info"></i> Pelajari Profil
+                <i class="fa-solid fa-circle-info"></i>
+                <span data-cms="HERO_CTA2_TEXT">Pelajari Profil</span>
               </button>
             </div>
           </div>
         </div>
-        <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="reveal stagger-in grid grid-cols-2 md:grid-cols-4 gap-4" data-cms-show="SHOW_HOME_STATS">
           <div class="glass-card p-6 rounded-2xl border border-slate-800">
             <i class="fa-solid fa-flask text-2xl text-indigo-400 mb-2"></i>
-            <p class="text-2xl font-black text-white">5 Divisi</p>
-            <p class="text-xs text-slate-400 font-medium">
-              Sub-Laboratorium Utama
-            </p>
+            <p class="text-2xl font-black text-white js-countup" data-cms="STAT_1_VALUE">5 Divisi</p>
+            <p class="text-xs text-slate-400 font-medium" data-cms="STAT_1_LABEL">Sub-Laboratorium Utama</p>
           </div>
           <div class="glass-card p-6 rounded-2xl border border-slate-800">
             <i class="fa-solid fa-users text-2xl text-cyan-400 mb-2"></i>
-            <p class="text-2xl font-black text-white">29 Aslab</p>
-            <p class="text-xs text-slate-400 font-medium">Tim Pengajar Resmi</p>
+            <p class="text-2xl font-black text-white js-countup" data-cms="STAT_2_VALUE">29 Aslab</p>
+            <p class="text-xs text-slate-400 font-medium" data-cms="STAT_2_LABEL">Tim Pengajar Resmi</p>
           </div>
           <div class="glass-card p-6 rounded-2xl border border-slate-800">
             <i
               class="fa-solid fa-graduation-cap text-2xl text-emerald-400 mb-2"
             ></i>
-            <p class="text-2xl font-black text-white">250+ Mahasiswa</p>
-            <p class="text-xs text-slate-400 font-medium">
-              Praktikan Tiap Semester
-            </p>
+            <p class="text-2xl font-black text-white js-countup" data-cms="STAT_3_VALUE">250+ Mahasiswa</p>
+            <p class="text-xs text-slate-400 font-medium" data-cms="STAT_3_LABEL">Praktikan Tiap Semester</p>
           </div>
           <div onclick="window.switchTab('profil'); window.switchProfilSubTab('publikasi');" class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-amber-500/50 transition cursor-pointer group">
             <div class="flex items-center justify-between mb-2">
@@ -513,73 +579,71 @@
         </div>
 
         <!-- VISI & MISI RINGKAS -->
-        <div class="reveal grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="reveal grid grid-cols-1 md:grid-cols-2 gap-6" data-cms-show="SHOW_HOME_VISIMISI">
           <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-3 relative overflow-hidden">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
                 <i class="fa-solid fa-bullseye text-lg"></i>
               </div>
-              <h3 class="text-xl font-bold text-white">Visi Laboratorium</h3>
+              <h3 class="text-xl font-bold text-white" data-cms="VISI_TITLE">Visi Laboratorium</h3>
             </div>
-            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-              Menjadi pusat unggulan praktikum, riset aplikasi teknologi industri, dan inkubasi inovasi rekayasa sistem yang adaptif terhadap era Society 5.0 dan Industri 4.0 berlandaskan nilai profesionalisme ilmiah.
-            </p>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed" data-cms="VISI_TEXT">Menjadi pusat unggulan praktikum, riset aplikasi teknologi industri, dan inkubasi inovasi rekayasa sistem yang adaptif terhadap era Society 5.0 dan Industri 4.0 berlandaskan nilai profesionalisme ilmiah.</p>
           </div>
           <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-3 relative overflow-hidden">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                 <i class="fa-solid fa-compass text-lg"></i>
               </div>
-              <h3 class="text-xl font-bold text-white">Misi Laboratorium</h3>
+              <h3 class="text-xl font-bold text-white" data-cms="MISI_TITLE">Misi Laboratorium</h3>
             </div>
             <ul class="text-slate-300 text-xs space-y-2 leading-relaxed">
-              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-cyan-400 mt-0.5 text-xs"></i> Menyelenggarakan kegiatan praktikum integratif berstandar industri nasional.</li>
-              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-cyan-400 mt-0.5 text-xs"></i> Memfasilitasi riset dosen dan mahasiswa di bidang manufaktur, ergonomi, dan komputasi.</li>
-              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-cyan-400 mt-0.5 text-xs"></i> Mencetak asisten laboratorium berkarakter kepemimpinan dan berintegritas tinggi.</li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-cyan-400 mt-0.5 text-xs"></i> <span data-cms="MISI_1">Menyelenggarakan kegiatan praktikum integratif berstandar industri nasional.</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-cyan-400 mt-0.5 text-xs"></i> <span data-cms="MISI_2">Memfasilitasi riset dosen dan mahasiswa di bidang manufaktur, ergonomi, dan komputasi.</span></li>
+              <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-cyan-400 mt-0.5 text-xs"></i> <span data-cms="MISI_3">Mencetak asisten laboratorium berkarakter kepemimpinan dan berintegritas tinggi.</span></li>
             </ul>
           </div>
         </div>
 
         <!-- SHOWCASE 5 SUB-LABORATORIUM -->
-        <div class="reveal space-y-6">
+        <div class="reveal space-y-6" data-cms-show="SHOW_HOME_SUBLABS">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 border-b border-slate-800 pb-4">
             <div>
-              <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">Fokus Keilmuan</span>
-              <h2 class="text-2xl sm:text-3xl font-black text-white">5 Sub-Laboratorium Unggulan</h2>
+              <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400" data-cms="SUBLABS_EYEBROW">Fokus Keilmuan</span>
+              <h2 class="text-2xl sm:text-3xl font-black text-white" data-cms="SUBLABS_TITLE">5 Sub-Laboratorium Unggulan</h2>
             </div>
             <button type="button" onclick="window.switchTab('profil')" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition cursor-pointer">
-              Lihat Detail Semua Divisi <i class="fa-solid fa-arrow-right"></i>
+              <span data-cms="SUBLABS_LINK">Lihat Detail Semua Divisi</span> <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>
-          <div id="home-sublabs-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+          <div id="home-sublabs-container" class="stagger-in grid grid-cols-1 md:grid-cols-3 gap-6"></div>
         </div>
 
         <!-- SHOWCASE GALERI TERBARU -->
-        <div class="reveal space-y-6">
+        <div class="reveal space-y-6" data-cms-show="SHOW_HOME_GALERI">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 border-b border-slate-800 pb-4">
             <div>
-              <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400">Dokumentasi</span>
-              <h2 class="text-2xl sm:text-3xl font-black text-white">Galeri Kegiatan & Praktikum</h2>
+              <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400" data-cms="GALERI_EYEBROW">Dokumentasi</span>
+              <h2 class="text-2xl sm:text-3xl font-black text-white" data-cms="HOME_GALERI_TITLE">Galeri Kegiatan &amp; Praktikum</h2>
             </div>
             <button type="button" onclick="window.switchTab('galeri')" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 transition cursor-pointer">
-              Buka Semua Galeri Foto <i class="fa-solid fa-arrow-right"></i>
+              <span data-cms="GALERI_LINK">Buka Semua Galeri Foto</span> <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>
-          <div id="home-galeri-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+          <div id="home-galeri-container" class="stagger-in grid grid-cols-1 md:grid-cols-3 gap-6"></div>
         </div>
 
         <!-- SHOWCASE BERITA & WORKSHOP -->
-        <div class="reveal space-y-6">
+        <div class="reveal space-y-6" data-cms-show="SHOW_HOME_BERITA">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 border-b border-slate-800 pb-4">
             <div>
-              <span class="text-[10px] font-black uppercase tracking-widest text-cyan-400">Informasi Terkini</span>
-              <h2 class="text-2xl sm:text-3xl font-black text-white">Berita & Agenda Workshop</h2>
+              <span class="text-[10px] font-black uppercase tracking-widest text-cyan-400" data-cms="BERITA_EYEBROW">Informasi Terkini</span>
+              <h2 class="text-2xl sm:text-3xl font-black text-white" data-cms="HOME_BERITA_TITLE">Berita &amp; Agenda Workshop</h2>
             </div>
             <button type="button" onclick="window.switchTab('berita')" class="text-xs font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1.5 transition cursor-pointer">
-              Baca Semua Berita <i class="fa-solid fa-arrow-right"></i>
+              <span data-cms="BERITA_LINK">Baca Semua Berita</span> <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>
-          <div id="home-berita-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+          <div id="home-berita-container" class="stagger-in grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </div>
 
       </section>
@@ -588,12 +652,8 @@
       <section id="tab-profil" class="tab-content hidden space-y-6">
         <div class="reveal flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 class="text-3xl font-black text-white">
-              Profil Laboratorium IELA
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">
-              Pusat keunggulan riset, simulasi, dan praktikum Teknik Industri Unirow
-            </p>
+            <h2 class="text-3xl font-black text-white" data-cms="PROFIL_TITLE">Profil Laboratorium IELA</h2>
+            <p class="text-xs text-slate-400 mt-1" data-cms="PROFIL_SUBTITLE">Pusat keunggulan riset, simulasi, dan praktikum Teknik Industri Unirow</p>
           </div>
           <button
             type="button"
@@ -824,12 +884,8 @@
       <section id="tab-galeri" class="tab-content hidden space-y-6">
         <div class="reveal flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 class="text-3xl font-black text-white">
-              Galeri Kegiatan & Praktikum
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">
-              Dokumentasi visual kegiatan riset, workshop pemesinan, dan aktivitas laboratorium
-            </p>
+            <h2 class="text-3xl font-black text-white" data-cms="GALERI_TITLE">Galeri Kegiatan &amp; Praktikum</h2>
+            <p class="text-xs text-slate-400 mt-1" data-cms="GALERI_SUBTITLE">Dokumentasi visual kegiatan riset, workshop pemesinan, dan aktivitas laboratorium</p>
           </div>
           <button
             type="button"
@@ -894,13 +950,8 @@
       <section id="tab-berita" class="tab-content hidden space-y-6">
         <div class="reveal flex justify-between items-center">
           <div>
-            <h2 class="text-3xl font-black text-white">
-              Berita & Agenda Workshop
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">
-              Informasi terbaru seputar dunia Teknik Industri dan Laboratorium
-              IELA
-            </p>
+            <h2 class="text-3xl font-black text-white" data-cms="BERITA_TITLE">Berita &amp; Agenda Workshop</h2>
+            <p class="text-xs text-slate-400 mt-1" data-cms="BERITA_SUBTITLE">Informasi terbaru seputar dunia Teknik Industri dan Laboratorium IELA</p>
           </div>
           <button
             type="button"
@@ -920,12 +971,8 @@
       <section id="tab-recruitment" class="tab-content hidden space-y-6">
         <div class="reveal flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
           <div>
-            <h2 class="text-3xl font-black text-white">
-              Informasi Recruitment Asisten 2027-2028
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">
-              Laboratorium Rekayasa & Sistem Manufaktur Industri (IELA) UNIROW
-            </p>
+            <h2 class="text-3xl font-black text-white" data-cms="RECRUIT_TITLE">Informasi Recruitment Asisten {{PERIODE}}</h2>
+            <p class="text-xs text-slate-400 mt-1" data-cms="RECRUIT_SUBTITLE">Laboratorium Rekayasa &amp; Sistem Manufaktur Industri (IELA) UNIROW</p>
           </div>
           <div id="recruitment-status-badge">
             <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
@@ -995,13 +1042,8 @@
           class="reveal flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4"
         >
           <div>
-            <h2 class="text-3xl font-black text-white">
-              Pengumuman & Daftar Peserta Lolos
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">
-              Daftar resmi peserta yang dinyatakan lolos seleksi Asisten Lab
-              IELA 2027-2028
-            </p>
+            <h2 class="text-3xl font-black text-white" data-cms="PENGUMUMAN_TITLE">Pengumuman &amp; Daftar Peserta Lolos</h2>
+            <p class="text-xs text-slate-400 mt-1" data-cms="PENGUMUMAN_SUBTITLE">Daftar resmi peserta yang dinyatakan lolos seleksi Asisten Lab IELA {{PERIODE}}</p>
           </div>
         </div>
         <!-- PENGUMUMAN RESMI CARDS -->
@@ -1056,7 +1098,7 @@
             </div>
             <div>
               <h3 class="text-base font-bold text-white">
-                Grup WhatsApp Calon IELA 2027 - 2028
+                Grup WhatsApp Calon IELA <span data-periode-tpl>{{PERIODE}}</span>
               </h3>
               <p class="text-xs text-slate-400">
                 Bergabunglah ke grup resmi untuk mendapatkan instruksi jadwal
@@ -1603,8 +1645,7 @@
               Dashboard Koordinator Lab
             </h2>
             <p class="text-xs text-slate-400 mt-1">
-              Pusat kendali pendaftar, wawancara, konten, dan sistem IELA
-              2027-2028
+              Pusat kendali pendaftar, wawancara, konten, dan sistem IELA <span data-periode-tpl>{{PERIODE}}</span>
             </p>
           </div>
           <div class="flex flex-wrap gap-2" id="admin-subtabs-nav">
@@ -1670,6 +1711,14 @@
             >
               Pengaturan
             </button>
+            <button
+              type="button"
+              onclick="window.switchAdminSubTab('tampilan')"
+              id="adm-btn-tampilan"
+              class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer flex items-center gap-1.5"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i> Tampilan Web
+            </button>
           </div>
         </div>
         <div id="admin-sub-master" class="admin-sub-content space-y-6">
@@ -1678,7 +1727,7 @@
           >
             <div>
               <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                <span>Data Peserta Pendaftar IELA 2027-2028</span>
+                <span>Data Peserta Pendaftar IELA <span data-periode-tpl>{{PERIODE}}</span></span>
               </h3>
               <p id="admin-total-count" class="text-xs text-slate-400">
                 Total: 0 Peserta
@@ -2229,33 +2278,73 @@
         </div>
         <div id="admin-sub-user" class="admin-sub-content hidden space-y-6">
           <div
-            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+            class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-slate-800 pb-4"
           >
             <div>
-              <h3 class="text-lg font-bold text-white">
-                Manajemen Pengguna & Anggota Laboratorium
-              </h3>
-              <p class="text-xs text-slate-400">
-                Atur hak akses, divisi sub-lab, serta jabatan anggota tim IELA
+              <div class="flex flex-wrap items-center gap-2.5">
+                <h3 class="text-xl font-black text-white">
+                  Manajemen Pengguna &amp; Anggota Laboratorium
+                </h3>
+                <span id="user-mgmt-count-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-mono">0 User</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">
+                Ubah <strong class="text-slate-200">Role</strong> dan <strong class="text-slate-200">Jabatan / Bidang</strong> langsung dari daftar pilihan atau ketik sendiri &mdash; pilihan baru otomatis tersimpan untuk pemakaian berikutnya.
               </p>
             </div>
+            <button
+              type="button"
+              onclick="window.openUserEditorModal()"
+              class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs cursor-pointer shadow-lg shadow-indigo-600/25 transition flex items-center gap-2 shrink-0"
+            >
+              <i class="fa-solid fa-user-plus"></i> Tambah Pengguna Baru
+            </button>
           </div>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-900/50 p-3.5 rounded-2xl border border-slate-800">
+            <div class="relative flex-1">
+              <i class="fa-solid fa-magnifying-glass text-slate-500 text-xs absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="text"
+                id="user-mgmt-search"
+                oninput="window.renderUsersTable()"
+                placeholder="Cari nama, NPM/username, role, atau jabatan/bidang..."
+                class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl pl-9 pr-3.5 py-2 text-xs text-white focus:outline-none"
+              />
+            </div>
+            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
+              <select
+                id="user-mgmt-role-filter"
+                onchange="window.renderUsersTable()"
+                class="bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none"
+              >
+                <option value="all">Semua Role</option>
+              </select>
+              <select
+                id="user-mgmt-jb-filter"
+                onchange="window.renderUsersTable()"
+                class="bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none"
+              >
+                <option value="all">Semua Bidang / Jabatan</option>
+              </select>
+            </div>
+          </div>
+
           <div
             class="glass-card rounded-2xl border border-slate-800 overflow-hidden"
           >
             <div class="overflow-x-auto">
               <table class="w-full text-left text-sm text-slate-300">
                 <thead
-                  class="bg-slate-900/80 text-xs uppercase font-bold text-slate-400 border-b border-slate-800"
+                  class="bg-slate-900/80 text-[11px] uppercase font-bold text-slate-400 border-b border-slate-800"
                 >
                   <tr>
-                    <th class="p-4">User ID</th>
-                    <th class="p-4">NPM / Username</th>
-                    <th class="p-4">Nama Lengkap</th>
-                    <th class="p-4">Role Sistem</th>
-                    <th class="p-4">Divisi / Bidang</th>
-                    <th class="p-4">Jabatan Sub-Lab</th>
-                    <th class="p-4 text-center">Status</th>
+                    <th class="p-3.5 whitespace-nowrap">User ID</th>
+                    <th class="p-3.5 whitespace-nowrap">NPM / Username</th>
+                    <th class="p-3.5 min-w-[170px]">Nama Lengkap</th>
+                    <th class="p-3.5 min-w-[200px]">Role</th>
+                    <th class="p-3.5 min-w-[250px]">Jabatan / Bidang</th>
+                    <th class="p-3.5 text-center whitespace-nowrap">Status</th>
+                    <th class="p-3.5 text-center whitespace-nowrap">Aksi</th>
                   </tr>
                 </thead>
                 <tbody
@@ -2371,6 +2460,48 @@
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div id="admin-sub-tampilan" class="admin-sub-content hidden space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800 pb-4">
+            <div>
+              <h3 class="text-xl font-black text-white">Tampilan &amp; Teks Web</h3>
+              <p class="text-xs text-slate-400 mt-1">
+                Ubah teks, tombol, dan bagian halaman publik tanpa membuka kode. Perubahan langsung tampil ke pengunjung.
+              </p>
+              <p id="cms-status-note" class="text-[11px] text-indigo-300 mt-2"></p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onclick="window.switchTab('home')"
+                class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2.5 rounded-xl text-xs border border-slate-700 transition cursor-pointer flex items-center gap-2"
+              >
+                <i class="fa-solid fa-eye"></i> Lihat Beranda
+              </button>
+              <button
+                type="button"
+                onclick="window.handleSaveTampilan()"
+                class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-600/30 transition cursor-pointer flex items-center gap-2"
+              >
+                <i class="fa-solid fa-floppy-disk"></i> Simpan Tampilan
+              </button>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Kolom teks yang sama dengan bawaan akan terus mengikuti bawaan (termasuk bawaan otomatis berdasarkan status pendaftaran).
+            Untuk mengosongkan sebuah teks, isi dengan tanda minus (-).
+          </p>
+          <div id="cms-admin-form" class="space-y-4"></div>
+          <div class="sticky bottom-4 flex justify-end pointer-events-none">
+            <button
+              type="button"
+              onclick="window.handleSaveTampilan()"
+              class="pointer-events-auto bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-6 py-3 rounded-xl text-xs shadow-xl shadow-slate-950/60 transition cursor-pointer flex items-center gap-2"
+            >
+              <i class="fa-solid fa-floppy-disk"></i> Simpan Tampilan
+            </button>
           </div>
         </div>
       </section>
@@ -3693,6 +3824,182 @@
         </div>
       </div>
     </div>
+    <!-- MODAL TAMBAH / EDIT PENGGUNA (MANAJEMEN USER) -->
+    <div
+      id="modal-user-editor"
+      class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto"
+      style="display: none"
+    >
+      <div class="glass-card max-w-lg w-full p-6 sm:p-8 rounded-3xl border border-indigo-500/30 relative space-y-5 shadow-2xl my-auto">
+        <button
+          type="button"
+          onclick="window.closeModal('modal-user-editor')"
+          class="absolute top-5 right-5 text-slate-400 hover:text-white cursor-pointer"
+        >
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+
+        <div class="space-y-1">
+          <h3 id="usr-modal-title" class="text-xl font-black text-white flex items-center gap-2">
+            <i class="fa-solid fa-user-gear text-indigo-400"></i> Kelola Pengguna
+          </h3>
+          <p class="text-xs text-slate-400">
+            Pilih Role dan Jabatan/Bidang yang tersedia atau ketik pilihan baru sesuai struktur organisasi.
+          </p>
+        </div>
+
+        <form
+          onsubmit="event.preventDefault(); window.handleSaveUserModal(); return false;"
+          class="space-y-4 text-xs"
+        >
+          <input type="hidden" id="usr-form-id" />
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label class="block font-bold text-slate-300 mb-1.5">Nama Lengkap*</label>
+              <input
+                type="text"
+                id="usr-form-nama"
+                required
+                placeholder="Contoh: M. Luqman Firdaus"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-white focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1.5">NPM / Username Login*</label>
+              <input
+                type="text"
+                id="usr-form-username"
+                required
+                placeholder="Contoh: 1411230105"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <!-- ROLE SELECTOR + CUSTOM INPUT -->
+          <div class="p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-slate-200">Role Pengguna*</label>
+              <button
+                type="button"
+                onclick="window.toggleUserModalCustom('role')"
+                id="usr-btn-toggle-role-custom"
+                class="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 cursor-pointer"
+              >
+                + Isi Role Sendiri
+              </button>
+            </div>
+            <select
+              id="usr-form-role-select"
+              onchange="window.onUserModalSelectChange('role')"
+              class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-white focus:outline-none"
+            ></select>
+            <div id="usr-form-role-custom-wrap" class="hidden space-y-1">
+              <input
+                type="text"
+                id="usr-form-role-custom"
+                placeholder="Ketik role baru, misal: Demisioner, Penasihat, Sekretaris..."
+                class="w-full bg-slate-950 border border-indigo-500/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none"
+              />
+              <p class="text-[10px] text-indigo-300/80">Role yang diketik akan langsung masuk ke daftar pilihan untuk pengguna lainnya.</p>
+            </div>
+          </div>
+
+          <!-- JABATAN / BIDANG SELECTOR + CUSTOM INPUT & QUICK BUILDER -->
+          <div class="p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-slate-200">Jabatan / Bidang*</label>
+              <button
+                type="button"
+                onclick="window.toggleUserModalCustom('jb')"
+                id="usr-btn-toggle-jb-custom"
+                class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 cursor-pointer"
+              >
+                + Isi Jabatan/Bidang Sendiri
+              </button>
+            </div>
+            <select
+              id="usr-form-jb-select"
+              onchange="window.onUserModalSelectChange('jb')"
+              class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-white focus:outline-none"
+            ></select>
+            <div id="usr-form-jb-custom-wrap" class="hidden space-y-2">
+              <input
+                type="text"
+                id="usr-form-jb-custom"
+                placeholder="Contoh: Ketua Umum / 3D Printing, Koordinator / Ergonomi..."
+                class="w-full bg-slate-950 border border-cyan-500/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none"
+              />
+              <div class="grid grid-cols-2 gap-2">
+                <select id="usr-quick-jab" onchange="window.composeQuickJabBid()" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-300">
+                  <option value="">-- Bantu Pilih Jabatan --</option>
+                  <option value="Ketua Umum">Ketua Umum</option>
+                  <option value="Wakil Ketua">Wakil Ketua</option>
+                  <option value="Sekretaris">Sekretaris</option>
+                  <option value="Bendahara">Bendahara</option>
+                  <option value="Koordinator">Koordinator</option>
+                  <option value="Anggota">Anggota</option>
+                  <option value="Pembimbing Praktikum">Pembimbing Praktikum</option>
+                  <option value="Demisioner">Demisioner</option>
+                </select>
+                <select id="usr-quick-bid" onchange="window.composeQuickJabBid()" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-300">
+                  <option value="">-- Bantu Pilih Bidang --</option>
+                  <option value="3D Printing">3D Printing</option>
+                  <option value="Bubut">Bubut</option>
+                  <option value="CNC">CNC</option>
+                  <option value="Fisika">Fisika</option>
+                  <option value="Ergonomi">Ergonomi</option>
+                  <option value="Statistika">Statistika</option>
+                  <option value="Algoritma">Algoritma</option>
+                  <option value="Manajemen Lab">Manajemen Lab</option>
+                </select>
+              </div>
+              <p class="text-[10px] text-cyan-300/80">Bebas ketik langsung atau gunakan perangkai cepat di atas. Otomatis tersimpan ke daftar pilihan.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label id="usr-form-pass-label" class="block font-bold text-slate-300 mb-1.5">Password Baru (Opsional)</label>
+              <input
+                type="text"
+                id="usr-form-password"
+                placeholder="Kosongkan jika tidak diubah"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-white font-mono focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-300 mb-1.5">Status Akun</label>
+              <select
+                id="usr-form-active"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-white focus:outline-none"
+              >
+                <option value="true">Aktif (Dapat Login)</option>
+                <option value="false">Nonaktif (Dibekukan)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-2 flex items-center justify-end gap-2.5">
+            <button
+              type="button"
+              onclick="window.closeModal('modal-user-editor')"
+              class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold cursor-pointer transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              id="usr-form-submit-btn"
+              class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer shadow-lg shadow-emerald-600/25 transition flex items-center gap-2"
+            >
+              <i class="fa-solid fa-floppy-disk"></i> Simpan Pengguna
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
     <!-- FOOTER RESMI INSTITUSI LABORATORIUM IELA UNIROW -->
     <footer class="bg-slate-950 text-slate-300 border-t border-slate-800 mt-16 text-xs relative">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -3737,7 +4044,7 @@
           <div class="space-y-3">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Tautan Akademik</h4>
             <ul class="space-y-2 text-slate-400 text-[11px]">
-              <li><a href="javascript:void(0)" onclick="window.switchTab('recruitment')" class="hover:text-white transition">Penerimaan Asisten Lab 2027</a></li>
+              <li><a href="javascript:void(0)" onclick="window.switchTab('recruitment')" class="hover:text-white transition" data-cms="FOOTER_LINK_RECRUIT">Penerimaan Asisten Lab {{PERIODE}}</a></li>
               <li><a href="javascript:void(0)" onclick="window.switchTab('pengumuman')" class="hover:text-white transition">Pengumuman Kelulusan Seleksi</a></li>
               <li><a href="javascript:void(0)" onclick="window.switchTab('profil'); setTimeout(function(){ var el = document.getElementById('aslab-grid-container'); if(el) el.scrollIntoView({behavior:'smooth'}); }, 100);" class="hover:text-white transition">Direktori 29 Asisten Laboratorium</a></li>
               <li><a href="javascript:void(0)" onclick="window.switchTab('berita')" class="hover:text-white transition">Panduan Keselamatan &amp; SOP K3</a></li>
@@ -3794,9 +4101,7 @@
         </div>
 
         <div class="pt-8 mt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500 text-[11px]">
-          <div>
-            &copy; 2027 Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban. Hak Cipta Dilindungi.
-          </div>
+          <div data-cms="FOOTER_COPYRIGHT">&copy; 2027 Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban. Hak Cipta Dilindungi.</div>
           <div class="flex items-center gap-4">
             <button
               type="button"
@@ -3953,7 +4258,7 @@
           "konten",
           "pengumuman",
           "user",
-          "pengaturan",
+          "pengaturan", "tampilan",
         ].forEach((k) => {
           const btn = document.getElementById("adm-btn-" + k);
           if (btn)
@@ -3963,6 +4268,15 @@
                 : "px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer";
         });
         
+        if (subTab === "tampilan") {
+        
+          window.renderCmsAdminForm();
+        
+        }
+        
+        if (subTab === "user" && typeof window.renderUsersTable === "function") {
+          window.renderUsersTable();
+        }
         if (subTab === "wawancara") {
           window.renderInterviewQueue();
         }
@@ -4073,6 +4387,40 @@
                   }
                 });
               }
+            }
+          } catch (e) {}
+          try {
+            var localUsersRaw = localStorage.getItem("IELA_USERS_OVERRIDE");
+            if (localUsersRaw) {
+              var parsedUsers = JSON.parse(localUsersRaw);
+              if (Array.isArray(parsedUsers) && parsedUsers.length > 0) {
+                window.appState.data.users = parsedUsers;
+              }
+            }
+            if ((!window.appState.data.users || window.appState.data.users.length === 0) && Array.isArray(window.defaultAslabList)) {
+              var seeded = [{
+                User_ID: "USR-001",
+                Username_NIM: "admin",
+                Nama_Lengkap: "Koordinator Utama IELA",
+                Role: "Admin",
+                Status_Aktif: true,
+                Bidang_Divisi: "Manajemen Lab",
+                Jabatan_Divisi: "Koordinator Utama",
+                Jabatan_Bidang: "Koordinator Utama / Manajemen Lab"
+              }];
+              window.defaultAslabList.forEach(function (a, idx) {
+                seeded.push({
+                  User_ID: "USR-" + (100 + idx),
+                  Username_NIM: a.npm,
+                  Nama_Lengkap: a.nama,
+                  Role: "Anggota",
+                  Status_Aktif: true,
+                  Bidang_Divisi: a.bidang,
+                  Jabatan_Divisi: a.jabatan,
+                  Jabatan_Bidang: ""
+                });
+              });
+              window.appState.data.users = seeded;
             }
           } catch (e) {}
           setTimeout(function () {
@@ -4497,7 +4845,7 @@
               '</div>' +
               '<div class="space-y-2">' +
                 '<span class="text-xs font-bold uppercase tracking-wider text-rose-400">Status Pendaftaran Periode Ini</span>' +
-                '<h3 class="text-2xl font-black text-white">Pendaftaran Calon Asisten Sedang Ditutup</h3>' +
+                '<h3 class="text-2xl font-black text-white">' + window.cmsText("RECRUIT_CLOSED_TITLE") + '</h3>' +
                 '<p class="text-slate-300 text-sm max-w-2xl leading-relaxed whitespace-pre-line">' + pesanTutup + '</p>' +
               '</div>' +
             '</div>' +
@@ -4518,9 +4866,9 @@
           cardEl.innerHTML = '<div class="glass-card p-6 sm:p-8 rounded-3xl border border-indigo-500/30 bg-gradient-to-br from-slate-900 via-indigo-950/20 to-slate-900 space-y-6">' +
             '<div class="space-y-2">' +
               '<span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Penerimaan Calon Asisten Baru</span>' +
-              '<h3 class="text-2xl font-black text-white">Bergabunglah Bersama Tim Asisten IELA</h3>' +
+              '<h3 class="text-2xl font-black text-white">' + window.cmsText("RECRUIT_OPEN_TITLE") + '</h3>' +
               '<p class="text-slate-300 text-sm max-w-2xl leading-relaxed">' +
-                'Kembangkan kemampuan kepemimpinan, praktikum laboratorium, riset industri manufaktur, dan pengalaman organisasi akademik bersama Laboratorium IELA UNIROW.' +
+                window.cmsText("RECRUIT_OPEN_DESC") +
               '</p>' +
             '</div>' +
             '<div class="flex flex-wrap items-center gap-4 pt-1">' +
@@ -4536,7 +4884,7 @@
       };
 
       window.initScrollReveal = function () {
-        const elements = document.querySelectorAll(".reveal, .reveal-scale, .reveal-fade");
+        const elements = document.querySelectorAll(".reveal, .reveal-scale, .reveal-fade, .stagger-in");
         if (!("IntersectionObserver" in window)) {
           elements.forEach(function (el) { el.classList.add("is-revealed"); });
           return;
@@ -4560,7 +4908,452 @@
         });
       };
 
+      /* =========================================================================
+         CMS TAMPILAN WEB
+         Teks, tombol, dan bagian halaman publik yang bisa diatur admin dari
+         Dashboard > tab "Tampilan Web". Disimpan di sheet PENGATURAN (Key/Value).
+         Aturan: nilai kosong / tidak ada di sheet = pakai bawaan (default).
+         Cara menambah teks baru yang bisa diedit:
+           1) beri atribut data-cms="NAMA_KEY" pada elemen teks di HTML,
+           2) (opsional) daftarkan label & grupnya di window.CMS_FIELDS di bawah.
+         ========================================================================= */
+      window.CMS_ACTIONS = [
+        { v: "recruitment", l: "Buka halaman Recruitment", icon: "fa-user-plus" },
+        { v: "register", l: "Buka form buat akun pendaftar", icon: "fa-user-plus" },
+        { v: "pengumuman", l: "Buka halaman Pengumuman", icon: "fa-bullhorn" },
+        { v: "profil", l: "Buka halaman Profil Lab", icon: "fa-circle-info" },
+        { v: "galeri", l: "Buka halaman Galeri", icon: "fa-images" },
+        { v: "berita", l: "Buka halaman Berita", icon: "fa-newspaper" },
+        { v: "publikasi", l: "Buka daftar Publikasi", icon: "fa-book-open" },
+        { v: "login", l: "Buka form Login Portal", icon: "fa-right-to-bracket" },
+        { v: "url", l: "Buka tautan luar (isi kolom URL)", icon: "fa-arrow-up-right-from-square" }
+      ];
+
+      /* def bisa berupa teks, atau fungsi(status) agar bawaannya mengikuti status pendaftaran.
+         Jika def tidak ditulis, bawaannya diambil dari teks asli di HTML. */
+      window.CMS_FIELDS = [
+        {
+          id: "umum", icon: "fa-id-badge", title: "Identitas & Periode",
+          desc: "Nama situs dan periode aktif. Tulis {{PERIODE}} di teks mana pun agar otomatis diganti periode aktif.",
+          items: [
+            { key: "ACTIVE_PERIODE", type: "text", label: "Periode aktif", def: "2027-2028", hint: "Ganti sekali di sini tiap pergantian periode. Semua teks yang memuat {{PERIODE}} ikut berubah." },
+            { key: "BRAND_NAME", type: "text", label: "Nama di navbar" },
+            { key: "BRAND_TAGLINE", type: "text", label: "Keterangan kecil di navbar" },
+            { key: "FOOTER_LINK_RECRUIT", type: "text", label: "Tautan rekrutmen di footer" },
+            { key: "FOOTER_COPYRIGHT", type: "area", label: "Teks hak cipta footer", wide: true }
+          ]
+        },
+        {
+          id: "hero", icon: "fa-star", title: "Beranda: Hero Utama",
+          desc: "Lencana, judul besar, deskripsi, dan dua tombol aksi di bagian paling atas beranda.",
+          items: [
+            { key: "HERO_BADGE_SHOW", type: "toggle", label: "Tampilkan lencana di atas judul", def: function (st) { return st === "TUTUP" ? "0" : "1"; }, hint: "Otomatis: tampil saat pendaftaran dibuka, tersembunyi saat ditutup." },
+            { key: "HERO_BADGE_TEXT", type: "text", label: "Teks lencana", wide: true },
+            { key: "HERO_TITLE_PRE", type: "text", label: "Judul: bagian awal" },
+            { key: "HERO_TITLE_ACCENT", type: "text", label: "Judul: bagian berwarna" },
+            { key: "HERO_TITLE_POST", type: "text", label: "Judul: bagian akhir", hint: "Isi tanda minus (-) untuk mengosongkan bagian ini." },
+            { key: "HERO_SUBTITLE", type: "area", label: "Deskripsi di bawah judul", wide: true },
+            { key: "HERO_CTA1_SHOW", type: "toggle", label: "Tampilkan tombol utama", def: "1" },
+            { key: "HERO_CTA1_TEXT", type: "text", label: "Tombol utama: teks", def: function (st) { return st === "TUTUP" ? "Lihat Pengumuman Seleksi" : "Daftar Asisten Sekarang"; }, hint: "Otomatis berubah mengikuti status pendaftaran selama tidak diubah manual." },
+            { key: "HERO_CTA1_ACTION", type: "select", label: "Tombol utama: tujuan", def: function (st) { return st === "TUTUP" ? "pengumuman" : "recruitment"; } },
+            { key: "HERO_CTA1_URL", type: "text", label: "Tombol utama: URL (jika tujuan tautan luar)", def: "", placeholder: "https://..." },
+            { key: "HERO_CTA2_SHOW", type: "toggle", label: "Tampilkan tombol kedua", def: "1" },
+            { key: "HERO_CTA2_TEXT", type: "text", label: "Tombol kedua: teks", def: "Pelajari Profil" },
+            { key: "HERO_CTA2_ACTION", type: "select", label: "Tombol kedua: tujuan", def: "profil" },
+            { key: "HERO_CTA2_URL", type: "text", label: "Tombol kedua: URL (jika tujuan tautan luar)", def: "", placeholder: "https://..." }
+          ]
+        },
+        {
+          id: "stat", icon: "fa-chart-simple", title: "Beranda: Statistik, Visi & Misi",
+          desc: "Angka ringkas, visi, dan misi laboratorium.",
+          items: [
+            { key: "SHOW_HOME_STATS", type: "toggle", label: "Tampilkan baris statistik", def: "1" },
+            { key: "STAT_1_VALUE", type: "text", label: "Statistik 1: angka" },
+            { key: "STAT_1_LABEL", type: "text", label: "Statistik 1: keterangan" },
+            { key: "STAT_2_VALUE", type: "text", label: "Statistik 2: angka" },
+            { key: "STAT_2_LABEL", type: "text", label: "Statistik 2: keterangan" },
+            { key: "STAT_3_VALUE", type: "text", label: "Statistik 3: angka" },
+            { key: "STAT_3_LABEL", type: "text", label: "Statistik 3: keterangan" },
+            { key: "SHOW_HOME_VISIMISI", type: "toggle", label: "Tampilkan Visi & Misi", def: "1" },
+            { key: "VISI_TITLE", type: "text", label: "Judul visi" },
+            { key: "MISI_TITLE", type: "text", label: "Judul misi" },
+            { key: "VISI_TEXT", type: "area", label: "Isi visi", wide: true },
+            { key: "MISI_1", type: "area", label: "Misi 1", wide: true },
+            { key: "MISI_2", type: "area", label: "Misi 2", wide: true },
+            { key: "MISI_3", type: "area", label: "Misi 3", wide: true }
+          ]
+        },
+        {
+          id: "showcase", icon: "fa-table-cells-large", title: "Beranda: Seksi Sub-Lab, Galeri & Berita",
+          desc: "Judul dan tombol tiap seksi di beranda, serta menampilkan atau menyembunyikannya.",
+          items: [
+            { key: "SHOW_HOME_SUBLABS", type: "toggle", label: "Tampilkan seksi Sub-Laboratorium", def: "1" },
+            { key: "SUBLABS_EYEBROW", type: "text", label: "Sub-Lab: label kecil" },
+            { key: "SUBLABS_TITLE", type: "text", label: "Sub-Lab: judul" },
+            { key: "SUBLABS_LINK", type: "text", label: "Sub-Lab: teks tautan", wide: true },
+            { key: "SHOW_HOME_GALERI", type: "toggle", label: "Tampilkan seksi Galeri", def: "1" },
+            { key: "GALERI_EYEBROW", type: "text", label: "Galeri: label kecil" },
+            { key: "HOME_GALERI_TITLE", type: "text", label: "Galeri: judul" },
+            { key: "GALERI_LINK", type: "text", label: "Galeri: teks tautan", wide: true },
+            { key: "SHOW_HOME_BERITA", type: "toggle", label: "Tampilkan seksi Berita", def: "1" },
+            { key: "BERITA_EYEBROW", type: "text", label: "Berita: label kecil" },
+            { key: "HOME_BERITA_TITLE", type: "text", label: "Berita: judul" },
+            { key: "BERITA_LINK", type: "text", label: "Berita: teks tautan", wide: true }
+          ]
+        },
+        {
+          id: "nav", icon: "fa-bars", title: "Menu Navigasi",
+          desc: "Sembunyikan menu yang tidak diperlukan (misalnya Recruitment di luar musim seleksi) atau ganti namanya.",
+          items: [
+            { key: "NAV_SHOW_RECRUITMENT", type: "toggle", label: "Tampilkan menu Recruitment", def: "1" },
+            { key: "NAV_LABEL_RECRUITMENT", type: "text", label: "Nama menu Recruitment" },
+            { key: "NAV_SHOW_PENGUMUMAN", type: "toggle", label: "Tampilkan menu Pengumuman", def: "1" },
+            { key: "NAV_LABEL_PENGUMUMAN", type: "text", label: "Nama menu Pengumuman" }
+          ]
+        },
+        {
+          id: "halaman", icon: "fa-file-lines", title: "Judul Halaman",
+          desc: "Judul dan subjudul tiap halaman, termasuk teks kartu Recruitment.",
+          items: [
+            { key: "PROFIL_TITLE", type: "text", label: "Profil: judul" },
+            { key: "PROFIL_SUBTITLE", type: "text", label: "Profil: subjudul" },
+            { key: "GALERI_TITLE", type: "text", label: "Galeri: judul" },
+            { key: "GALERI_SUBTITLE", type: "text", label: "Galeri: subjudul" },
+            { key: "BERITA_TITLE", type: "text", label: "Berita: judul" },
+            { key: "BERITA_SUBTITLE", type: "text", label: "Berita: subjudul" },
+            { key: "RECRUIT_TITLE", type: "text", label: "Recruitment: judul" },
+            { key: "RECRUIT_SUBTITLE", type: "text", label: "Recruitment: subjudul" },
+            { key: "RECRUIT_OPEN_TITLE", type: "text", label: "Kartu saat pendaftaran dibuka: judul", def: "Bergabunglah Bersama Tim Asisten IELA" },
+            { key: "RECRUIT_CLOSED_TITLE", type: "text", label: "Kartu saat pendaftaran ditutup: judul", def: "Pendaftaran Calon Asisten Sedang Ditutup", hint: "Isi pesan penutupan ada di tab Pengaturan." },
+            { key: "RECRUIT_OPEN_DESC", type: "area", label: "Kartu saat pendaftaran dibuka: deskripsi", wide: true, def: "Kembangkan kemampuan kepemimpinan, praktikum laboratorium, riset industri manufaktur, dan pengalaman organisasi akademik bersama Laboratorium IELA UNIROW." },
+            { key: "PENGUMUMAN_TITLE", type: "text", label: "Pengumuman: judul" },
+            { key: "PENGUMUMAN_SUBTITLE", type: "text", label: "Pengumuman: subjudul" }
+          ]
+        }
+      ];
+
+      window.cmsField = function (key) {
+        if (!window._cmsIndex) {
+          window._cmsIndex = {};
+          window.CMS_FIELDS.forEach(function (g) {
+            g.items.forEach(function (it) { window._cmsIndex[it.key] = it; });
+          });
+        }
+        return window._cmsIndex[key] || null;
+      };
+
+      window.cmsEsc = function (s) {
+        return String(s === undefined || s === null ? "" : s)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      };
+
+      window.cmsStatus = function () {
+        return String(window.getPengaturanVal("STATUS_PENDAFTARAN", "BUKA")).trim().toUpperCase();
+      };
+
+      window.cmsIsOn = function (v) {
+        return !/^(0|false|off|no|tidak|hide|sembunyi)$/i.test(String(v).trim());
+      };
+
+      /* Bawaan teks diambil dari HTML asli, sekali saja, sebelum ada yang ditimpa. */
+      window.cmsDomDefaults = {};
+      window.cmsCaptureDefaults = function () {
+        document.querySelectorAll("[data-cms]").forEach(function (el) {
+          var k = el.getAttribute("data-cms");
+          if (!(k in window.cmsDomDefaults)) {
+            window.cmsDomDefaults[k] = el.textContent.replace(/\s+/g, " ").trim();
+          }
+        });
+      };
+
+      window.cmsDefault = function (key) {
+        var f = window.cmsField(key);
+        if (f && f.def !== undefined) {
+          return typeof f.def === "function" ? f.def(window.cmsStatus()) : f.def;
+        }
+        return window.cmsDomDefaults[key] !== undefined ? window.cmsDomDefaults[key] : "";
+      };
+
+      window.cmsVal = function (key) {
+        return window.getPengaturanVal(key, window.cmsDefault(key));
+      };
+
+      window.cmsStoredRaw = function (key) {
+        var list = window.appState.data.pengaturan || [];
+        var f = list.find(function (p) { return String(p.Key_Name || p.key || "").trim() === key; });
+        return f && f.Value_Text !== undefined && f.Value_Text !== null ? String(f.Value_Text) : "";
+      };
+
+      window.cmsFill = function (s) {
+        var periode = window.getPengaturanVal("ACTIVE_PERIODE", "2027-2028");
+        var out = String(s).replace(/\{\{PERIODE\}\}/g, periode);
+        return out.trim() === "-" ? "" : out;
+      };
+
+      /* Teks siap pakai di dalam template innerHTML (sudah di-escape). */
+      window.cmsText = function (key) {
+        return window.cmsEsc(window.cmsFill(window.cmsVal(key)));
+      };
+
+      window.cmsRunAction = function (action, url) {
+        var allowed = window.CMS_ACTIONS.some(function (a) { return a.v === action; });
+        if (!allowed) return;
+        if (action === "register") { window.openModal("modal-register"); return; }
+        if (action === "login") { window.openModal("modal-login"); return; }
+        if (action === "publikasi") {
+          window.switchTab("profil");
+          if (typeof window.switchProfilSubTab === "function") window.switchProfilSubTab("publikasi");
+          return;
+        }
+        if (action === "url") {
+          var u = String(url || "").trim();
+          if (!/^https?:\/\//i.test(u)) { window.showToast("Tautan tombol belum diisi dengan benar."); return; }
+          window.open(u, "_blank", "noopener,noreferrer");
+          return;
+        }
+        window.switchTab(action);
+      };
+
+      window.cmsApplyHeroCtas = function () {
+        [1, 2].forEach(function (n) {
+          var btn = document.getElementById("hero-cta-" + n);
+          if (!btn) return;
+          var action = window.cmsVal("HERO_CTA" + n + "_ACTION");
+          if (!window.CMS_ACTIONS.some(function (a) { return a.v === action; })) {
+            action = window.cmsDefault("HERO_CTA" + n + "_ACTION");
+          }
+          var url = window.cmsVal("HERO_CTA" + n + "_URL");
+          var meta = window.CMS_ACTIONS.find(function (a) { return a.v === action; });
+          var icon = btn.querySelector("i");
+          if (icon && meta) icon.className = "fa-solid " + meta.icon;
+          btn.onclick = function () { window.cmsRunAction(action, url); };
+        });
+        var row = document.getElementById("hero-cta-row");
+        if (row) {
+          var any = [1, 2].some(function (n) {
+            var b = document.getElementById("hero-cta-" + n);
+            return b && !b.classList.contains("cms-hidden");
+          });
+          row.classList.toggle("cms-hidden", !any);
+        }
+      };
+
+      /* Menerapkan semua pengaturan ke halaman publik. Aman dipanggil berulang. */
+      window.applyCms = function () {
+        window.cmsCaptureDefaults();
+        document.querySelectorAll("[data-cms]").forEach(function (el) {
+          var v = window.cmsFill(window.cmsVal(el.getAttribute("data-cms")));
+          if (el.textContent !== v) el.textContent = v;
+        });
+        document.querySelectorAll("[data-periode-tpl]").forEach(function (el) {
+          if (!el.dataset.tpl) el.dataset.tpl = el.textContent;
+          var t = window.cmsFill(el.dataset.tpl);
+          if (el.textContent !== t) el.textContent = t;
+        });
+        document.querySelectorAll("[data-cms-show]").forEach(function (el) {
+          var on = window.cmsIsOn(window.cmsVal(el.getAttribute("data-cms-show")));
+          el.classList.toggle("cms-hidden", !on);
+        });
+        window.cmsApplyHeroCtas();
+        document.title = "IELA WebApp - Profil & Recruitment Portal " + window.getPengaturanVal("ACTIVE_PERIODE", "2027-2028");
+        if (typeof window.initCountUp === "function") window.initCountUp();
+      };
+
+      /* ---------- Panel admin: tab "Tampilan Web" ---------- */
+      window.renderCmsAdminForm = function () {
+        var box = document.getElementById("cms-admin-form");
+        if (!box) return;
+        var openIds = {};
+        box.querySelectorAll("details[data-gid]").forEach(function (d) { if (d.open) openIds[d.getAttribute("data-gid")] = true; });
+        var firstRender = box.children.length === 0;
+        var inputCls = "w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-xs focus:border-indigo-500 focus:outline-none";
+
+        var fieldHtml = function (it) {
+          var val = window.cmsVal(it.key);
+          var id = "cms-f-" + it.key;
+          var attrs = ' id="' + id + '" data-cms-field="' + it.key + '" data-type="' + it.type + '"';
+          var hint = it.hint ? '<p class="text-[10px] text-slate-500 mt-1 leading-relaxed">' + window.cmsEsc(it.hint) + "</p>" : "";
+          if (it.type === "toggle") {
+            return '<div class="md:col-span-2 flex items-center justify-between gap-4 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3">' +
+              '<div class="min-w-0"><label for="' + id + '" class="block text-xs font-bold text-slate-200">' + window.cmsEsc(it.label) + "</label>" + hint + "</div>" +
+              '<label class="relative inline-flex items-center cursor-pointer shrink-0">' +
+              '<input type="checkbox" class="sr-only peer"' + attrs + (window.cmsIsOn(val) ? " checked" : "") + ">" +
+              '<span class="w-11 h-6 bg-slate-700 rounded-full peer-checked:bg-emerald-600 transition peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400 after:content-[\'\'] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:transition-all peer-checked:after:translate-x-5"></span>' +
+              "</label></div>";
+          }
+          var wrap = '<div class="' + (it.wide || it.type === "area" ? "md:col-span-2" : "") + '">' +
+            '<label for="' + id + '" class="block text-xs font-bold text-slate-300 mb-1.5">' + window.cmsEsc(it.label) + "</label>";
+          if (it.type === "select") {
+            return wrap + "<select" + attrs + ' class="' + inputCls + '">' +
+              window.CMS_ACTIONS.map(function (a) {
+                return '<option value="' + a.v + '"' + (a.v === val ? " selected" : "") + ">" + window.cmsEsc(a.l) + "</option>";
+              }).join("") + "</select>" + hint + "</div>";
+          }
+          if (it.type === "area") {
+            return wrap + "<textarea" + attrs + ' rows="3" class="' + inputCls + ' leading-relaxed">' + window.cmsEsc(val) + "</textarea>" + hint + "</div>";
+          }
+          return wrap + '<input type="text"' + attrs + ' value="' + window.cmsEsc(val) + '"' +
+            (it.placeholder ? ' placeholder="' + window.cmsEsc(it.placeholder) + '"' : "") + ' class="' + inputCls + '">' + hint + "</div>";
+        };
+
+        box.innerHTML = window.CMS_FIELDS.map(function (g) {
+          var isOpen = firstRender ? g.id === "hero" : !!openIds[g.id];
+          return '<details data-gid="' + g.id + '" class="group glass-card rounded-3xl border border-slate-800"' + (isOpen ? " open" : "") + ">" +
+            '<summary class="list-none cursor-pointer select-none p-5 sm:p-6 flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">' +
+            '<div class="flex items-center gap-3 min-w-0">' +
+            '<div class="w-10 h-10 shrink-0 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400"><i class="fa-solid ' + g.icon + '"></i></div>' +
+            '<div class="min-w-0"><h4 class="text-sm font-bold text-white">' + window.cmsEsc(g.title) + '</h4><p class="text-[11px] text-slate-400">' + window.cmsEsc(g.desc) + "</p></div></div>" +
+            '<i class="fa-solid fa-chevron-down text-slate-500 transition-transform group-open:rotate-180"></i></summary>' +
+            '<div class="px-5 sm:px-6 pb-6 space-y-4">' +
+            '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' + g.items.map(fieldHtml).join("") + "</div>" +
+            '<button type="button" onclick="window.cmsResetGroup(\'' + g.id + '\')" class="text-[11px] font-bold text-slate-400 hover:text-white transition cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-rotate-left"></i> Kembalikan bawaan grup ini</button>' +
+            "</div></details>";
+        }).join("");
+
+        var ind = document.getElementById("cms-status-note");
+        if (ind) {
+          ind.textContent = window.cmsStatus() === "TUTUP"
+            ? "Status pendaftaran saat ini: DITUTUP. Bawaan hero menyesuaikan diri (lencana disembunyikan, tombol utama menuju pengumuman)."
+            : "Status pendaftaran saat ini: DIBUKA. Bawaan hero menampilkan lencana dan tombol pendaftaran.";
+        }
+      };
+
+      window.cmsResetGroup = function (gid) {
+        var g = window.CMS_FIELDS.find(function (x) { return x.id === gid; });
+        if (!g) return;
+        g.items.forEach(function (it) {
+          var el = document.getElementById("cms-f-" + it.key);
+          if (!el) return;
+          var def = window.cmsDefault(it.key);
+          if (it.type === "toggle") el.checked = window.cmsIsOn(def);
+          else el.value = def;
+        });
+        window.showToast("Isi grup dikembalikan ke bawaan. Klik Simpan Tampilan untuk menerapkan.");
+      };
+
+      window.cmsApplyLocal = function (payload) {
+        var list = window.appState.data.pengaturan = window.appState.data.pengaturan || [];
+        Object.keys(payload).forEach(function (k) {
+          var item = list.find(function (x) { return String(x.Key_Name || "").trim() === k; });
+          if (item) item.Value_Text = payload[k];
+          else list.push({ Key_Name: k, Value_Text: payload[k] });
+        });
+      };
+
+      window.handleSaveTampilan = function () {
+        var payload = {};
+        var count = 0;
+        document.querySelectorAll("[data-cms-field]").forEach(function (inp) {
+          var key = inp.getAttribute("data-cms-field");
+          var val = inp.getAttribute("data-type") === "toggle" ? (inp.checked ? "1" : "0") : String(inp.value).trim();
+          /* Sama dengan bawaan = kosongkan, supaya tetap mengikuti bawaan/otomatis. */
+          var store = val === String(window.cmsDefault(key)) ? "" : val;
+          if (store !== window.cmsStoredRaw(key)) {
+            payload[key] = store;
+            count++;
+          }
+        });
+        if (!count) { window.showToast("Tidak ada perubahan untuk disimpan."); return; }
+
+        var applyAll = function () {
+          window.cmsApplyLocal(payload);
+          try { window.applyCms(); } catch (e) { console.error(e); }
+          try { window.renderRecruitmentStatus(); } catch (e) { console.error(e); }
+        };
+        window.showLoading(true, "Menyimpan tampilan web...");
+        if (window.checkIsGAS()) {
+          google.script.run
+            .withSuccessHandler(function (res) {
+              window.showLoading(false);
+              if (res && res.success) {
+                applyAll();
+                window.showToast(res.message || "Tampilan web berhasil disimpan!");
+              } else {
+                window.showToast("Gagal: " + (res ? res.message : "Error"));
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showLoading(false);
+              window.showToast("Error: " + err.toString());
+            })
+            .saveCmsSettings(payload);
+        } else {
+          setTimeout(function () {
+            window.showLoading(false);
+            applyAll();
+            try { localStorage.setItem("IELA_PENGATURAN_OVERRIDE", JSON.stringify(window.appState.data.pengaturan)); } catch (e) {}
+            window.showToast("Tampilan web disimpan! (Demo Mode)");
+          }, 300);
+        }
+      };
+
+      /* ---------- Efek visual halaman publik ---------- */
+      window.initHeroFx = function () {
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var fine = window.matchMedia && window.matchMedia("(pointer: fine)").matches;
+        var stage = document.getElementById("hero-stage");
+        if (stage && !reduce && fine) {
+          var raf = 0;
+          stage.addEventListener("pointermove", function (e) {
+            if (raf) return;
+            raf = requestAnimationFrame(function () {
+              raf = 0;
+              var r = stage.getBoundingClientRect();
+              stage.style.setProperty("--mx", (e.clientX - r.left) + "px");
+              stage.style.setProperty("--my", (e.clientY - r.top) + "px");
+            });
+          });
+        }
+        var bar = document.getElementById("scroll-progress");
+        if (bar) {
+          var ticking = false;
+          window.addEventListener("scroll", function () {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(function () {
+              var h = document.documentElement;
+              var max = h.scrollHeight - h.clientHeight;
+              bar.style.transform = "scaleX(" + (max > 0 ? Math.min(1, h.scrollTop / max) : 0) + ")";
+              ticking = false;
+            });
+          }, { passive: true });
+        }
+      };
+
+      window.initCountUp = function () {
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        document.querySelectorAll(".js-countup").forEach(function (el) {
+          if (el.dataset.cuInit) return;
+          el.dataset.cuInit = "1";
+          if (reduce || !("IntersectionObserver" in window)) return;
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (en) {
+              if (!en.isIntersecting) return;
+              io.disconnect();
+              var finalText = el.textContent.trim();
+              var m = /^(\D*?)(\d+)(\D.*|)$/.exec(finalText);
+              if (!m || /^[.,]\d/.test(m[3])) return;
+              var target = parseInt(m[2], 10);
+              if (!target) return;
+              var start = performance.now();
+              var dur = 900;
+              var tick = function (now) {
+                var p = Math.min(1, (now - start) / dur);
+                var eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = m[1] + Math.round(target * eased) + m[3];
+                if (p < 1) requestAnimationFrame(tick);
+                else el.textContent = finalText;
+              };
+              requestAnimationFrame(tick);
+            });
+          }, { threshold: 0.4 });
+          io.observe(el);
+        });
+      };
+
       window.renderAllViews = function () {
+        try { window.applyCms(); } catch (e) { console.error("applyCms error:", e); }
         window.renderHomeShowcase();
         window.renderProfilList();
         window.renderAslabDirectory();
@@ -5506,6 +6299,7 @@
             if (window.renderRecruitmentStatus) {
               window.renderRecruitmentStatus();
             }
+            if (window.applyCms) window.applyCms();
           }, 500);
         }
       };
@@ -5729,14 +6523,14 @@
           window.openModal("modal-login");
           return;
         }
-        const role = String(user.role).toLowerCase();
+        const role = String(user.role || "").trim().toLowerCase();
         if (role.includes("admin") || role.includes("koordinator")) {
           window.switchTab("admin");
-        } else if (role.includes("penguji") || role.includes("dosen") || role.includes("anggota")) {
-          window.switchTab("penguji");
-        } else {
+        } else if (!role || role.includes("pendaftar") || role.includes("calon") || role.includes("praktikan")) {
           window.switchTab("pendaftar");
           window.populatePendaftarForm(user);
+        } else {
+          window.switchTab("penguji");
         }
       };
       window.populatePendaftarForm = function (user) {
@@ -7227,50 +8021,743 @@
           .join("");
       };
 
-      window.renderUsersTable = function () {
-        const tb = document.getElementById("admin-users-table-body");
-        if (!tb) return;
-        const list = window.appState.data.users || [];
-        if (list.length === 0) {
-          tb.innerHTML =
-            '<tr><td colspan="7" class="p-4 text-center text-slate-500 italic">Belum ada data pengguna.</td></tr>';
+      /* ========================================================
+         MANAJEMEN PENGGUNA DINAMIS (ROLE & JABATAN/BIDANG KUSTOM)
+         ======================================================== */
+      window.DEFAULT_USER_ROLES = [
+        "Admin",
+        "Koordinator",
+        "Penguji",
+        "Asisten",
+        "Anggota",
+        "Dosen",
+        "Pendaftar"
+      ];
+
+      window.DEFAULT_JABATAN_BIDANG = [
+        "Koordinator Utama / Manajemen Lab",
+        "Ketua Umum / Manajemen Lab",
+        "Ketua Umum / 3D Printing",
+        "Sekretaris / Manajemen Lab",
+        "Bendahara / Manajemen Lab",
+        "Koordinator / 3D Printing",
+        "Anggota / 3D Printing",
+        "Koordinator / Bubut",
+        "Anggota / Bubut",
+        "Koordinator / CNC",
+        "Anggota / CNC",
+        "Koordinator / Fisika",
+        "Anggota / Fisika",
+        "Koordinator / Ergonomi",
+        "Anggota / Ergonomi",
+        "Koordinator / Statistika",
+        "Anggota / Statistika",
+        "Koordinator / Algoritma",
+        "Anggota / Algoritma",
+        "Penguji Wawancara",
+        "Pendaftar"
+      ];
+
+      window.userInlineEditState = {
+        userId: null,
+        field: null // 'role' atau 'jb'
+      };
+
+      window.escUserHtml = function (str) {
+        return String(str === null || str === undefined ? "" : str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      };
+
+      window.normalizeBidangShort = function (rawBidang) {
+        var b = String(rawBidang || "").trim();
+        if (!b || b === "-") return "";
+        if (/3d\s*printing/i.test(b)) return "3D Printing";
+        if (/bubut/i.test(b)) return "Bubut";
+        if (/cnc/i.test(b)) return "CNC";
+        return b.replace(/^\d+\.\s*/, "").trim();
+      };
+
+      window.getUserJabatanBidang = function (u) {
+        if (!u) return "-";
+        var explicit = String(u.Jabatan_Bidang || u.jabatanBidang || "").trim();
+        if (explicit) return explicit;
+        var jab = String(u.Jabatan_Divisi || u.jabatan || "").trim();
+        var bid = String(u.Bidang_Divisi || u.bidang || "").trim();
+        if (jab.toLowerCase() === "pendaftar" || String(u.Role || "").toLowerCase() === "pendaftar") {
+          return "Pendaftar";
+        }
+        var jabClean = jab.replace(/\s*Sub-Lab$/i, "").trim();
+        var bidClean = window.normalizeBidangShort(bid);
+        if (jabClean && bidClean && jabClean.toLowerCase() !== bidClean.toLowerCase()) {
+          return jabClean + " / " + bidClean;
+        }
+        return jabClean || bidClean || "-";
+      };
+
+      window.readStoredCustomOptions = function (pengaturanKey) {
+        var out = [];
+        var pList = (window.appState && window.appState.data && window.appState.data.pengaturan) || [];
+        var found = pList.find(function (x) {
+          return String(x.Key_Name || x.key || "").trim() === pengaturanKey;
+        });
+        if (found && found.Value_Text) {
+          var raw = String(found.Value_Text).trim();
+          if (raw) {
+            try {
+              var parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) out = out.concat(parsed);
+            } catch (e) {
+              out = out.concat(raw.split("||"));
+            }
+          }
+        }
+        try {
+          var localRaw = localStorage.getItem("IELA_OPT_" + pengaturanKey);
+          if (localRaw) {
+            var localArr = JSON.parse(localRaw);
+            if (Array.isArray(localArr)) out = out.concat(localArr);
+          }
+        } catch (e) {}
+        return out;
+      };
+
+      window.registerLocalCustomOption = function (pengaturanKey, newVal) {
+        var clean = String(newVal || "").trim();
+        if (!clean || clean === "-") return;
+        var current = window.readStoredCustomOptions(pengaturanKey);
+        var exists = current.some(function (x) {
+          return String(x || "").trim().toLowerCase() === clean.toLowerCase();
+        });
+        if (!exists) current.push(clean);
+        var serialized = JSON.stringify(current);
+        var pList = (window.appState && window.appState.data && window.appState.data.pengaturan) || [];
+        var idx = pList.findIndex(function (x) {
+          return String(x.Key_Name || x.key || "").trim() === pengaturanKey;
+        });
+        if (idx !== -1) {
+          pList[idx].Value_Text = serialized;
+        } else {
+          pList.push({ Key_Name: pengaturanKey, Value_Text: serialized });
+        }
+        try {
+          localStorage.setItem("IELA_OPT_" + pengaturanKey, serialized);
+        } catch (e) {}
+      };
+
+      window.mergeUniqueOptions = function (lists) {
+        var seen = {};
+        var merged = [];
+        lists.forEach(function (arr) {
+          (arr || []).forEach(function (item) {
+            var clean = String(item || "").trim();
+            if (!clean || clean === "-") return;
+            var key = clean.toLowerCase();
+            if (!seen[key]) {
+              seen[key] = true;
+              merged.push(clean);
+            }
+          });
+        });
+        return merged;
+      };
+
+      window.getUserRoleOptions = function () {
+        var fromUsers = (window.appState.data.users || []).map(function (u) {
+          return String(u.Role || "").trim();
+        });
+        var fromSaved = window.readStoredCustomOptions("USER_ROLE_OPTIONS");
+        return window.mergeUniqueOptions([window.DEFAULT_USER_ROLES, fromSaved, fromUsers]);
+      };
+
+      window.getJabatanBidangOptions = function () {
+        var fromUsers = (window.appState.data.users || []).map(function (u) {
+          return window.getUserJabatanBidang(u);
+        });
+        var fromSaved = window.readStoredCustomOptions("USER_JABATAN_BIDANG_OPTIONS");
+        return window.mergeUniqueOptions([window.DEFAULT_JABATAN_BIDANG, fromSaved, fromUsers]);
+      };
+
+      window.getRoleSelectStyle = function (roleStr) {
+        var r = String(roleStr || "").toLowerCase();
+        if (r.includes("admin") || r.includes("koordinator")) {
+          return "border-indigo-500/40 bg-indigo-950/40 text-indigo-200";
+        }
+        if (r.includes("penguji") || r.includes("dosen")) {
+          return "border-cyan-500/40 bg-cyan-950/40 text-cyan-200";
+        }
+        if (r.includes("demisioner") || r.includes("alumni")) {
+          return "border-amber-500/40 bg-amber-950/40 text-amber-200";
+        }
+        if (r.includes("pendaftar")) {
+          return "border-slate-700 bg-slate-900/80 text-slate-400";
+        }
+        return "border-emerald-500/35 bg-emerald-950/30 text-emerald-200";
+      };
+
+      window.syncUserManagementFilters = function () {
+        var roleFilter = document.getElementById("user-mgmt-role-filter");
+        if (roleFilter) {
+          var prevR = roleFilter.value || "all";
+          var roles = window.getUserRoleOptions();
+          roleFilter.innerHTML =
+            '<option value="all">Semua Role</option>' +
+            roles.map(function (r) {
+              return '<option value="' + window.escUserHtml(r) + '">' + window.escUserHtml(r) + "</option>";
+            }).join("");
+          if (prevR === "all" || roles.some(function (r) { return r === prevR; })) {
+            roleFilter.value = prevR;
+          }
+        }
+        var jbFilter = document.getElementById("user-mgmt-jb-filter");
+        if (jbFilter) {
+          var prevJ = jbFilter.value || "all";
+          var jbs = window.getJabatanBidangOptions();
+          jbFilter.innerHTML =
+            '<option value="all">Semua Jabatan / Bidang</option>' +
+            jbs.map(function (j) {
+              return '<option value="' + window.escUserHtml(j) + '">' + window.escUserHtml(j) + "</option>";
+            }).join("");
+          if (prevJ === "all" || jbs.some(function (j) { return j === prevJ; })) {
+            jbFilter.value = prevJ;
+          }
+        }
+      };
+
+      window.startInlineUserCustom = function (userId, field) {
+        window.userInlineEditState = { userId: String(userId), field: field };
+        window.renderUsersTable(true);
+        setTimeout(function () {
+          var inp = document.getElementById("inline-usr-input-" + field + "-" + userId);
+          if (inp) {
+            inp.focus();
+            inp.select();
+          }
+        }, 30);
+      };
+
+      window.cancelInlineUserCustom = function () {
+        window.userInlineEditState = { userId: null, field: null };
+        window.renderUsersTable(true);
+      };
+
+      window.onInlineUserKeyDown = function (ev, el) {
+        if (ev.key === "Enter") {
+          ev.preventDefault();
+          window.submitInlineUserCustom(el.dataset.uid, el.dataset.field);
+        } else if (ev.key === "Escape") {
+          window.cancelInlineUserCustom();
+        }
+      };
+
+      window.onInlineUserSelectChange = function (selectEl) {
+        var userId = selectEl.dataset.uid;
+        var field = selectEl.dataset.field;
+        var val = selectEl.value;
+        if (val === "__CUSTOM__") {
+          window.startInlineUserCustom(userId, field);
           return;
         }
+        window.quickSaveUserField(userId, field, val);
+      };
+
+      window.submitInlineUserCustom = function (userId, field) {
+        var inp = document.getElementById("inline-usr-input-" + field + "-" + userId);
+        if (!inp) return;
+        var val = String(inp.value || "").trim();
+        if (!val) {
+          window.showToast("Isian tidak boleh kosong.");
+          inp.focus();
+          return;
+        }
+        window.userInlineEditState = { userId: null, field: null };
+        window.quickSaveUserField(userId, field, val);
+      };
+
+      window.persistLocalUsersIfDemo = function () {
+        if (!window.checkIsGAS()) {
+          try {
+            localStorage.setItem("IELA_USERS_OVERRIDE", JSON.stringify(window.appState.data.users || []));
+          } catch (e) {}
+        }
+      };
+
+      window.applySavedUserToState = function (savedUser) {
+        if (!savedUser || !savedUser.User_ID) return;
+        var list = window.appState.data.users || [];
+        var idx = list.findIndex(function (u) {
+          return String(u.User_ID || "").trim() === String(savedUser.User_ID).trim();
+        });
+        if (idx !== -1) {
+          list[idx] = Object.assign({}, list[idx], savedUser);
+        } else {
+          list.unshift(savedUser);
+        }
+        if (savedUser.Role) window.registerLocalCustomOption("USER_ROLE_OPTIONS", savedUser.Role);
+        if (savedUser.Jabatan_Bidang) window.registerLocalCustomOption("USER_JABATAN_BIDANG_OPTIONS", savedUser.Jabatan_Bidang);
+
+        if (window.appState.currentUser && String(window.appState.currentUser.userId || "").trim() === String(savedUser.User_ID).trim()) {
+          window.appState.currentUser.nama = savedUser.Nama_Lengkap || window.appState.currentUser.nama;
+          window.appState.currentUser.role = savedUser.Role || window.appState.currentUser.role;
+          window.appState.currentUser.jabatanBidang = savedUser.Jabatan_Bidang || "";
+          window.updateUserUI();
+        }
+        window.persistLocalUsersIfDemo();
+        window.renderUsersTable();
+        if (typeof window.renderAslabDirectory === "function") window.renderAslabDirectory();
+      };
+
+      window.quickSaveUserField = function (userId, field, newValue) {
+        var list = window.appState.data.users || [];
+        var target = list.find(function (u) {
+          return String(u.User_ID || "").trim() === String(userId).trim();
+        });
+        if (!target) return;
+
+        var payload = { userId: String(userId).trim() };
+        if (field === "role") {
+          payload.role = String(newValue).trim();
+          window.registerLocalCustomOption("USER_ROLE_OPTIONS", payload.role);
+        } else if (field === "jb") {
+          payload.jabatanBidang = String(newValue).trim();
+          window.registerLocalCustomOption("USER_JABATAN_BIDANG_OPTIONS", payload.jabatanBidang);
+        } else if (field === "status") {
+          if (String(target.Username_NIM || "").toLowerCase() === "admin") {
+            window.showToast("Akun Administrator Utama selalu aktif.");
+            return;
+          }
+          payload.statusAktif = Boolean(newValue);
+        }
+
+        var optimistic = Object.assign({}, target);
+        if (payload.role !== undefined) optimistic.Role = payload.role;
+        if (payload.jabatanBidang !== undefined) {
+          optimistic.Jabatan_Bidang = payload.jabatanBidang;
+          if (payload.jabatanBidang.indexOf("/") !== -1) {
+            var sp = payload.jabatanBidang.split("/");
+            optimistic.Jabatan_Divisi = String(sp[0] || "").trim() || optimistic.Jabatan_Divisi;
+            optimistic.Bidang_Divisi = String(sp.slice(1).join("/") || "").trim() || optimistic.Bidang_Divisi;
+          } else {
+            optimistic.Jabatan_Divisi = payload.jabatanBidang;
+          }
+        }
+        if (payload.statusAktif !== undefined) optimistic.Status_Aktif = payload.statusAktif;
+        window.applySavedUserToState(optimistic);
+
+        if (window.checkIsGAS()) {
+          google.script.run
+            .withSuccessHandler(function (res) {
+              if (res && res.success) {
+                if (res.user) window.applySavedUserToState(res.user);
+                window.showToast(res.message || "Perubahan pengguna tersimpan.");
+              } else {
+                window.showToast("Gagal menyimpan: " + (res ? res.message : "Error"));
+                window.initData(true);
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showToast("Error Server: " + err.toString());
+              window.initData(true);
+            })
+            .saveOrUpdateUser(payload);
+        } else {
+          window.showToast(
+            field === "role"
+              ? ('Role "' + payload.role + '" disimpan & ditambahkan ke daftar pilihan.')
+              : field === "jb"
+              ? ('Jabatan/Bidang "' + payload.jabatanBidang + '" disimpan & ditambahkan ke daftar pilihan.')
+              : "Status pengguna diperbarui."
+          );
+        }
+      };
+
+      window.renderUsersTable = function (skipFilterSync) {
+        const tb = document.getElementById("admin-users-table-body");
+        if (!tb) return;
+        if (!skipFilterSync) window.syncUserManagementFilters();
+
+        const allUsers = window.appState.data.users || [];
+        const q = ((document.getElementById("user-mgmt-search") || {}).value || "").trim().toLowerCase();
+        const fRole = ((document.getElementById("user-mgmt-role-filter") || {}).value || "all");
+        const fJb = ((document.getElementById("user-mgmt-jb-filter") || {}).value || "all");
+
+        const roleOpts = window.getUserRoleOptions();
+        const jbOpts = window.getJabatanBidangOptions();
+
+        const list = allUsers.filter(function (x) {
+          var curRole = String(x.Role || "Anggota").trim();
+          var curJb = window.getUserJabatanBidang(x);
+          if (fRole !== "all" && curRole.toLowerCase() !== fRole.toLowerCase()) return false;
+          if (fJb !== "all" && curJb.toLowerCase() !== fJb.toLowerCase()) return false;
+          if (q) {
+            var hay = [x.User_ID, x.Username_NIM, x.Nama_Lengkap, curRole, curJb].join(" ").toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+
+        var countBadge = document.getElementById("user-mgmt-count-badge");
+        if (countBadge) {
+          countBadge.innerText = list.length === allUsers.length
+            ? (allUsers.length + " User")
+            : (list.length + " / " + allUsers.length + " User");
+        }
+
+        if (list.length === 0) {
+          tb.innerHTML =
+            '<tr><td colspan="7" class="p-6 text-center text-slate-500 italic">Tidak ada data pengguna yang cocok dengan filter.</td></tr>';
+          return;
+        }
+
         tb.innerHTML = list
           .map(function (x) {
+            var uid = String(x.User_ID || "").trim();
+            var uidEsc = window.escUserHtml(uid);
+            var uname = String(x.Username_NIM || "-").trim();
+            var isPrimaryAdmin = uname.toLowerCase() === "admin";
+            var curRole = String(x.Role || "Anggota").trim();
+            var curJb = window.getUserJabatanBidang(x);
             var isActive = String(x.Status_Aktif).toLowerCase() !== "false";
             var activeClass = isActive
-              ? "bg-emerald-500/20 text-emerald-400"
-              : "bg-red-500/20 text-red-400";
+              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"
+              : "bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30";
+
+            var isEditingRole = window.userInlineEditState.userId === uid && window.userInlineEditState.field === "role";
+            var roleCellHtml = "";
+            if (isEditingRole) {
+              roleCellHtml =
+                '<div class="flex items-center gap-1.5">' +
+                '<input type="text" id="inline-usr-input-role-' + uidEsc + '" data-uid="' + uidEsc + '" data-field="role" value="' + window.escUserHtml(curRole) + '" ' +
+                'placeholder="Contoh: Demisioner" onkeydown="window.onInlineUserKeyDown(event, this)" ' +
+                'class="w-36 bg-slate-950 border border-indigo-500 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none" />' +
+                '<button type="button" data-uid="' + uidEsc + '" data-field="role" onclick="window.submitInlineUserCustom(this.dataset.uid, this.dataset.field)" class="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs cursor-pointer" title="Simpan Role Baru"><i class="fa-solid fa-check"></i></button>' +
+                '<button type="button" onclick="window.cancelInlineUserCustom()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs cursor-pointer" title="Batal"><i class="fa-solid fa-xmark"></i></button>' +
+                '</div>';
+            } else {
+              var roleSelectList = window.mergeUniqueOptions([roleOpts, [curRole]]);
+              roleCellHtml =
+                '<div class="flex items-center gap-1.5">' +
+                '<select data-uid="' + uidEsc + '" data-field="role" onchange="window.onInlineUserSelectChange(this)" ' +
+                'class="w-full min-w-[145px] rounded-xl px-2.5 py-1.5 text-xs font-bold border focus:outline-none cursor-pointer ' + window.getRoleSelectStyle(curRole) + '">' +
+                roleSelectList.map(function (r) {
+                  var sel = r.toLowerCase() === curRole.toLowerCase() ? " selected" : "";
+                  return '<option value="' + window.escUserHtml(r) + '" class="bg-slate-900 text-white font-semibold"' + sel + '>' + window.escUserHtml(r) + '</option>';
+                }).join("") +
+                '<option value="__CUSTOM__" class="bg-slate-900 text-indigo-300 font-bold">+ Isi Role Baru...</option>' +
+                '</select>' +
+                '<button type="button" data-uid="' + uidEsc + '" data-field="role" onclick="window.startInlineUserCustom(this.dataset.uid, this.dataset.field)" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-indigo-300 text-[11px] cursor-pointer shrink-0" title="Ketik Role Sendiri"><i class="fa-solid fa-pen"></i></button>' +
+                '</div>';
+            }
+
+            var isEditingJb = window.userInlineEditState.userId === uid && window.userInlineEditState.field === "jb";
+            var jbCellHtml = "";
+            if (isEditingJb) {
+              jbCellHtml =
+                '<div class="flex items-center gap-1.5">' +
+                '<input type="text" id="inline-usr-input-jb-' + uidEsc + '" data-uid="' + uidEsc + '" data-field="jb" value="' + window.escUserHtml(curJb === "-" ? "" : curJb) + '" ' +
+                'placeholder="Contoh: Ketua Umum / 3D Printing" onkeydown="window.onInlineUserKeyDown(event, this)" ' +
+                'class="w-52 bg-slate-950 border border-cyan-500 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none" />' +
+                '<button type="button" data-uid="' + uidEsc + '" data-field="jb" onclick="window.submitInlineUserCustom(this.dataset.uid, this.dataset.field)" class="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs cursor-pointer" title="Simpan Jabatan/Bidang Baru"><i class="fa-solid fa-check"></i></button>' +
+                '<button type="button" onclick="window.cancelInlineUserCustom()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs cursor-pointer" title="Batal"><i class="fa-solid fa-xmark"></i></button>' +
+                '</div>';
+            } else {
+              var jbSelectList = window.mergeUniqueOptions([jbOpts, curJb && curJb !== "-" ? [curJb] : []]);
+              jbCellHtml =
+                '<div class="flex items-center gap-1.5">' +
+                '<select data-uid="' + uidEsc + '" data-field="jb" onchange="window.onInlineUserSelectChange(this)" ' +
+                'class="w-full min-w-[205px] rounded-xl px-2.5 py-1.5 text-xs font-semibold border border-slate-700/90 bg-slate-900/90 text-slate-200 focus:border-cyan-500 focus:outline-none cursor-pointer">' +
+                (curJb === "-" ? '<option value="-" class="bg-slate-900 text-slate-400" selected>- Pilih Jabatan / Bidang -</option>' : '') +
+                jbSelectList.map(function (j) {
+                  var sel = j.toLowerCase() === curJb.toLowerCase() ? " selected" : "";
+                  return '<option value="' + window.escUserHtml(j) + '" class="bg-slate-900 text-white"' + sel + '>' + window.escUserHtml(j) + '</option>';
+                }).join("") +
+                '<option value="__CUSTOM__" class="bg-slate-900 text-cyan-300 font-bold">+ Isi Jabatan/Bidang Baru...</option>' +
+                '</select>' +
+                '<button type="button" data-uid="' + uidEsc + '" data-field="jb" onclick="window.startInlineUserCustom(this.dataset.uid, this.dataset.field)" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-cyan-300 text-[11px] cursor-pointer shrink-0" title="Ketik Jabatan/Bidang Sendiri"><i class="fa-solid fa-pen"></i></button>' +
+                '</div>';
+            }
+
             return (
-              '<tr class="hover:bg-slate-800/40 border-b border-slate-800/60">' +
-              '<td class="p-4 font-mono text-xs text-slate-400">' +
-              (x.User_ID || "-") +
+              '<tr class="hover:bg-slate-800/40 border-b border-slate-800/60 transition">' +
+              '<td class="p-3.5 font-mono text-xs text-slate-400 whitespace-nowrap">' +
+              window.escUserHtml(uid || "-") +
               "</td>" +
-              '<td class="p-4 font-mono text-xs text-indigo-400 font-bold">' +
-              (x.Username_NIM || "-") +
+              '<td class="p-3.5 font-mono text-xs text-indigo-400 font-bold whitespace-nowrap">' +
+              window.escUserHtml(uname) +
               "</td>" +
-              '<td class="p-4 font-bold text-white text-sm">' +
-              (x.Nama_Lengkap || "-") +
+              '<td class="p-3.5 font-bold text-white text-xs sm:text-sm">' +
+              window.escUserHtml(x.Nama_Lengkap || "-") +
               "</td>" +
-              '<td class="p-4 text-xs text-slate-300">' +
-              (x.Role || "-") +
+              '<td class="p-3.5 text-xs">' +
+              roleCellHtml +
               "</td>" +
-              '<td class="p-4 text-xs text-slate-300">' +
-              (x.Bidang_Divisi || "-") +
+              '<td class="p-3.5 text-xs">' +
+              jbCellHtml +
               "</td>" +
-              '<td class="p-4 text-xs text-slate-300">' +
-              (x.Jabatan_Divisi || "-") +
-              "</td>" +
-              '<td class="p-4 text-center"><span class="px-2 py-0.5 text-[10px] font-bold rounded-md ' +
-              activeClass +
-              '">' +
+              '<td class="p-3.5 text-center whitespace-nowrap">' +
+              '<button type="button" data-uid="' + uidEsc + '" data-next="' + (!isActive) + '" onclick="window.quickSaveUserField(this.dataset.uid, \'status\', this.dataset.next === \'true\')" ' +
+              'class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition cursor-pointer ' + activeClass + '" title="Klik untuk ubah status aktif">' +
               (isActive ? "Aktif" : "Nonaktif") +
-              "</span></td>" +
+              "</button></td>" +
+              '<td class="p-3.5 text-center whitespace-nowrap">' +
+              '<button type="button" data-uid="' + uidEsc + '" onclick="window.openUserEditorModal(this.dataset.uid)" class="p-2 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/30 text-indigo-300 text-xs transition mr-1 cursor-pointer" title="Edit Lengkap / Reset Password"><i class="fa-solid fa-user-pen"></i></button>' +
+              (isPrimaryAdmin
+                ? ''
+                : '<button type="button" data-uid="' + uidEsc + '" onclick="window.handleDeleteUserAccount(this.dataset.uid)" class="p-2 rounded-lg bg-red-500/15 hover:bg-red-500/30 text-red-400 text-xs transition cursor-pointer" title="Hapus Pengguna"><i class="fa-solid fa-trash"></i></button>') +
+              "</td>" +
               "</tr>"
             );
           })
           .join("");
+      };
+
+      window.populateUserModalSelects = function (selectedRole, selectedJb) {
+        var rSel = document.getElementById("usr-form-role-select");
+        var jSel = document.getElementById("usr-form-jb-select");
+        var roles = window.mergeUniqueOptions([window.getUserRoleOptions(), selectedRole ? [selectedRole] : []]);
+        var jbs = window.mergeUniqueOptions([window.getJabatanBidangOptions(), selectedJb && selectedJb !== "-" ? [selectedJb] : []]);
+
+        if (rSel) {
+          rSel.innerHTML =
+            roles.map(function (r) {
+              var s = selectedRole && r.toLowerCase() === selectedRole.toLowerCase() ? " selected" : "";
+              return '<option value="' + window.escUserHtml(r) + '"' + s + '>' + window.escUserHtml(r) + '</option>';
+            }).join("") +
+            '<option value="__CUSTOM__">+ Isi / Ketik Role Sendiri...</option>';
+        }
+        if (jSel) {
+          jSel.innerHTML =
+            jbs.map(function (j) {
+              var s = selectedJb && j.toLowerCase() === selectedJb.toLowerCase() ? " selected" : "";
+              return '<option value="' + window.escUserHtml(j) + '"' + s + '>' + window.escUserHtml(j) + '</option>';
+            }).join("") +
+            '<option value="__CUSTOM__">+ Isi / Ketik Jabatan/Bidang Sendiri...</option>';
+        }
+      };
+
+      window.toggleUserModalCustom = function (which, forceShow) {
+        var isRole = which === "role";
+        var wrap = document.getElementById(isRole ? "usr-form-role-custom-wrap" : "usr-form-jb-custom-wrap");
+        var btn = document.getElementById(isRole ? "usr-btn-toggle-role-custom" : "usr-btn-toggle-jb-custom");
+        var sel = document.getElementById(isRole ? "usr-form-role-select" : "usr-form-jb-select");
+        var inp = document.getElementById(isRole ? "usr-form-role-custom" : "usr-form-jb-custom");
+        if (!wrap) return;
+        var show = forceShow !== undefined ? forceShow : wrap.classList.contains("hidden");
+        if (show) {
+          wrap.classList.remove("hidden");
+          if (sel) sel.value = "__CUSTOM__";
+          if (btn) btn.innerText = "Pilih dari Daftar";
+          if (inp) setTimeout(function () { inp.focus(); }, 30);
+        } else {
+          wrap.classList.add("hidden");
+          if (sel && sel.options.length > 1 && sel.value === "__CUSTOM__") sel.selectedIndex = 0;
+          if (btn) btn.innerText = isRole ? "+ Isi Role Sendiri" : "+ Isi Jabatan/Bidang Sendiri";
+        }
+      };
+
+      window.onUserModalSelectChange = function (which) {
+        var sel = document.getElementById(which === "role" ? "usr-form-role-select" : "usr-form-jb-select");
+        if (!sel) return;
+        window.toggleUserModalCustom(which, sel.value === "__CUSTOM__");
+      };
+
+      window.composeQuickJabBid = function () {
+        var j = (document.getElementById("usr-quick-jab") || {}).value || "";
+        var b = (document.getElementById("usr-quick-bid") || {}).value || "";
+        var inp = document.getElementById("usr-form-jb-custom");
+        if (!inp) return;
+        if (j && b) inp.value = j + " / " + b;
+        else if (j || b) inp.value = j || b;
+      };
+
+      window.openUserEditorModal = function (userId) {
+        var idEl = document.getElementById("usr-form-id");
+        var namaEl = document.getElementById("usr-form-nama");
+        var userEl = document.getElementById("usr-form-username");
+        var passEl = document.getElementById("usr-form-password");
+        var passLbl = document.getElementById("usr-form-pass-label");
+        var actEl = document.getElementById("usr-form-active");
+        var titleEl = document.getElementById("usr-modal-title");
+        var rCustom = document.getElementById("usr-form-role-custom");
+        var jCustom = document.getElementById("usr-form-jb-custom");
+        var qJab = document.getElementById("usr-quick-jab");
+        var qBid = document.getElementById("usr-quick-bid");
+
+        if (rCustom) rCustom.value = "";
+        if (jCustom) jCustom.value = "";
+        if (qJab) qJab.value = "";
+        if (qBid) qBid.value = "";
+        window.toggleUserModalCustom("role", false);
+        window.toggleUserModalCustom("jb", false);
+
+        var existing = null;
+        if (userId) {
+          existing = (window.appState.data.users || []).find(function (u) {
+            return String(u.User_ID || "").trim() === String(userId).trim();
+          });
+        }
+
+        if (existing) {
+          var curRole = String(existing.Role || "Anggota").trim();
+          var curJb = window.getUserJabatanBidang(existing);
+          if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-user-pen text-indigo-400"></i> Edit Pengguna: ' + window.escUserHtml(existing.Nama_Lengkap || "");
+          if (idEl) idEl.value = existing.User_ID;
+          if (namaEl) namaEl.value = existing.Nama_Lengkap || "";
+          if (userEl) userEl.value = existing.Username_NIM || "";
+          if (passEl) { passEl.value = ""; passEl.placeholder = "Kosongkan jika password tetap"; }
+          if (passLbl) passLbl.innerText = "Reset Password (Opsional)";
+          if (actEl) actEl.value = String(existing.Status_Aktif).toLowerCase() !== "false" ? "true" : "false";
+          window.populateUserModalSelects(curRole, curJb === "-" ? "Anggota / 3D Printing" : curJb);
+        } else {
+          if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-user-plus text-emerald-400"></i> Tambah Pengguna Baru';
+          if (idEl) idEl.value = "";
+          if (namaEl) namaEl.value = "";
+          if (userEl) userEl.value = "";
+          if (passEl) { passEl.value = "das12345"; passEl.placeholder = "Default: das12345"; }
+          if (passLbl) passLbl.innerText = "Password Login Awal";
+          if (actEl) actEl.value = "true";
+          window.populateUserModalSelects("Anggota", "Anggota / 3D Printing");
+        }
+
+        window.openModal("modal-user-editor");
+      };
+
+      window.handleSaveUserModal = function () {
+        var uid = String((document.getElementById("usr-form-id") || {}).value || "").trim();
+        var nama = String((document.getElementById("usr-form-nama") || {}).value || "").trim();
+        var username = String((document.getElementById("usr-form-username") || {}).value || "").trim();
+        var newPassword = String((document.getElementById("usr-form-password") || {}).value || "").trim();
+        var statusAktif = ((document.getElementById("usr-form-active") || {}).value || "true") === "true";
+
+        var roleSel = document.getElementById("usr-form-role-select");
+        var roleWrap = document.getElementById("usr-form-role-custom-wrap");
+        var roleVal = (!roleWrap.classList.contains("hidden") || (roleSel && roleSel.value === "__CUSTOM__"))
+          ? String((document.getElementById("usr-form-role-custom") || {}).value || "").trim()
+          : String((roleSel || {}).value || "").trim();
+
+        var jbSel = document.getElementById("usr-form-jb-select");
+        var jbWrap = document.getElementById("usr-form-jb-custom-wrap");
+        var jbVal = (!jbWrap.classList.contains("hidden") || (jbSel && jbSel.value === "__CUSTOM__"))
+          ? String((document.getElementById("usr-form-jb-custom") || {}).value || "").trim()
+          : String((jbSel || {}).value || "").trim();
+
+        if (!nama || !username) {
+          window.showToast("Nama Lengkap dan NPM/Username wajib diisi!");
+          return;
+        }
+        if (!roleVal) {
+          window.showToast("Silakan pilih atau ketik Role pengguna!");
+          return;
+        }
+        if (!jbVal) {
+          window.showToast("Silakan pilih atau ketik Jabatan / Bidang!");
+          return;
+        }
+
+        var payload = {
+          userId: uid,
+          nama: nama,
+          username: username,
+          role: roleVal,
+          jabatanBidang: jbVal,
+          statusAktif: statusAktif,
+          newPassword: newPassword
+        };
+
+        window.registerLocalCustomOption("USER_ROLE_OPTIONS", roleVal);
+        window.registerLocalCustomOption("USER_JABATAN_BIDANG_OPTIONS", jbVal);
+
+        if (window.checkIsGAS()) {
+          window.showLoading(true, "Menyimpan data pengguna...");
+          google.script.run
+            .withSuccessHandler(function (res) {
+              window.showLoading(false);
+              if (res && res.success) {
+                window.closeModal("modal-user-editor");
+                if (res.user) window.applySavedUserToState(res.user);
+                window.showToast(res.message || "Pengguna berhasil disimpan!");
+              } else {
+                window.showToast("Gagal: " + (res ? res.message : "Error"));
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showLoading(false);
+              window.showToast("Error Server: " + err.toString());
+            })
+            .saveOrUpdateUser(payload);
+        } else {
+          var list = window.appState.data.users || [];
+          var dup = list.find(function (u) {
+            return String(u.User_ID || "") !== uid && String(u.Username_NIM || "").trim().toLowerCase() === username.toLowerCase();
+          });
+          if (dup) {
+            window.showToast("NPM / Username '" + username + "' sudah terdaftar!");
+            return;
+          }
+          var jabPart = jbVal.indexOf("/") !== -1 ? jbVal.split("/")[0].trim() : jbVal;
+          var bidPart = jbVal.indexOf("/") !== -1 ? jbVal.split("/").slice(1).join("/").trim() : "-";
+          var demoSaved = {
+            User_ID: uid || ("USR-" + Math.floor(1000 + Math.random() * 9000)),
+            Username_NIM: username,
+            Nama_Lengkap: nama,
+            Role: roleVal,
+            Status_Aktif: statusAktif,
+            Bidang_Divisi: bidPart || "-",
+            Jabatan_Divisi: jabPart || "-",
+            Jabatan_Bidang: jbVal
+          };
+          window.closeModal("modal-user-editor");
+          window.applySavedUserToState(demoSaved);
+          window.showToast("Pengguna " + nama + " disimpan & opsi baru ditambahkan!");
+        }
+      };
+
+      window.handleDeleteUserAccount = function (userId) {
+        var list = window.appState.data.users || [];
+        var target = list.find(function (u) {
+          return String(u.User_ID || "").trim() === String(userId).trim();
+        });
+        if (!target) return;
+        if (String(target.Username_NIM || "").toLowerCase() === "admin") {
+          window.showToast("Akun Administrator Utama tidak dapat dihapus.");
+          return;
+        }
+        if (!window.confirm("Hapus akun pengguna '" + (target.Nama_Lengkap || userId) + "' (" + (target.Username_NIM || "-") + ") dari sistem?")) {
+          return;
+        }
+        if (window.checkIsGAS()) {
+          window.showLoading(true, "Menghapus akun pengguna...");
+          google.script.run
+            .withSuccessHandler(function (res) {
+              window.showLoading(false);
+              if (res && res.success) {
+                window.appState.data.users = (window.appState.data.users || []).filter(function (u) {
+                  return String(u.User_ID || "").trim() !== String(userId).trim();
+                });
+                window.renderUsersTable();
+                if (typeof window.renderAslabDirectory === "function") window.renderAslabDirectory();
+                window.showToast(res.message || "Pengguna dihapus.");
+              } else {
+                window.showToast("Gagal: " + (res ? res.message : "Error"));
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showLoading(false);
+              window.showToast("Error Server: " + err.toString());
+            })
+            .deleteUserAccount(userId);
+        } else {
+          window.appState.data.users = list.filter(function (u) {
+            return String(u.User_ID || "").trim() !== String(userId).trim();
+          });
+          window.persistLocalUsersIfDemo();
+          window.renderUsersTable();
+          if (typeof window.renderAslabDirectory === "function") window.renderAslabDirectory();
+          window.showToast("Pengguna " + (target.Nama_Lengkap || userId) + " dihapus.");
+        }
       };
 
       /* ========================================================
@@ -7431,16 +8918,28 @@
         const search = ((document.getElementById("aslab-search-input") ? document.getElementById("aslab-search-input").value : "") || "").toLowerCase();
 
         let rawList = (window.appState.data.users && window.appState.data.users.length > 5)
-          ? window.appState.data.users.filter(u => String(u.Role || "").toLowerCase() !== "pendaftar" && u.Username_NIM !== "admin")
+          ? window.appState.data.users.filter(function (u) {
+              var r = String(u.Role || "").toLowerCase();
+              var act = String(u.Status_Aktif).toLowerCase() !== "false";
+              return act && r !== "pendaftar" && String(u.Username_NIM || "").toLowerCase() !== "admin";
+            })
           : window.defaultAslabList;
 
         let list = rawList.filter(function (x) {
           var nama = (x.Nama_Lengkap || x.nama || "").toLowerCase();
           var npm = (x.Username_NIM || x.npm || "").toLowerCase();
-          var bidang = (x.Bidang_Divisi || x.bidang || "").toLowerCase();
+          var jb = window.getUserJabatanBidang ? window.getUserJabatanBidang(x) : "";
+          var bidangRaw = ((x.Bidang_Divisi || x.bidang || "") + " " + jb).toLowerCase();
 
-          if (search && !nama.includes(search) && !npm.includes(search)) return false;
-          if (filterBidang !== "all" && !bidang.includes(filterBidang.toLowerCase())) return false;
+          if (search && !nama.includes(search) && !npm.includes(search) && !jb.toLowerCase().includes(search)) return false;
+          if (filterBidang !== "all") {
+            var fb = filterBidang.toLowerCase();
+            if (fb === "manufaktur") {
+              if (!(/manufaktur|bubut|3d|cnc/i.test(bidangRaw))) return false;
+            } else if (!bidangRaw.includes(fb)) {
+              return false;
+            }
+          }
           return true;
         });
 
@@ -7452,29 +8951,47 @@
         c.innerHTML = list.map(function (x) {
           var nama = x.Nama_Lengkap || x.nama || "-";
           var npm = x.Username_NIM || x.npm || "-";
+          var jbFull = window.getUserJabatanBidang ? window.getUserJabatanBidang(x) : "";
           var bidang = x.Bidang_Divisi || x.bidang || "Sub-Laboratorium";
           var jabatan = x.Jabatan_Divisi || x.jabatan || "Pembimbing Praktikum";
+          var roleTxt = String(x.Role || "").trim();
 
+          if (jbFull && jbFull !== "-") {
+            if (jbFull.indexOf("/") !== -1) {
+              var parts = jbFull.split("/");
+              jabatan = parts[0].trim() || jabatan;
+              bidang = parts.slice(1).join("/").trim() || bidang;
+            } else {
+              jabatan = jbFull;
+            }
+          }
+
+          var matchRef = (bidang + " " + jbFull).toLowerCase();
           var colorClass = "text-indigo-400 bg-indigo-500/10 border-indigo-500/20";
-          if (bidang.includes("Ergonomi")) colorClass = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-          if (bidang.includes("Manufaktur")) colorClass = "text-amber-400 bg-amber-500/10 border-amber-500/20";
-          if (bidang.includes("Statistika")) colorClass = "text-cyan-400 bg-cyan-500/10 border-cyan-500/20";
-          if (bidang.includes("Algoritma")) colorClass = "text-purple-400 bg-purple-500/10 border-purple-500/20";
+          if (matchRef.includes("ergonomi")) colorClass = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+          if (/manufaktur|bubut|3d|cnc/.test(matchRef)) colorClass = "text-amber-400 bg-amber-500/10 border-amber-500/20";
+          if (matchRef.includes("statistika")) colorClass = "text-cyan-400 bg-cyan-500/10 border-cyan-500/20";
+          if (matchRef.includes("algoritma")) colorClass = "text-purple-400 bg-purple-500/10 border-purple-500/20";
+
+          var showRolePill = roleTxt && !/^(anggota|asisten)$/i.test(roleTxt);
 
           return (
             '<div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3 hover:border-slate-700 transition flex flex-col justify-between">' +
             '<div class="flex items-center gap-3">' +
             '<div class="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-black text-sm shrink-0">' +
-            nama.charAt(0) +
+            window.escUserHtml(nama.charAt(0)) +
             '</div>' +
             '<div class="overflow-hidden">' +
-            '<h4 class="font-bold text-white text-xs truncate" title="' + nama + '">' + nama + '</h4>' +
-            '<p class="text-[10px] text-slate-400 font-mono">NPM: ' + npm + '</p>' +
+            '<h4 class="font-bold text-white text-xs truncate" title="' + window.escUserHtml(nama) + '">' + window.escUserHtml(nama) + '</h4>' +
+            '<p class="text-[10px] text-slate-400 font-mono">NPM: ' + window.escUserHtml(npm) + '</p>' +
             '</div>' +
             '</div>' +
-            '<div class="space-y-1 pt-1 border-t border-slate-800/80">' +
-            '<span class="inline-block px-2.5 py-0.5 text-[9px] font-bold rounded-full border ' + colorClass + ' truncate max-w-full">' + bidang + '</span>' +
-            '<p class="text-[10px] text-slate-400">' + jabatan + '</p>' +
+            '<div class="space-y-1.5 pt-1.5 border-t border-slate-800/80">' +
+            '<div class="flex flex-wrap items-center gap-1">' +
+            '<span class="inline-block px-2.5 py-0.5 text-[9px] font-bold rounded-full border ' + colorClass + ' truncate max-w-full">' + window.escUserHtml(bidang) + '</span>' +
+            (showRolePill ? '<span class="inline-block px-2 py-0.5 text-[9px] font-bold rounded-full border border-slate-700 bg-slate-900 text-slate-300">' + window.escUserHtml(roleTxt) + '</span>' : '') +
+            '</div>' +
+            '<p class="text-[11px] font-semibold text-slate-300">' + window.escUserHtml(jbFull && jbFull !== "-" ? jbFull : jabatan) + '</p>' +
             '</div>' +
             '</div>'
           );
@@ -7987,6 +9504,7 @@
           usernameInput.value = rememberedUsername;
           rememberCheckbox.checked = true;
         }
+        try { window.applyCms(); window.initHeroFx(); } catch (e) { console.error(e); }
         window.initData(false);
       });
 

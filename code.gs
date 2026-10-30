@@ -305,6 +305,7 @@ function login(username, password) {
     var activeCol = headers.indexOf("Status_Aktif");
     var divCol = headers.indexOf("Bidang_Divisi");
     var jabCol = headers.indexOf("Jabatan_Divisi");
+    var jabBidCol = headers.indexOf("Jabatan_Bidang");
 
     if (uCol === -1 || pCol === -1) {
       return { success: false, message: "Format kolom USERS tidak valid." };
@@ -335,7 +336,8 @@ function login(username, password) {
               email: emailCol !== -1 ? data[i][emailCol] : "",
               role: roleCol !== -1 ? data[i][roleCol] : "Pendaftar",
               bidangDivisi: divCol !== -1 ? (data[i][divCol] || "-") : "-",
-              jabatanDivisi: jabCol !== -1 ? (data[i][jabCol] || "Anggota Sub-Lab") : "Anggota Sub-Lab"
+              jabatanDivisi: jabCol !== -1 ? (data[i][jabCol] || "Anggota Sub-Lab") : "Anggota Sub-Lab",
+              jabatanBidang: jabBidCol !== -1 ? (data[i][jabBidCol] || "") : ""
             }
           };
         }
@@ -457,6 +459,343 @@ function savePengaturanMulti(items) {
     return { success: true, message: "Informasi kontak dan laboratorium berhasil diperbarui!" };
   } catch (err) {
     return { success: false, message: err.toString() };
+  }
+}
+
+/**
+ * Simpan pengaturan tampilan web (CMS) dari tab "Tampilan Web" di dashboard admin.
+ * Berbeda dari savePengaturanMulti: key divalidasi, nilai dibersihkan dan dibatasi
+ * panjangnya, ditulis sebagai teks murni (anti formula injection), dan seluruh
+ * penulisan dikunci agar dua simpan bersamaan tidak saling menimpa.
+ * Nilai kosong ("") berarti "pakai bawaan" di frontend.
+ */
+function saveCmsSettings(items) {
+  var lock = LockService.getScriptLock();
+  try {
+    if (!items || typeof items !== "object") return { success: false, message: "Data pengaturan tidak valid." };
+    lock.waitLock(15000);
+
+    var ss = getSpreadsheet();
+    var sheet = ss ? ss.getSheetByName("PENGATURAN") : null;
+    if (!sheet) return { success: false, message: "Sheet PENGATURAN tidak ditemukan" };
+
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0].map(function (h) { return String(h).trim(); });
+    var idCol = headers.indexOf("Param_ID");
+    var keyCol = headers.indexOf("Key_Name");
+    var valCol = headers.indexOf("Value_Text");
+    if (keyCol === -1 || valCol === -1) return { success: false, message: "Kolom PENGATURAN tidak valid" };
+
+    var rowByKey = {};
+    for (var i = 1; i < data.length; i++) {
+      rowByKey[String(data[i][keyCol]).trim()] = i + 1;
+    }
+
+    var newRows = [];
+    var updated = 0;
+    var skipped = [];
+    Object.keys(items).forEach(function (k) {
+      var keyName = String(k).trim();
+      if (!/^[A-Z][A-Z0-9_]{1,59}$/.test(keyName)) {
+        skipped.push(keyName);
+        return;
+      }
+      var val = String(items[k] === null || items[k] === undefined ? "" : items[k])
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
+        .slice(0, 4000);
+
+      if (rowByKey[keyName]) {
+        sheet.getRange(rowByKey[keyName], valCol + 1).setNumberFormat("@").setValue(val);
+        updated++;
+      } else {
+        var row = [];
+        for (var c = 0; c < headers.length; c++) row.push("");
+        if (idCol !== -1) row[idCol] = "PRM-" + Math.floor(1000 + Math.random() * 9000);
+        row[keyCol] = keyName;
+        row[valCol] = val;
+        newRows.push(row);
+      }
+    });
+
+    if (newRows.length > 0) {
+      var startRow = sheet.getLastRow() + 1;
+      var range = sheet.getRange(startRow, 1, newRows.length, headers.length);
+      range.setNumberFormat("@");
+      range.setValues(newRows);
+    }
+
+    invalidateCache("INITIAL_DATA");
+    var total = updated + newRows.length;
+    var msg = "Tampilan web berhasil disimpan (" + total + " pengaturan diperbarui).";
+    if (skipped.length > 0) msg += " " + skipped.length + " key tidak valid dilewati.";
+    return { success: true, message: msg, updated: updated, added: newRows.length, skipped: skipped };
+  } catch (err) {
+    return { success: false, message: err.toString() };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
+  }
+}
+
+/**
+ * Helper internal: menyimpan pilihan baru (Role / Jabatan_Bidang) yang diketik Admin
+ * ke sheet PENGATURAN agar otomatis muncul di daftar pilihan seterusnya.
+ */
+function appendCustomUserOption_(ss, keyName, rawVal, keteranganText) {
+  var val = String(rawVal || "").trim();
+  if (!val || val === "-") return [];
+  var pSheet = ss.getSheetByName("PENGATURAN");
+  if (!pSheet) return [val];
+
+  var pData = pSheet.getDataRange().getValues();
+  if (!pData || pData.length === 0) return [val];
+  var pHeaders = pData[0].map(function (h) { return String(h).trim(); });
+  var pIdCol = pHeaders.indexOf("Param_ID");
+  var pKeyCol = pHeaders.indexOf("Key_Name");
+  var pValCol = pHeaders.indexOf("Value_Text");
+  var pKetCol = pHeaders.indexOf("Keterangan");
+  if (pKeyCol === -1 || pValCol === -1) return [val];
+
+  var foundRow = -1;
+  var currentList = [];
+  for (var i = 1; i < pData.length; i++) {
+    if (String(pData[i][pKeyCol]).trim() === keyName) {
+      foundRow = i + 1;
+      var rawStored = String(pData[i][pValCol] || "").trim();
+      if (rawStored) {
+        try {
+          var parsed = JSON.parse(rawStored);
+          if (Array.isArray(parsed)) currentList = parsed;
+        } catch (e) {
+          currentList = rawStored.split("||").map(function (s) { return s.trim(); }).filter(Boolean);
+        }
+      }
+      break;
+    }
+  }
+
+  var exists = currentList.some(function (item) {
+    return String(item || "").trim().toLowerCase() === val.toLowerCase();
+  });
+  if (!exists) {
+    currentList.push(val);
+    var serialized = JSON.stringify(currentList);
+    if (foundRow !== -1) {
+      pSheet.getRange(foundRow, pValCol + 1).setNumberFormat("@").setValue(serialized);
+    } else {
+      var newRow = [];
+      for (var c = 0; c < pHeaders.length; c++) newRow.push("");
+      if (pIdCol !== -1) newRow[pIdCol] = "PRM-" + Math.floor(1000 + Math.random() * 9000);
+      newRow[pKeyCol] = keyName;
+      newRow[pValCol] = serialized;
+      if (pKetCol !== -1 && keteranganText) newRow[pKetCol] = keteranganText;
+      var nextRow = pSheet.getLastRow() + 1;
+      pSheet.getRange(nextRow, 1, 1, pHeaders.length).setNumberFormat("@").setValues([newRow]);
+    }
+  }
+  return currentList;
+}
+
+/**
+ * Tambah atau perbarui pengguna dari menu Manajemen User Admin.
+ * Mendukung ubah cepat Role / Jabatan_Bidang / Status maupun form lengkap Tambah & Edit User.
+ */
+function saveOrUpdateUser(payload) {
+  var lock = LockService.getScriptLock();
+  try {
+    if (!payload || typeof payload !== "object") {
+      return { success: false, message: "Data pengguna tidak valid." };
+    }
+    lock.waitLock(15000);
+
+    var ss = getSpreadsheet();
+    if (!ss) return { success: false, message: "Database spreadsheet tidak ditemukan." };
+    var sheet = ss.getSheetByName("USERS");
+    if (!sheet) return { success: false, message: "Sheet USERS tidak ditemukan." };
+
+    var data = sheet.getDataRange().getDisplayValues();
+    var headers = data[0].map(function (h) { return String(h).trim(); });
+
+    function ensureCol(colName) {
+      var idx = headers.indexOf(colName);
+      if (idx === -1) {
+        idx = headers.length;
+        headers.push(colName);
+        sheet.getRange(1, idx + 1)
+          .setValue(colName)
+          .setFontWeight("bold")
+          .setBackground("#1E293B")
+          .setFontColor("#F8FAFC");
+      }
+      return idx;
+    }
+
+    var idCol = ensureCol("User_ID");
+    var uCol = ensureCol("Username_NIM");
+    var pCol = ensureCol("Password");
+    var nameCol = ensureCol("Nama_Lengkap");
+    var emailCol = ensureCol("Email");
+    var roleCol = ensureCol("Role");
+    var activeCol = ensureCol("Status_Aktif");
+    var divCol = ensureCol("Bidang_Divisi");
+    var jabCol = ensureCol("Jabatan_Divisi");
+    var jabBidCol = ensureCol("Jabatan_Bidang");
+
+    var targetRow = -1;
+    var reqId = String(payload.userId || "").trim();
+    if (reqId) {
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][idCol] || "").trim() === reqId) {
+          targetRow = i + 1;
+          break;
+        }
+      }
+      if (targetRow === -1) {
+        return { success: false, message: "Pengguna dengan ID " + reqId + " tidak ditemukan." };
+      }
+    }
+
+    var existingRow = targetRow !== -1 ? data[targetRow - 1] : [];
+    var getExisting = function (colIdx, fallback) {
+      return (targetRow !== -1 && colIdx < existingRow.length) ? String(existingRow[colIdx] || "") : (fallback || "");
+    };
+
+    var finalUserId = targetRow !== -1 ? getExisting(idCol, reqId) : ("USR-" + Math.floor(1000 + Math.random() * 9000));
+    var finalUsername = payload.username !== undefined ? String(payload.username).trim().slice(0, 100) : getExisting(uCol, "");
+    var finalNama = payload.nama !== undefined ? String(payload.nama).trim().slice(0, 150) : getExisting(nameCol, "");
+    var finalEmail = payload.email !== undefined ? String(payload.email).trim().slice(0, 150) : getExisting(emailCol, "");
+    var finalRole = payload.role !== undefined ? String(payload.role).trim().slice(0, 80) : getExisting(roleCol, "Anggota");
+    var finalActive = payload.statusAktif !== undefined
+      ? (String(payload.statusAktif).toLowerCase() !== "false" && Boolean(payload.statusAktif))
+      : (String(getExisting(activeCol, "true")).toLowerCase() !== "false");
+
+    if (!finalUsername || !finalNama) {
+      return { success: false, message: "NPM / Username dan Nama Lengkap wajib diisi." };
+    }
+    if (!finalRole) finalRole = "Anggota";
+
+    if (targetRow !== -1 && String(getExisting(uCol, "")).toLowerCase() === "admin") {
+      finalActive = true;
+    }
+
+    for (var r = 1; r < data.length; r++) {
+      if ((r + 1) !== targetRow && String(data[r][uCol] || "").trim().toLowerCase() === finalUsername.toLowerCase()) {
+        return { success: false, message: "NPM / Username '" + finalUsername + "' sudah digunakan oleh pengguna lain." };
+      }
+    }
+
+    var finalDivisi = payload.bidangDivisi !== undefined ? String(payload.bidangDivisi).trim().slice(0, 120) : getExisting(divCol, "-");
+    var finalJabatan = payload.jabatanDivisi !== undefined ? String(payload.jabatanDivisi).trim().slice(0, 120) : getExisting(jabCol, "-");
+    var finalJabBid = payload.jabatanBidang !== undefined ? String(payload.jabatanBidang).trim().slice(0, 160) : getExisting(jabBidCol, "");
+
+    if (payload.jabatanBidang !== undefined) {
+      if (finalJabBid.indexOf("/") !== -1) {
+        var parts = finalJabBid.split("/");
+        var leftJab = String(parts[0] || "").trim();
+        var rightBid = String(parts.slice(1).join("/") || "").trim();
+        if (leftJab) finalJabatan = leftJab;
+        if (rightBid) finalDivisi = rightBid;
+      } else if (finalJabBid) {
+        finalJabatan = finalJabBid;
+      }
+    }
+
+    var rawNewPass = payload.newPassword !== undefined ? String(payload.newPassword).trim() : "";
+    var finalPass = "";
+    if (targetRow !== -1) {
+      var rawPassSheet = sheet.getRange(targetRow, pCol + 1).getDisplayValue();
+      finalPass = rawNewPass ? hashPassword(rawNewPass) : rawPassSheet;
+    } else {
+      finalPass = hashPassword(rawNewPass || "das12345");
+      if (!finalEmail) finalEmail = "mhs" + finalUsername + "@student.unirow.ac.id";
+    }
+
+    var outRow = [];
+    for (var c = 0; c < headers.length; c++) {
+      outRow.push(targetRow !== -1 && c < existingRow.length ? existingRow[c] : "");
+    }
+    outRow[idCol] = finalUserId;
+    outRow[uCol] = finalUsername;
+    outRow[pCol] = finalPass;
+    outRow[nameCol] = finalNama;
+    outRow[emailCol] = finalEmail;
+    outRow[roleCol] = finalRole;
+    outRow[activeCol] = finalActive ? "TRUE" : "FALSE";
+    outRow[divCol] = finalDivisi || "-";
+    outRow[jabCol] = finalJabatan || "-";
+    outRow[jabBidCol] = finalJabBid;
+
+    var writeRowIdx = targetRow !== -1 ? targetRow : (sheet.getLastRow() + 1);
+    var writeRange = sheet.getRange(writeRowIdx, 1, 1, headers.length);
+    writeRange.setNumberFormat("@");
+    writeRange.setValues([outRow]);
+
+    var roleOpts = appendCustomUserOption_(ss, "USER_ROLE_OPTIONS", finalRole, "Daftar opsi Role kustom pada Manajemen User.");
+    var jbOpts = appendCustomUserOption_(ss, "USER_JABATAN_BIDANG_OPTIONS", finalJabBid, "Daftar opsi Jabatan/Bidang kustom pada Manajemen User.");
+
+    invalidateCache("INITIAL_DATA");
+
+    return {
+      success: true,
+      message: targetRow !== -1 ? ("Data pengguna " + finalNama + " berhasil diperbarui.") : ("Pengguna baru " + finalNama + " berhasil ditambahkan."),
+      user: {
+        User_ID: finalUserId,
+        Username_NIM: finalUsername,
+        Nama_Lengkap: finalNama,
+        Role: finalRole,
+        Status_Aktif: finalActive,
+        Bidang_Divisi: finalDivisi || "-",
+        Jabatan_Divisi: finalJabatan || "-",
+        Jabatan_Bidang: finalJabBid
+      },
+      roleOptions: roleOpts,
+      jabatanBidangOptions: jbOpts
+    };
+  } catch (err) {
+    return { success: false, message: "Gagal menyimpan pengguna: " + err.toString() };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
+  }
+}
+
+/**
+ * Hapus akun pengguna dari sheet USERS melalui Manajemen User Admin.
+ */
+function deleteUserAccount(userId) {
+  var lock = LockService.getScriptLock();
+  try {
+    var cleanId = String(userId || "").trim();
+    if (!cleanId) return { success: false, message: "User ID tidak valid." };
+    lock.waitLock(15000);
+
+    var ss = getSpreadsheet();
+    if (!ss) return { success: false, message: "Database spreadsheet tidak ditemukan." };
+    var sheet = ss.getSheetByName("USERS");
+    if (!sheet) return { success: false, message: "Sheet USERS tidak ditemukan." };
+
+    var data = sheet.getDataRange().getDisplayValues();
+    var headers = data[0].map(function (h) { return String(h).trim(); });
+    var idCol = headers.indexOf("User_ID");
+    var uCol = headers.indexOf("Username_NIM");
+    var nameCol = headers.indexOf("Nama_Lengkap");
+    if (idCol === -1) return { success: false, message: "Kolom User_ID tidak ditemukan." };
+
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][idCol] || "").trim() === cleanId) {
+        var uname = uCol !== -1 ? String(data[i][uCol] || "").trim().toLowerCase() : "";
+        if (uname === "admin") {
+          return { success: false, message: "Akun Administrator Utama tidak boleh dihapus." };
+        }
+        var deletedName = nameCol !== -1 ? data[i][nameCol] : cleanId;
+        sheet.deleteRow(i + 1);
+        invalidateCache("INITIAL_DATA");
+        return { success: true, message: "Pengguna " + deletedName + " berhasil dihapus." };
+      }
+    }
+    return { success: false, message: "Pengguna tidak ditemukan." };
+  } catch (err) {
+    return { success: false, message: "Gagal menghapus pengguna: " + err.toString() };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
   }
 }
 
