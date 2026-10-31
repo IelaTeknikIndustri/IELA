@@ -1262,11 +1262,7 @@ function buildStatusEmailHtml(targetNama, npm, status, customNote) {
     statusTitle: "DINYATAKAN LOLOS SELEKSI (DITERIMA)",
     statusSubtitle: "Sebagai Asisten Laboratorium Teknik Industri (IELA) Periode Kepengurusan 2027/2028",
     openingText: "Sehubungan dengan telah dilaksanakannya seluruh rangkaian tahapan Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban tahun akademik 2027/2028, meliputi seleksi administrasi berkas, uji kompetensi, dan wawancara panelis, dengan ini Panitia Seleksi bersama Koordinator Laboratorium menetapkan bahwa:",
-    instructions: [
-      "Menghadiri agenda <strong>Pembekalan & First Gathering Asisten Laboratorium</strong> sesuai jadwal dan tata tertib yang diumumkan melalui portal resmi IELA.",
-      "Mengikuti proses orientasi kerja, pengenalan inventaris instrumen, dan penempatan pembagian sub-laboratorium resmi.",
-      "Melakukan konfirmasi kesediaan dan penandatanganan <strong>Pakta Integritas serta Surat Perjanjian Komitmen Asisten</strong>."
-    ],
+    instructions: [],
     closingText: "Demikian surat pemberitahuan penetapan ini kami sampaikan secara resmi untuk dapat dipergunakan sebagaimana mestinya. Atas perhatian, dedikasi, dan kerja sama Saudara/i, kami sampaikan terima kasih."
   };
 
@@ -1332,9 +1328,17 @@ function buildStatusEmailHtml(targetNama, npm, status, customNote) {
     ];
   }
 
-  var instructionListHtml = config.instructions.map(function(item) {
-    return "<li style='margin-bottom:8px; padding-left:4px;'>" + item + "</li>";
-  }).join("");
+  var instructionsBlockHtml = "";
+  if (config.instructions && config.instructions.length > 0) {
+    var instructionListHtml = config.instructions.map(function(item) {
+      return "<li style='margin-bottom:8px; padding-left:4px;'>" + item + "</li>";
+    }).join("");
+    instructionsBlockHtml =
+      "<p style='margin:16px 0 8px 0; font-size:12.5px; font-weight:700; color:#f1f5f9;'>Ketentuan dan Petunjuk Tindak Lanjut:</p>" +
+      "<ol style='margin:0 0 18px 0; padding-left:20px; font-size:12.5px; line-height:1.7; color:#cbd5e1; text-align:justify;'>" +
+        instructionListHtml +
+      "</ol>";
+  }
 
   var noteHtml = "";
   if (customNote && String(customNote).trim().length > 0) {
@@ -1417,10 +1421,7 @@ function buildStatusEmailHtml(targetNama, npm, status, customNote) {
       "</div>" +
 
       // INSTRUKSI / PETUNJUK TINDAK LANJUT
-      "<p style='margin:16px 0 8px 0; font-size:12.5px; font-weight:700; color:#f1f5f9;'>Ketentuan dan Petunjuk Tindak Lanjut:</p>" +
-      "<ol style='margin:0 0 18px 0; padding-left:20px; font-size:12.5px; line-height:1.7; color:#cbd5e1; text-align:justify;'>" +
-        instructionListHtml +
-      "</ol>" +
+      instructionsBlockHtml +
 
       noteHtml +
 
