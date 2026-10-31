@@ -296,6 +296,8 @@ function getInitialData(forceRefresh) {
       var uSheetCheck = ss.getSheetByName("USERS");
       if (uSheetCheck) {
         uSheetCheck.getDataRange().clearDataValidations();
+        uSheetCheck.getRange(1, 1, Math.max(uSheetCheck.getMaxRows(), 1), Math.max(uSheetCheck.getMaxColumns(), 1)).clearDataValidations();
+        SpreadsheetApp.flush();
       }
     } catch (eUVal) {}
 
@@ -817,23 +819,41 @@ function saveOrUpdateUser(payload) {
     var writeRange = sheet.getRange(writeRowIdx, 1, 1, headers.length);
     writeRange.setNumberFormat("@");
     
-    // Hapus data validation rules yang kaku dari Google Sheet agar custom role, jabatan, dan bidang bebas disimpan
+    // Bersihkan aturan validasi data kaku pada sheet USERS agar custom role & jabatan bebas disimpan tanpa exception
     try {
       writeRange.clearDataValidations();
-      sheet.getRange(writeRowIdx, 1, 1, Math.max(sheet.getMaxColumns(), headers.length)).clearDataValidations();
+      for (var ci = 1; ci <= headers.length; ci++) {
+        try { sheet.getRange(writeRowIdx, ci).clearDataValidations(); } catch (eC) {}
+      }
+      SpreadsheetApp.flush();
     } catch (eVal) {}
 
     try {
       writeRange.setValues([outRow]);
     } catch (writeErr) {
-      // Jika masih terhalang data validation pada baris/kolom, bersihkan seluruh validasi pada sheet USERS dan ulangi
+      // Jika masih terhalang aturan validasi sel / kolom pada Google Sheet, lakukan pembersihan total pada USERS
       try {
         sheet.getDataRange().clearDataValidations();
         sheet.getRange(1, 1, Math.max(sheet.getMaxRows(), 1), Math.max(sheet.getMaxColumns(), 1)).clearDataValidations();
+        SpreadsheetApp.flush();
         writeRange.clearDataValidations();
         writeRange.setValues([outRow]);
       } catch (retryErr) {
-        throw new Error("Gagal menyimpan pengguna karena batasan sel: " + retryErr.toString());
+        // Fallback penulisan sel per sel agar jika ada sel yang tetap terkunci oleh aturan Google Sheet, sel lain tetap tersimpan
+        var cellError = null;
+        for (var c = 0; c < headers.length; c++) {
+          try {
+            var cCell = sheet.getRange(writeRowIdx, c + 1);
+            try { cCell.clearDataValidations(); } catch (eCv) {}
+            cCell.setValue(outRow[c]);
+          } catch (cErr) {
+            cellError = cErr;
+            Logger.log("Peringatan tulis sel kolom " + (c + 1) + ": " + cErr.toString());
+          }
+        }
+        if (cellError && targetRow === -1) {
+          throw new Error("Gagal menyimpan pengguna karena batasan sel: " + cellError.toString());
+        }
       }
     }
 
