@@ -523,53 +523,83 @@
 
           <!-- WATERMARK LOGO IELA DENGAN RODA GIGI BERPUTAR -->
           <div class="hero-iela-watermark absolute -right-20 sm:-right-10 md:right-0 lg:right-6 top-1/2 -translate-y-1/2 w-[340px] h-[340px] sm:w-[460px] sm:h-[460px] lg:w-[530px] lg:h-[530px] pointer-events-none select-none z-0 overflow-visible opacity-[0.14] transition-opacity duration-700">
-            <svg class="w-full h-full drop-shadow-[0_0_45px_rgba(99,102,241,0.3)]" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <svg class="w-full h-full drop-shadow-[0_0_50px_rgba(99,102,241,0.35)]" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <defs>
-    <!-- Gradien Warna Neon Lab IELA -->
-    <linearGradient id="ielaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.95" />
-      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.85" />
-      <stop offset="100%" stop-color="#6366f1" stop-opacity="0.95" />
+    <!-- Gradien Logam Roda Gigi IELA -->
+    <linearGradient id="ielaGearMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#cbd5e1" stop-opacity="0.85" />
+      <stop offset="35%" stop-color="#94a3b8" stop-opacity="0.65" />
+      <stop offset="70%" stop-color="#64748b" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#cbd5e1" stop-opacity="0.9" />
     </linearGradient>
-    <radialGradient id="ielaAura" cx="50%" cy="50%" r="50%">
+    <linearGradient id="ielaGearEdge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <radialGradient id="ielaBackGlow" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#6366f1" stop-opacity="0.25" />
-      <stop offset="65%" stop-color="#0284c7" stop-opacity="0.1" />
+      <stop offset="70%" stop-color="#0284c7" stop-opacity="0.08" />
       <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
     </radialGradient>
-    <!-- Path untuk Teks Melingkar: Atas & Bawah Tegak -->
-    <path id="textCircleTop" d="M 112,250 A 138,138 0 0,1 388,250" fill="none" />
-    <path id="textCircleBottom" d="M 116,250 A 134,134 0 0,0 384,250" fill="none" />
+    <!-- Path Teks Melingkar -->
+    <path id="textCircleTop" d="M 108,250 A 142,142 0 0,1 392,250" fill="none" />
+    <path id="textCircleBottom" d="M 112,250 A 138,138 0 0,0 388,250" fill="none" />
     <clipPath id="innerCircleClip">
-      <circle cx="250" cy="250" r="118" />
+      <circle cx="250" cy="250" r="120" />
     </clipPath>
   </defs>
 
-  <!-- Aura Ambient Halus -->
-  <circle cx="250" cy="250" r="240" fill="url(#ielaAura)" />
+  <!-- Aura Ambient Biru Neon -->
+  <circle cx="250" cy="250" r="242" fill="url(#ielaBackGlow)" />
 
   <!-- ============================================== -->
-  <!-- 1. RODA GIGI UTAMA BERPUTAR (ANIMATED GEAR)    -->
+  <!-- 1. RODA GIGI RESMI IELA BERPUTAR (16 GIGI)     -->
   <!-- ============================================== -->
   <g class="animate-gear-spin origin-center">
-    <!-- Roda Gigi Mekanikal Industri Luar -->
-    <path d="M 454.00 250.00 L 453.73 260.41 L 489.06 271.27 L 485.13 298.12 L 448.17 298.40 L 438.47 328.07 L 434.24 337.58 L 462.72 361.14 L 448.82 384.43 L 414.57 370.56 L 394.25 394.25 L 386.70 401.42 L 404.00 434.08 L 382.24 450.28 L 355.91 424.36 L 328.07 438.47 L 318.35 442.21 L 321.83 479.00 L 295.53 485.64 L 281.12 451.61 L 250.00 454.00 L 239.59 453.73 L 228.73 489.06 L 201.88 485.13 L 201.60 448.17 L 171.93 438.47 L 162.42 434.24 L 138.86 462.72 L 115.57 448.82 L 129.44 414.57 L 105.75 394.25 L 98.58 386.70 L 65.92 404.00 L 49.72 382.24 L 75.64 355.91 L 61.53 328.07 L 57.79 318.35 L 21.00 321.83 L 14.36 295.53 L 48.39 281.12 L 46.00 250.00 L 46.27 239.59 L 10.94 228.73 L 14.87 201.88 L 51.83 201.60 L 61.53 171.93 L 65.76 162.42 L 37.28 138.86 L 51.18 115.57 L 85.43 129.44 L 105.75 105.75 L 113.30 98.58 L 96.00 65.92 L 117.76 49.72 L 144.09 75.64 L 171.93 61.53 L 181.65 57.79 L 178.17 21.00 L 204.47 14.36 L 218.88 48.39 L 250.00 46.00 L 260.41 46.27 L 271.27 10.94 L 298.12 14.87 L 298.40 51.83 L 328.07 61.53 L 337.58 65.76 L 361.14 37.28 L 384.43 51.18 L 370.56 85.43 L 394.25 105.75 L 401.42 113.30 L 434.08 96.00 L 450.28 117.76 L 424.36 144.09 L 438.47 171.93 L 442.21 181.65 L 479.00 178.17 L 485.64 204.47 L 451.61 218.88 L 454.00 250.00 Z" fill="none" stroke="url(#ielaGrad)" stroke-width="2.6" stroke-linejoin="round" />
-    <circle cx="250" cy="250" r="222" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 6" stroke-opacity="0.5" />
-    <circle cx="250" cy="250" r="204" stroke="#818cf8" stroke-width="1.5" stroke-opacity="0.65" />
-    
-    <!-- Gigi Roda Sekunder (Aksen Mesin Bertingkat) -->
-    <path d="M 425.00 250.00 L 424.84 257.56 L 441.51 263.71 L 439.66 279.89 L 422.03 282.12 L 416.43 304.08 L 413.94 311.21 L 427.90 322.22 L 421.14 337.03 L 403.68 333.70 L 391.58 352.86 L 387.00 358.88 L 396.88 373.66 L 385.87 385.66 L 370.30 377.10 L 352.86 391.58 L 346.65 395.89 L 351.47 412.99 L 337.30 421.00 L 325.13 408.05 L 304.08 416.43 L 296.84 418.61 L 296.14 436.37 L 280.18 439.61 L 272.61 423.53 L 250.00 425.00 L 242.44 424.84 L 236.29 441.51 L 220.11 439.66 L 217.88 422.03 L 195.92 416.43 L 188.79 413.94 L 177.78 427.90 L 162.97 421.14 L 166.30 403.68 L 147.14 391.58 L 141.12 387.00 L 126.34 396.88 L 114.34 385.87 L 122.90 370.30 L 108.42 352.86 L 104.11 346.65 L 87.01 351.47 L 79.00 337.30 L 91.95 325.13 L 83.57 304.08 L 81.39 296.84 L 63.63 296.14 L 60.39 280.18 L 76.47 272.61 L 75.00 250.00 L 75.16 242.44 L 58.49 236.29 L 60.34 220.11 L 77.97 217.88 L 83.57 195.92 L 86.06 188.79 L 72.10 177.78 L 78.86 162.97 L 96.32 166.30 L 108.42 147.14 L 113.00 141.12 L 103.12 126.34 L 114.13 114.34 L 129.70 122.90 L 147.14 108.42 L 153.35 104.11 L 148.53 87.01 L 162.70 79.00 L 174.87 91.95 L 195.92 83.57 L 203.16 81.39 L 203.86 63.63 L 219.82 60.39 L 227.39 76.47 L 250.00 75.00 L 257.56 75.16 L 263.71 58.49 L 279.89 60.34 L 282.12 77.97 L 304.08 83.57 L 311.21 86.06 L 322.22 72.10 L 337.03 78.86 L 333.70 96.32 L 352.86 108.42 L 358.88 113.00 L 373.66 103.12 L 385.66 114.13 L 377.10 129.70 L 391.58 147.14 L 395.89 153.35 L 412.99 148.53 L 421.00 162.70 L 408.05 174.87 L 416.43 195.92 L 418.61 203.16 L 436.37 203.86 L 439.61 219.82 L 423.53 227.39 L 425.00 250.00 Z" fill="none" stroke="#60a5fa" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round" />
-    <circle cx="250" cy="250" r="175" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.45" />
+    <!-- Badan Roda Gigi (Solid Fill dengan Stroke Tajam) -->
+    <path
+      d="M 454.00 250.00 L 453.73 260.41 L 489.06 271.27 L 485.13 298.12 L 448.17 298.40 L 438.47 328.07 L 434.24 337.58 L 462.72 361.14 L 448.82 384.43 L 414.57 370.56 L 394.25 394.25 L 386.70 401.42 L 404.00 434.08 L 382.24 450.28 L 355.91 424.36 L 328.07 438.47 L 318.35 442.21 L 321.83 479.00 L 295.53 485.64 L 281.12 451.61 L 250.00 454.00 L 239.59 453.73 L 228.73 489.06 L 201.88 485.13 L 201.60 448.17 L 171.93 438.47 L 162.42 434.24 L 138.86 462.72 L 115.57 448.82 L 129.44 414.57 L 105.75 394.25 L 98.58 386.70 L 65.92 404.00 L 49.72 382.24 L 75.64 355.91 L 61.53 328.07 L 57.79 318.35 L 21.00 321.83 L 14.36 295.53 L 48.39 281.12 L 46.00 250.00 L 46.27 239.59 L 10.94 228.73 L 14.87 201.88 L 51.83 201.60 L 61.53 171.93 L 65.76 162.42 L 37.28 138.86 L 51.18 115.57 L 85.43 129.44 L 105.75 105.75 L 113.30 98.58 L 96.00 65.92 L 117.76 49.72 L 144.09 75.64 L 171.93 61.53 L 181.65 57.79 L 178.17 21.00 L 204.47 14.36 L 218.88 48.39 L 250.00 46.00 L 260.41 46.27 L 271.27 10.94 L 298.12 14.87 L 298.40 51.83 L 328.07 61.53 L 337.58 65.76 L 361.14 37.28 L 384.43 51.18 L 370.56 85.43 L 394.25 105.75 L 401.42 113.30 L 434.08 96.00 L 450.28 117.76 L 424.36 144.09 L 438.47 171.93 L 442.21 181.65 L 479.00 178.17 L 485.64 204.47 L 451.61 218.88 L 454.00 250.00 Z"
+      fill="url(#ielaGearMetal)"
+      stroke="url(#ielaGearEdge)"
+      stroke-width="2.5"
+      stroke-linejoin="round"
+    />
+    <!-- Lingkar Pitch Diameter Titik-Titik -->
+    <circle cx="250" cy="250" r="222" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="4 6" stroke-opacity="0.6" />
+    <!-- Lingkar Dasar Gigi (Root Circle) -->
+    <circle cx="250" cy="250" r="204" stroke="#e2e8f0" stroke-width="1.5" stroke-opacity="0.75" />
 
-    <!-- 8 Lubang Baut / Poros Presisi -->
-    <g stroke="#818cf8" stroke-width="1.5" fill="none" stroke-opacity="0.5">
-      <circle cx="250" cy="76" r="6" />
-      <circle cx="250" cy="424" r="6" />
-      <circle cx="76" cy="250" r="6" />
-      <circle cx="424" cy="250" r="6" />
-      <circle cx="127" cy="127" r="6" />
-      <circle cx="373" cy="373" r="6" />
-      <circle cx="127" cy="373" r="6" />
-      <circle cx="373" cy="127" r="6" />
+    <!-- 16 Titik Poros Baut Mekanikal pada Setiap Gigi -->
+    <g fill="#38bdf8" fill-opacity="0.8">
+      <circle cx="472.00" cy="250.00" r="2" />
+      <circle cx="455.10" cy="334.96" r="2" />
+      <circle cx="406.98" cy="406.98" r="2" />
+      <circle cx="334.96" cy="455.10" r="2" />
+      <circle cx="250.00" cy="472.00" r="2" />
+      <circle cx="165.04" cy="455.10" r="2" />
+      <circle cx="93.02" cy="406.98" r="2" />
+      <circle cx="44.90" cy="334.96" r="2" />
+      <circle cx="28.00" cy="250.00" r="2" />
+      <circle cx="44.90" cy="165.04" r="2" />
+      <circle cx="93.02" cy="93.02" r="2" />
+      <circle cx="165.04" cy="44.90" r="2" />
+      <circle cx="250.00" cy="28.00" r="2" />
+      <circle cx="334.96" cy="44.90" r="2" />
+      <circle cx="406.98" cy="93.02" r="2" />
+      <circle cx="455.10" cy="165.04" r="2" />
+    </g>
+
+    <!-- 8 Lubang Baut Dalam Roda Gigi -->
+    <g stroke="#94a3b8" stroke-width="1.8" fill="#0f172a" fill-opacity="0.6">
+      <circle cx="250" cy="74" r="6.5" />
+      <circle cx="250" cy="426" r="6.5" />
+      <circle cx="74" cy="250" r="6.5" />
+      <circle cx="426" cy="250" r="6.5" />
+      <circle cx="126" cy="126" r="6.5" />
+      <circle cx="374" cy="374" r="6.5" />
+      <circle cx="126" cy="374" r="6.5" />
+      <circle cx="374" cy="126" r="6.5" />
     </g>
   </g>
 
@@ -577,67 +607,75 @@
   <!-- 2. PIRINGAN KALIBRASI TEKNIK (BERLAWANAN ARAH) -->
   <!-- ============================================== -->
   <g class="animate-gear-spin-reverse origin-center text-cyan-400">
-    <circle cx="250" cy="250" r="162" stroke="currentColor" stroke-width="1" stroke-dasharray="2 4" stroke-opacity="0.45" />
-    <line x1="250" y1="88" x2="250" y2="104" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.6" />
-    <line x1="250" y1="396" x2="250" y2="412" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.6" />
-    <line x1="88" y1="250" x2="104" y2="250" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.6" />
-    <line x1="396" y1="250" x2="412" y2="250" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.6" />
+    <circle cx="250" cy="250" r="166" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" stroke-opacity="0.5" />
+    <circle cx="250" cy="250" r="156" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3" />
+    <!-- 4 Garis Sumbu Presisi -->
+    <line x1="250" y1="88" x2="250" y2="108" stroke="#38bdf8" stroke-width="1.6" stroke-opacity="0.7" />
+    <line x1="250" y1="392" x2="250" y2="412" stroke="#38bdf8" stroke-width="1.6" stroke-opacity="0.7" />
+    <line x1="88" y1="250" x2="108" y2="250" stroke="#38bdf8" stroke-width="1.6" stroke-opacity="0.7" />
+    <line x1="392" y1="250" x2="412" y2="250" stroke="#38bdf8" stroke-width="1.6" stroke-opacity="0.7" />
   </g>
 
   <!-- ============================================== -->
-  <!-- 3. INTI EMBLEM IELA (TEGAK, KOKOH & KONTRAST) -->
+  <!-- 3. INTI EMBLEM RESMI IELA (TEGAK, KOKOH & ASLI)-->
   <!-- ============================================== -->
-  <!-- Lingkar Biru Pembungkus Teks -->
-  <circle cx="250" cy="250" r="148" fill="#1e293b" fill-opacity="0.65" stroke="#38bdf8" stroke-width="2.5" />
-  <circle cx="250" cy="250" r="120" stroke="#60a5fa" stroke-width="1.5" fill="none" stroke-opacity="0.8" />
+  <!-- Cincin Biru Lambang (Navy Blue Seal) -->
+  <circle cx="250" cy="250" r="150" fill="#1e3a8a" fill-opacity="0.85" stroke="#38bdf8" stroke-width="2.6" />
+  <circle cx="250" cy="250" r="122" stroke="#60a5fa" stroke-width="1.5" fill="none" stroke-opacity="0.9" />
 
   <!-- Teks Melingkar Atas: LABORATORIUM TEKNIK INDUSTRI -->
-  <text font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="800" fill="#bae6fd" letter-spacing="2.2">
+  <text font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="900" fill="#ffffff" letter-spacing="2.2">
     <textPath href="#textCircleTop" startOffset="50%" text-anchor="middle">
       LABORATORIUM TEKNIK INDUSTRI
     </textPath>
   </text>
+
   <!-- Teks Melingkar Bawah: UNIROW TUBAN -->
-  <text font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="800" fill="#fde047" letter-spacing="3.5">
+  <text font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="900" fill="#facc15" letter-spacing="3.5">
     <textPath href="#textCircleBottom" startOffset="50%" text-anchor="middle">
       UNIROW TUBAN
     </textPath>
   </text>
 
-  <!-- Lingkar Inti Belah Dua (Kiri Biru Cyan, Kanan Kuning Gold) -->
-  <g clip-path="url(#innerCircleClip)">
-    <!-- Latar Belakang Separuh Cyan, Separuh Gold -->
-    <rect x="130" y="130" width="120" height="240" fill="#0284c7" fill-opacity="0.5" />
-    <rect x="250" y="130" width="120" height="240" fill="#ca8a04" fill-opacity="0.5" />
+  <!-- 2 Bintang Pemisah Kiri & Kanan (Ciri Khas Logo IELA) -->
+  <text x="108" y="254" text-anchor="middle" font-size="13" fill="#ffffff">★</text>
+  <text x="392" y="254" text-anchor="middle" font-size="13" fill="#ffffff">★</text>
 
-    <!-- Kubah Atas Hitam/Slate Mesin -->
-    <path d="M 130,200 Q 250,154 370,200 L 370,130 L 130,130 Z" fill="#090d16" fill-opacity="0.85" />
+  <!-- Lingkar Inti Belah Dua (Kiri Cyan, Kanan Kuning Gold) -->
+  <g clip-path="url(#innerCircleClip)">
+    <!-- Separuh Kiri: Cyan Biru Muda IELA -->
+    <rect x="130" y="130" width="120" height="240" fill="#00a3e0" fill-opacity="0.8" />
+    <!-- Separuh Kanan: Kuning Emas IELA -->
+    <rect x="250" y="130" width="120" height="240" fill="#ffc72c" fill-opacity="0.8" />
+
+    <!-- Kubah Atas Hitam/Gear Siluet Industri -->
+    <path d="M 130,200 Q 250,152 370,200 L 370,130 L 130,130 Z" fill="#0b1120" />
     
-    <!-- Lambang Buku Terbuka (Open Book) -->
-    <g transform="translate(250, 218) scale(1.22)">
-      <!-- Bayangan Buku -->
-      <path d="M -38,2 Q -18,-6 0,-2 Q 18,-6 38,2 L 34,14 Q 18,6 0,10 Q -18,6 -34,14 Z" fill="#090d16" fill-opacity="0.6" />
-      <!-- Halaman Kiri (Putih Bersih) -->
-      <path d="M -36,0 Q -18,-7 0,-3 L 0,12 Q -18,8 -36,15 Z" fill="#ffffff" fill-opacity="0.95" stroke="#94a3b8" stroke-width="1" />
+    <!-- Lambang Buku Terbuka (Open Book of Knowledge) -->
+    <g transform="translate(250, 216) scale(1.25)">
+      <!-- Bayangan Dasar Buku -->
+      <path d="M -38,2 Q -18,-6 0,-2 Q 18,-6 38,2 L 34,14 Q 18,6 0,10 Q -18,6 -34,14 Z" fill="#0b1120" fill-opacity="0.7" />
+      <!-- Halaman Kiri Buku (Putih Bersih) -->
+      <path d="M -36,0 Q -18,-7 0,-3 L 0,12 Q -18,8 -36,15 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
       <line x1="-30" y1="4" x2="-6" y2="0" stroke="#64748b" stroke-width="0.8" />
       <line x1="-30" y1="8" x2="-6" y2="4" stroke="#64748b" stroke-width="0.8" />
-      <!-- Halaman Kanan (Emas / Kuning Hangat) -->
-      <path d="M 0,-3 Q 18,-7 36,0 L 36,15 Q 18,8 0,12 Z" fill="#fef08a" fill-opacity="0.95" stroke="#facc15" stroke-width="1" />
-      <line x1="6" y1="0" x2="30" y2="4" stroke="#b45309" stroke-width="0.8" />
-      <line x1="6" y1="4" x2="30" y2="8" stroke="#b45309" stroke-width="0.8" />
-      <!-- Tulang Buku Tengah -->
-      <line x1="0" y1="-3" x2="0" y2="12" stroke="#334155" stroke-width="1.8" />
+      <!-- Halaman Kanan Buku (Emas Hangat) -->
+      <path d="M 0,-3 Q 18,-7 36,0 L 36,15 Q 18,8 0,12 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="1" />
+      <line x1="6" y1="0" x2="30" y2="4" stroke="#ca8a04" stroke-width="0.8" />
+      <line x1="6" y1="4" x2="30" y2="8" stroke="#ca8a04" stroke-width="0.8" />
+      <!-- Punggung Buku Tengah -->
+      <line x1="0" y1="-3" x2="0" y2="12" stroke="#1e293b" stroke-width="2" />
     </g>
 
-    <!-- Tulisan IELA Bold Elegan -->
-    <text x="250" y="268" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="900" fill="#ffffff" letter-spacing="3.5" stroke="#090d16" stroke-width="1.2">
+    <!-- Tulisan Resmi 'IELA' Bold Hitam/Gelap di Atas Separuh Warna -->
+    <text x="250" y="267" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="900" fill="#0f172a" letter-spacing="3.5">
       IELA
     </text>
 
-    <!-- Garis Pembatas Tengah Vertikal -->
-    <line x1="250" y1="130" x2="250" y2="370" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.4" />
+    <!-- Garis Pemisah Tengah Vertikal -->
+    <line x1="250" y1="130" x2="250" y2="370" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.5" />
 
-    <!-- Lapisan Foto Logo IELA Resmi (Opsional saat online) -->
+    <!-- Lapisan Foto Asli Logo IELA (Sebagai Overlay Sempurna) -->
     <image
       href="https://i.ibb.co/B5pjdF4v/Whats-App-Image-2026-09-30-at-18-36-50-1.jpg"
       x="126"
@@ -645,12 +683,12 @@
       width="248"
       height="248"
       preserveAspectRatio="xMidYMid meet"
-      opacity="0.32"
+      opacity="0.38"
     />
   </g>
 
-  <!-- Ring Luar Pembatas Inti dengan Glow Halus -->
-  <circle cx="250" cy="250" r="118" stroke="#38bdf8" stroke-width="2.2" fill="none" stroke-opacity="0.85" />
+  <!-- Ring Luar Pembatas Inti Bercahaya -->
+  <circle cx="250" cy="250" r="120" stroke="#38bdf8" stroke-width="2.4" fill="none" stroke-opacity="0.9" />
 </svg>
           </div>
           <div class="relative z-10 max-w-3xl space-y-6">
