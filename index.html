@@ -5777,9 +5777,9 @@
       window.renderPengumumanLolosTable = function () {
         const tb = document.getElementById("pengumuman-lolos-table-body");
         if (!tb) return;
-        const lolosList = window.appState.data.pendaftar.filter(function(x) {
-          var st = String(x.Status_Pendaftaran || '').toLowerCase();
-          return st.includes('lolos') && !st.includes('tidak lolos');
+        const lolosList = (window.appState.data.pendaftar || []).filter(function(x) {
+          var st = String(x.Status_Pendaftaran || '').toLowerCase().trim();
+          return st.includes('lolos') && !st.includes('tidak');
         });
         if (lolosList.length === 0) {
           tb.innerHTML =
@@ -5787,10 +5787,27 @@
           return;
         }
         tb.innerHTML = lolosList
-          .map(
-            (x) =>
-              ' <tr class="hover:bg-slate-800/40"> <td class="p-3 font-mono font-bold text-indigo-400">' + (x.NIM) + '</td> <td class="p-3 font-bold text-white">' + (x.Nama) + '</td> <td class="p-3 text-slate-300">' + (x.Bidang_Pilihan_1 || "-") + '</td> <td class="p-3"><span class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">' + (x.Status_Pendaftaran) + '</span></td> </tr> ',
-          )
+          .map(function(x) {
+            var st = String(x.Status_Pendaftaran || '').toLowerCase().trim();
+            // Identifikasi kelulusan akhir IELA (Lolos IELA / Lolos Asisten)
+            var isLolosIela = (st.includes('iela') || st.includes('asisten') || st === 'lolos') && !st.includes('tidak') && !st.includes('berkas');
+
+            // Sesuai instruksi: jika statusnya lolos IELA, hilangkan bidang yang dipilih (tampilkan '-') dan status hanya 'Lolos'
+            var displayBidang = isLolosIela ? '-' : (x.Bidang_Pilihan_1 || '-');
+            var displayStatus = isLolosIela ? 'Lolos' : (x.Status_Pendaftaran || 'Lolos');
+            var badgeClass = isLolosIela
+              ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+              : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30';
+
+            return (
+              '<tr class="hover:bg-slate-800/40">' +
+              '  <td class="p-3 font-mono font-bold text-indigo-400">' + (x.NIM || '-') + '</td>' +
+              '  <td class="p-3 font-bold text-white">' + (x.Nama || '-') + '</td>' +
+              '  <td class="p-3 text-slate-300 font-medium">' + displayBidang + '</td>' +
+              '  <td class="p-3"><span class="px-2.5 py-1 text-[10px] font-bold rounded-full ' + badgeClass + ' border">' + displayStatus + '</span></td>' +
+              '</tr>'
+            );
+          })
           .join("");
       };
 
@@ -7094,6 +7111,7 @@
               '        <option value="Submitted">Submitted</option>' +
               '        <option value="Draft">Draft</option>' +
               '        <option value="Lolos Seleksi Berkas">Lolos Berkas</option>' +
+              '        <option value="Lolos IELA">Lolos IELA</option>' +
               '        <option value="Lolos Asisten Lab 2027">Lolos Asisten</option>' +
               '        <option value="Tidak Lolos">Tidak Lolos</option>' +
               '      </select>' +
@@ -7135,7 +7153,7 @@
             btnSubmit.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Ya, Tidak Lolos';
           }
           if (descBox) descBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-400 mr-1"></i> Pendaftar akan dinyatakan <strong>Tidak Lolos</strong> dan menerima email notifikasi resmi bertema merah.';
-        } else if (newStatus.includes("Lolos Asisten")) {
+        } else if (newStatus.includes("Lolos Asisten") || newStatus.includes("Lolos IELA") || newStatus === "Lolos") {
           if (iconBox) iconBox.className = "w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xl";
           if (icon) icon.className = "fa-solid fa-trophy";
           if (badgeEl) badgeEl.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
@@ -7212,6 +7230,7 @@
             }
           });
           window.renderAdminTable();
+          if (typeof window.renderPengumumanLolosTable === "function") window.renderPengumumanLolosTable();
         }
 
         if (window.checkIsGAS()) {

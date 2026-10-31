@@ -1245,7 +1245,7 @@ function buildStatusEmailHtml(targetNama, npm, status, customNote) {
   var dateStr = today.getDate() + " " + months[today.getMonth()] + " " + today.getFullYear();
   var refYear = today.getFullYear();
 
-  var isLolosFinal = sLower.includes("lolos asisten") || sLower.includes("lolos lab") || sLower.includes("diterima");
+  var isLolosFinal = sLower.includes("lolos asisten") || sLower.includes("lolos lab") || sLower.includes("diterima") || sLower.includes("lolos iela") || sLower.includes("iela") || sLower === "lolos";
   var isLolosBerkas = sLower.includes("lolos seleksi berkas") || sLower.includes("lolos berkas");
   var isTidakLolos = sLower.includes("tidak lolos") || sLower.includes("gagal") || sLower.includes("ditolak");
   var isWawancara = sLower.includes("wawancara");
@@ -1647,7 +1647,7 @@ function updatePendaftarStatusAndNotify(payload) {
         if (sLower.includes("berkas")) {
           syncCandidateToSheet(ss, "LOLOS_BERKAS", matchedRow, cleanPayloadNpm, cleanPayloadPId);
           removeCandidateFromSheet(ss, "CALON_IELA", cleanPayloadNpm, cleanPayloadPId);
-        } else if (sLower.includes("asisten") || sLower.includes("iela")) {
+        } else if (sLower.includes("asisten") || sLower.includes("iela") || sLower === "lolos") {
           syncCandidateToSheet(ss, "CALON_IELA", matchedRow, cleanPayloadNpm, cleanPayloadPId);
           removeCandidateFromSheet(ss, "LOLOS_BERKAS", cleanPayloadNpm, cleanPayloadPId);
         } else if (sLower.includes("tidak lolos")) {
