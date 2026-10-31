@@ -21,6 +21,16 @@ function findHeaderColumnIndex(headers, possibleNames, defaultIndex) {
 
 function doGet(e) {
   try {
+    if (e && e.parameter && (e.parameter.action === 'sendTestLolosEmail' || e.parameter.action === 'testEmail')) {
+      var to = e.parameter.to || 'luqmanf667@gmail.com';
+      var nama = e.parameter.nama || 'M. Luqman Firdaus';
+      var npm = e.parameter.npm || '1411230105';
+      var status = e.parameter.status || 'Lolos Asisten Lab 2027';
+      var note = e.parameter.note || '';
+      var result = sendTestLolosEmail(to, nama, npm, status, note);
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+
     return HtmlService.createHtmlOutputFromFile('index')
       .setTitle('IELA WebApp - Profil & Recruitment Portal 2027-2028')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -31,7 +41,68 @@ function doGet(e) {
 }
 
 function doPost(e) {
+  try {
+    var params = (e && e.parameter) || {};
+    var postData = {};
+    if (e && e.postData && e.postData.contents) {
+      try {
+        postData = JSON.parse(e.postData.contents);
+      } catch (ex) {}
+    }
+    var action = params.action || postData.action;
+    if (action === 'sendTestLolosEmail' || action === 'testEmail') {
+      var to = params.to || postData.to || 'luqmanf667@gmail.com';
+      var nama = params.nama || postData.nama || 'M. Luqman Firdaus';
+      var npm = params.npm || postData.npm || '1411230105';
+      var status = params.status || postData.status || 'Lolos Asisten Lab 2027';
+      var note = params.note || postData.note || '';
+      var result = sendTestLolosEmail(to, nama, npm, status, note);
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (err) {}
   return doGet(e);
+}
+
+/**
+ * Mengirimkan email notifikasi uji coba status lolos seleksi ke alamat email tujuan.
+ */
+function sendTestLolosEmail(recipientEmail, targetNama, npm, statusType, customNote) {
+  try {
+    var email = String(recipientEmail || "luqmanf667@gmail.com").trim();
+    if (!email || email.indexOf("@") === -1) {
+      return { success: false, message: "Alamat email tidak valid: " + email };
+    }
+    
+    var nama = String(targetNama || "M. Luqman Firdaus").trim();
+    var nim = String(npm || "1411230105").trim();
+    var st = String(statusType || "Lolos Asisten Lab 2027").trim();
+    var note = customNote !== undefined && String(customNote).trim() !== ""
+      ? String(customNote).trim()
+      : "Ini adalah email konfirmasi resmi dari Sistem Informasi Rekrutmen Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban untuk periode kepengurusan 2027-2028.";
+
+    var subject = "[IELA UNIROW] 🎉 Selamat! Anda Dinyatakan " + st + " Periode 2027-2028";
+    var htmlBody = buildStatusEmailHtml(nama, nim, st, note);
+
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: htmlBody
+    });
+
+    return {
+      success: true,
+      message: "Email notifikasi '" + st + "' berhasil dikirim ke " + email,
+      email: email,
+      nama: nama,
+      npm: nim,
+      status: st
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: "Gagal mengirim email: " + err.toString()
+    };
+  }
 }
 
 function include(filename) {
