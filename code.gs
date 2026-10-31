@@ -821,9 +821,15 @@ function saveOrUpdateUser(payload) {
     
     // Bersihkan aturan validasi data kaku pada sheet USERS agar custom role & jabatan bebas disimpan tanpa exception
     try {
+      sheet.getRange("A:Z").clearDataValidations();
+      sheet.getDataRange().clearDataValidations();
       writeRange.clearDataValidations();
       for (var ci = 1; ci <= headers.length; ci++) {
-        try { sheet.getRange(writeRowIdx, ci).clearDataValidations(); } catch (eC) {}
+        try {
+          var cTarget = sheet.getRange(writeRowIdx, ci);
+          cTarget.clearDataValidations();
+          cTarget.setDataValidation(null);
+        } catch (eC) {}
       }
       SpreadsheetApp.flush();
     } catch (eVal) {}
@@ -844,7 +850,10 @@ function saveOrUpdateUser(payload) {
         for (var c = 0; c < headers.length; c++) {
           try {
             var cCell = sheet.getRange(writeRowIdx, c + 1);
-            try { cCell.clearDataValidations(); } catch (eCv) {}
+            try {
+              cCell.clearDataValidations();
+              cCell.setDataValidation(null);
+            } catch (eCv) {}
             cCell.setValue(outRow[c]);
           } catch (cErr) {
             cellError = cErr;
