@@ -542,11 +542,9 @@
       <stop offset="70%" stop-color="#0284c7" stop-opacity="0.08" />
       <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
     </radialGradient>
-    <!-- Path Teks Melingkar -->
-    <path id="textCircleTop" d="M 108,250 A 142,142 0 0,1 392,250" fill="none" />
-    <path id="textCircleBottom" d="M 112,250 A 138,138 0 0,0 388,250" fill="none" />
+    <path id="textCircleBottom" d="M 116,250 A 134,134 0 0,0 384,250" fill="none" />
     <clipPath id="innerCircleClip">
-      <circle cx="250" cy="250" r="120" />
+      <circle cx="250" cy="250" r="122" />
     </clipPath>
   </defs>
 
@@ -617,78 +615,60 @@
   </g>
 
   <!-- ============================================== -->
-  <!-- 3. INTI EMBLEM RESMI IELA (TEGAK, KOKOH & ASLI)-->
+  <!-- 3. INTI EMBLEM RESMI IELA (TEGAK, BERSIH & JELAS) -->
   <!-- ============================================== -->
-  <!-- Cincin Biru Lambang (Navy Blue Seal) -->
+  <!-- Cincin Biru Lambang (Navy Blue Ring) -->
   <circle cx="250" cy="250" r="150" fill="#1e3a8a" fill-opacity="0.85" stroke="#38bdf8" stroke-width="2.6" />
   <circle cx="250" cy="250" r="122" stroke="#60a5fa" stroke-width="1.5" fill="none" stroke-opacity="0.9" />
 
-  <!-- Teks Melingkar Atas: LABORATORIUM TEKNIK INDUSTRI -->
-  <text font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="900" fill="#ffffff" letter-spacing="2.2">
-    <textPath href="#textCircleTop" startOffset="50%" text-anchor="middle">
-      LABORATORIUM TEKNIK INDUSTRI
-    </textPath>
-  </text>
-
-  <!-- Teks Melingkar Bawah: UNIROW TUBAN -->
-  <text font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="900" fill="#facc15" letter-spacing="3.5">
-    <textPath href="#textCircleBottom" startOffset="50%" text-anchor="middle">
-      UNIROW TUBAN
-    </textPath>
-  </text>
-
-  <!-- 2 Bintang Pemisah Kiri & Kanan (Ciri Khas Logo IELA) -->
-  <text x="108" y="254" text-anchor="middle" font-size="13" fill="#ffffff">★</text>
-  <text x="392" y="254" text-anchor="middle" font-size="13" fill="#ffffff">★</text>
+  
 
   <!-- Lingkar Inti Belah Dua (Kiri Cyan, Kanan Kuning Gold) -->
   <g clip-path="url(#innerCircleClip)">
     <!-- Separuh Kiri: Cyan Biru Muda IELA -->
-    <rect x="130" y="130" width="120" height="240" fill="#00a3e0" fill-opacity="0.8" />
+    <rect x="125" y="125" width="125" height="250" fill="#00a3e0" fill-opacity="0.9" />
     <!-- Separuh Kanan: Kuning Emas IELA -->
-    <rect x="250" y="130" width="120" height="240" fill="#ffc72c" fill-opacity="0.8" />
+    <rect x="250" y="125" width="125" height="250" fill="#ffc72c" fill-opacity="0.9" />
 
-    <!-- Kubah Atas Hitam/Gear Siluet Industri -->
-    <path d="M 130,200 Q 250,152 370,200 L 370,130 L 130,130 Z" fill="#0b1120" />
+    <!-- Kubah Atas Hitam Arsitektur Industri -->
+    <path d="M 125,198 Q 250,150 375,198 L 375,125 L 125,125 Z" fill="#0b1120" />
     
     <!-- Lambang Buku Terbuka (Open Book of Knowledge) -->
-    <g transform="translate(250, 216) scale(1.25)">
-      <!-- Bayangan Dasar Buku -->
-      <path d="M -38,2 Q -18,-6 0,-2 Q 18,-6 38,2 L 34,14 Q 18,6 0,10 Q -18,6 -34,14 Z" fill="#0b1120" fill-opacity="0.7" />
+    <g transform="translate(250, 212) scale(1.35)">
+      <!-- Bayangan Buku -->
+      <path d="M -38,2 Q -18,-6 0,-2 Q 18,-6 38,2 L 34,14 Q 18,6 0,10 Q -18,6 -34,14 Z" fill="#0b1120" fill-opacity="0.75" />
       <!-- Halaman Kiri Buku (Putih Bersih) -->
-      <path d="M -36,0 Q -18,-7 0,-3 L 0,12 Q -18,8 -36,15 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
-      <line x1="-30" y1="4" x2="-6" y2="0" stroke="#64748b" stroke-width="0.8" />
-      <line x1="-30" y1="8" x2="-6" y2="4" stroke="#64748b" stroke-width="0.8" />
+      <path d="M -36,0 Q -18,-7 0,-3 L 0,12 Q -18,8 -36,15 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.1" />
+      <line x1="-30" y1="4" x2="-6" y2="0" stroke="#64748b" stroke-width="0.9" />
+      <line x1="-30" y1="8" x2="-6" y2="4" stroke="#64748b" stroke-width="0.9" />
       <!-- Halaman Kanan Buku (Emas Hangat) -->
-      <path d="M 0,-3 Q 18,-7 36,0 L 36,15 Q 18,8 0,12 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="1" />
-      <line x1="6" y1="0" x2="30" y2="4" stroke="#ca8a04" stroke-width="0.8" />
-      <line x1="6" y1="4" x2="30" y2="8" stroke="#ca8a04" stroke-width="0.8" />
+      <path d="M 0,-3 Q 18,-7 36,0 L 36,15 Q 18,8 0,12 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="1.1" />
+      <line x1="6" y1="0" x2="30" y2="4" stroke="#ca8a04" stroke-width="0.9" />
+      <line x1="6" y1="4" x2="30" y2="8" stroke="#ca8a04" stroke-width="0.9" />
       <!-- Punggung Buku Tengah -->
-      <line x1="0" y1="-3" x2="0" y2="12" stroke="#1e293b" stroke-width="2" />
+      <line x1="0" y1="-3" x2="0" y2="12" stroke="#1e293b" stroke-width="2.2" />
     </g>
 
-    <!-- Tulisan Resmi 'IELA' Bold Hitam/Gelap di Atas Separuh Warna -->
-    <text x="250" y="267" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="900" fill="#0f172a" letter-spacing="3.5">
+    <!-- SATU TULISAN TUNGGAL 'IELA' (PRESISI & SANGAT TEGAS, TIDAK ADA DUPLIKASI LAGI) -->
+    <text
+      x="250"
+      y="272"
+      text-anchor="middle"
+      font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+      font-size="28"
+      font-weight="900"
+      fill="#0f172a"
+      letter-spacing="4"
+    >
       IELA
     </text>
 
-    <!-- Garis Pemisah Tengah Vertikal -->
-    <line x1="250" y1="130" x2="250" y2="370" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.5" />
-
-    <!-- Lapisan Foto Asli Logo IELA (Sebagai Overlay Sempurna) -->
-    <image
-      href="https://i.ibb.co/B5pjdF4v/Whats-App-Image-2026-09-30-at-18-36-50-1.jpg"
-      x="126"
-      y="126"
-      width="248"
-      height="248"
-      preserveAspectRatio="xMidYMid meet"
-      opacity="0.38"
-    />
+    <!-- Garis Pemisah Tengah Vertikal Simetris -->
+    <line x1="250" y1="125" x2="250" y2="375" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.6" />
   </g>
 
   <!-- Ring Luar Pembatas Inti Bercahaya -->
-  <circle cx="250" cy="250" r="120" stroke="#38bdf8" stroke-width="2.4" fill="none" stroke-opacity="0.9" />
+  <circle cx="250" cy="250" r="122" stroke="#38bdf8" stroke-width="2.5" fill="none" stroke-opacity="0.95" />
 </svg>
           </div>
           <div class="relative z-10 max-w-3xl space-y-6">
