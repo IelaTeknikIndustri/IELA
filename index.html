@@ -179,6 +179,64 @@
         .stagger-in > * { opacity: 1; transform: none; transition: none; }
         #scroll-progress { display: none; }
       }
+
+      /* ===== LEMBAR BERTUMPUK (overlapping sections) & MARQUEE VELOCITY =====
+         Beranda disusun sebagai lembar yang saling menimpa: lembar berikutnya
+         naik menutupi lembar sebelumnya yang mengecil dan meredup sedikit.
+         Hanya transform/scale + opacity. Dimatikan saat prefers-reduced-motion. */
+      #tab-home > .sheet:not(#hero-stage) {
+        background-color: #162037;
+        border-radius: 1.75rem;
+        padding: 1.5rem;
+      }
+      @media (min-width: 640px) {
+        #tab-home > .sheet:not(#hero-stage) { padding: 2.5rem; }
+      }
+      #home-sheet-intro:not(:has(> :not(.cms-hidden))) { display: none; }
+      html.sheets-on #tab-home > .sheet {
+        position: sticky;
+        top: 92px;
+        transform-origin: 50% 0;
+        scale: calc(1 - var(--cover, 0) * 0.045);
+      }
+      html.sheets-on #tab-home > .sheet::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 30;
+        border-radius: inherit;
+        background-color: #0b1120;
+        opacity: calc(var(--cover, 0) * 0.45);
+        pointer-events: none;
+      }
+      .vm { position: relative; z-index: 10; margin: 2.5rem -2rem 0; overflow: clip; }
+      @media (min-width: 640px) { .vm { margin-left: -3rem; margin-right: -3rem; } }
+      .vm-track { display: flex; width: max-content; }
+      .vm-group { display: flex; flex: none; margin: 0; padding: 0; list-style: none; }
+      .vm-item {
+        flex: none;
+        font-size: clamp(2rem, 4.6vw, 3.5rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        color: #94a3b8;
+        white-space: nowrap;
+        padding-right: 0.5em;
+      }
+      .vm-item::after { content: "/"; margin-left: 0.5em; color: #818cf8; font-weight: 500; }
+      .vm-pause {
+        position: relative; z-index: 10; margin-top: 1rem;
+        font-size: 0.8125rem; font-weight: 600; color: #94a3b8; cursor: pointer;
+        transition: color 180ms ease;
+      }
+      .vm-pause:hover, .vm-pause:focus-visible { color: #f8fafc; }
+      @media (prefers-reduced-motion: reduce) {
+        .vm { margin-left: 0; margin-right: 0; }
+        .vm-track { display: block; width: auto; transform: none !important; }
+        .vm-group { flex: 0 1 auto; flex-wrap: wrap; }
+        .vm-group .vm-item:last-child::after { display: none; }
+        .vm-group[aria-hidden="true"], .vm-pause { display: none; }
+      }
     </style>
   </head>
   <body
@@ -475,13 +533,13 @@
     <!-- MAIN CONTENT AREA -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- TAB 1: BERANDA -->
-      <section id="tab-home" class="tab-content space-y-12">
+      <section id="tab-home" class="tab-content space-y-6">
         <!-- BANNER PENGUMUMAN RESMI TERBARU DI BERANDA UTAMA -->
                 <div id="home-pengumuman-banner" class="hidden"></div>
 
         <div
           id="hero-stage"
-          class="reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 p-8 sm:p-12"
+          class="sheet reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 p-8 sm:p-12"
         >
           <div
             class="hero-aurora absolute -right-20 -top-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"
@@ -547,7 +605,29 @@
               </button>
             </div>
           </div>
+
+          <div class="vm" data-vm>
+            <div class="vm-track">
+              <ul class="vm-group" aria-label="Bidang praktikum dan riset IELA">
+                <li class="vm-item">Ergonomi</li>
+                <li class="vm-item">Fisika Dasar</li>
+                <li class="vm-item">Statistika</li>
+                <li class="vm-item">Proses Manufaktur</li>
+                <li class="vm-item">Algoritma Pemrograman</li>
+              </ul>
+              <ul class="vm-group" aria-hidden="true">
+                <li class="vm-item">Ergonomi</li>
+                <li class="vm-item">Fisika Dasar</li>
+                <li class="vm-item">Statistika</li>
+                <li class="vm-item">Proses Manufaktur</li>
+                <li class="vm-item">Algoritma Pemrograman</li>
+              </ul>
+            </div>
+          </div>
+          <button type="button" class="vm-pause" aria-pressed="false" data-vm-pause>Jeda gerak</button>
         </div>
+        <!-- LEMBAR PENGANTAR: statistik + visi misi -->
+        <div id="home-sheet-intro" class="sheet space-y-6">
         <div class="reveal stagger-in grid grid-cols-2 md:grid-cols-4 gap-4" data-cms-show="SHOW_HOME_STATS">
           <div class="glass-card p-6 rounded-2xl border border-slate-800">
             <i class="fa-solid fa-flask text-2xl text-indigo-400 mb-2"></i>
@@ -603,9 +683,10 @@
             </ul>
           </div>
         </div>
+        </div>
 
         <!-- SHOWCASE 5 SUB-LABORATORIUM -->
-        <div class="reveal space-y-6" data-cms-show="SHOW_HOME_SUBLABS">
+        <div class="sheet reveal space-y-6" data-cms-show="SHOW_HOME_SUBLABS">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 border-b border-slate-800 pb-4">
             <div>
               <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400" data-cms="SUBLABS_EYEBROW">Fokus Keilmuan</span>
@@ -619,7 +700,7 @@
         </div>
 
         <!-- SHOWCASE GALERI TERBARU -->
-        <div class="reveal space-y-6" data-cms-show="SHOW_HOME_GALERI">
+        <div class="sheet reveal space-y-6" data-cms-show="SHOW_HOME_GALERI">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 border-b border-slate-800 pb-4">
             <div>
               <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400" data-cms="GALERI_EYEBROW">Dokumentasi</span>
@@ -633,7 +714,7 @@
         </div>
 
         <!-- SHOWCASE BERITA & WORKSHOP -->
-        <div class="reveal space-y-6" data-cms-show="SHOW_HOME_BERITA">
+        <div class="sheet reveal space-y-6" data-cms-show="SHOW_HOME_BERITA">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 border-b border-slate-800 pb-4">
             <div>
               <span class="text-[10px] font-black uppercase tracking-widest text-cyan-400" data-cms="BERITA_EYEBROW">Informasi Terkini</span>
@@ -5330,6 +5411,156 @@
         }
       };
 
+      /* ---------- Lembar bertumpuk + marquee velocity (Beranda) ---------- */
+      window.initSheetStack = function () {
+        if (window.__sheetStackInit) return;
+        var home = document.getElementById("tab-home");
+        if (!home) return;
+        window.__sheetStackInit = true;
+        var root = document.documentElement;
+        var header = document.querySelector("header.sticky");
+        var reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+        var GAP = 12;
+        var all = Array.prototype.slice.call(home.querySelectorAll(":scope > .sheet"));
+        var live = [];
+        var queued = false;
+
+        function collect() {
+          live = all.filter(function (el) { return el.offsetParent !== null; });
+        }
+        function update() {
+          queued = false;
+          var rects = live.map(function (el) { return el.getBoundingClientRect(); });
+          for (var i = 0; i < live.length; i++) {
+            var p = 0;
+            if (i < live.length - 1) {
+              var h = Math.max(live[i].offsetHeight, 1);
+              p = (rects[i].top + h - rects[i + 1].top) / h;
+              p = Math.max(0, Math.min(1, p));
+            }
+            live[i].style.setProperty("--cover", p.toFixed(3));
+          }
+        }
+        function schedule() {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(update);
+        }
+        function place() {
+          if (reduceMq.matches) return;
+          collect();
+          var vh = window.innerHeight;
+          var top0 = (header ? header.getBoundingClientRect().height : 80) + GAP;
+          live.forEach(function (el) {
+            // Lembar yang lebih tinggi dari layar berhenti saat dasarnya sampai di tepi bawah layar.
+            el.style.top = Math.min(top0, vh - el.offsetHeight - GAP) + "px";
+          });
+          schedule();
+        }
+        function apply() {
+          var on = !reduceMq.matches;
+          root.classList.toggle("sheets-on", on);
+          if (on) {
+            place();
+          } else {
+            all.forEach(function (el) {
+              el.style.removeProperty("top");
+              el.style.removeProperty("--cover");
+            });
+          }
+        }
+
+        window.addEventListener("scroll", function () { if (!reduceMq.matches) schedule(); }, { passive: true });
+        window.addEventListener("resize", place);
+        window.addEventListener("load", place);
+        if (reduceMq.addEventListener) reduceMq.addEventListener("change", apply);
+        if ("ResizeObserver" in window) {
+          var ro = new ResizeObserver(place);
+          ro.observe(home);
+          all.forEach(function (el) { ro.observe(el); });
+          if (header) ro.observe(header);
+        }
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+        apply();
+      };
+
+      window.initVelocityMarquee = function () {
+        var box = document.querySelector("[data-vm]");
+        if (!box || box.dataset.vmInit) return;
+        box.dataset.vmInit = "1";
+        var track = box.querySelector(".vm-track");
+        var group = box.querySelector(".vm-group");
+        var btn = document.querySelector("[data-vm-pause]");
+        var reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+        var x = 0, dir = 1, vel = 0, gw = 0;
+        var lastY = window.pageYOffset, lastT = 0;
+        var raf = 0, paused = false, visible = false;
+
+        function measure() {
+          gw = group.getBoundingClientRect().width;
+          // Cukup banyak salinan agar jalur selalu menutupi lebar kotak + satu kelompok.
+          var guard = 0;
+          while (gw > 0 && track.scrollWidth < box.clientWidth + gw && guard++ < 4) {
+            var clone = group.cloneNode(true);
+            clone.setAttribute("aria-hidden", "true");
+            track.appendChild(clone);
+          }
+        }
+        function frame(t) {
+          raf = 0;
+          if (!visible || paused || reduceMq.matches) return;
+          var dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 0;
+          lastT = t;
+          var y = window.pageYOffset;
+          var inst = dt > 0 ? (y - lastY) / dt : 0;
+          lastY = y;
+          // Kecepatan gulir dihaluskan; arah mengikuti arah gulir, diam = lanjut arah terakhir.
+          vel += (inst - vel) * 0.1;
+          var target = Math.abs(vel) > 40 ? (vel > 0 ? 1 : -1) : (dir >= 0 ? 1 : -1);
+          dir += (target - dir) * 0.08;
+          var speed = (28 + Math.min(Math.abs(vel) * 0.16, 360)) * dir;
+          x -= speed * dt;
+          if (gw > 0) {
+            while (x <= -gw) x += gw;
+            while (x > 0) x -= gw;
+          }
+          track.style.transform = "translate3d(" + x.toFixed(2) + "px,0,0)";
+          raf = requestAnimationFrame(frame);
+        }
+        function start() {
+          if (raf || !visible || paused || reduceMq.matches) return;
+          lastT = 0;
+          lastY = window.pageYOffset;
+          raf = requestAnimationFrame(frame);
+        }
+
+        measure();
+        window.addEventListener("resize", measure);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver(function (entries) {
+            visible = entries[0].isIntersecting;
+            if (visible) start();
+          }).observe(box);
+        } else {
+          visible = true;
+          start();
+        }
+        if (btn) {
+          btn.addEventListener("click", function () {
+            paused = !paused;
+            btn.setAttribute("aria-pressed", paused ? "true" : "false");
+            btn.textContent = paused ? "Lanjutkan gerak" : "Jeda gerak";
+            if (!paused) start();
+          });
+        }
+        if (reduceMq.addEventListener) {
+          reduceMq.addEventListener("change", function () {
+            if (reduceMq.matches) track.style.transform = ""; else start();
+          });
+        }
+      };
+
       window.initCountUp = function () {
         var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         document.querySelectorAll(".js-countup").forEach(function (el) {
@@ -9529,7 +9760,7 @@
           usernameInput.value = rememberedUsername;
           rememberCheckbox.checked = true;
         }
-        try { window.applyCms(); window.initHeroFx(); } catch (e) { console.error(e); }
+        try { window.applyCms(); window.initHeroFx(); window.initSheetStack(); window.initVelocityMarquee(); } catch (e) { console.error(e); }
         window.initData(false);
       });
 
