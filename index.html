@@ -3478,6 +3478,60 @@
         </div>
       </div>
     </div>
+    <!-- MODAL VALIDASI KELENGKAPAN FORMULIR & BERKAS -->
+    <div
+      id="modal-incomplete-pendaftaran"
+      class="fixed inset-0 z-[80] hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
+      style="display: none"
+    >
+      <div
+        class="glass-card max-w-lg w-full p-6 sm:p-7 rounded-3xl border border-rose-500/40 relative space-y-5 shadow-2xl my-auto max-h-[90vh] overflow-y-auto"
+      >
+        <button
+          type="button"
+          onclick="window.closeModal('modal-incomplete-pendaftaran')"
+          class="absolute top-5 right-5 text-slate-400 hover:text-white cursor-pointer"
+        >
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xl shrink-0">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white">
+              Formulir Belum Lengkap!
+            </h3>
+            <p class="text-xs text-rose-300">
+              Seluruh isian data diri dan 6 berkas persyaratan wajib dilengkapi untuk dapat melakukan submit.
+            </p>
+          </div>
+        </div>
+
+        <div id="incomplete-items-container" class="space-y-3 text-xs">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="pt-2 flex items-center gap-3">
+          <button
+            type="button"
+            onclick="window.closeModal('modal-incomplete-pendaftaran')"
+            class="w-1/3 py-2.5 px-3 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs font-bold transition cursor-pointer"
+          >
+            Tutup
+          </button>
+          <button
+            type="button"
+            id="btn-scroll-first-incomplete"
+            onclick="window.scrollToFirstIncomplete()"
+            class="w-2/3 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white text-xs font-bold transition cursor-pointer shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-arrow-down"></i>
+            <span>Lengkapi Item yang Kurang</span>
+          </button>
+        </div>
+      </div>
+    </div>
     <!-- MODAL 9: TAMBAH / EDIT PUBLIKASI ARTIKEL -->
     <div
       id="modal-publikasi"
@@ -4476,12 +4530,17 @@
         const textEl = document.getElementById("preview-" + key + "-text");
         if (!file) {
           window.appState.files[key] = null;
-          if (textEl) textEl.innerText = "Belum dipilih";
+          if (textEl) textEl.innerHTML = '<span class="text-rose-400 font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-exclamation"></i> Belum dipilih</span>';
           return;
         }
-        if (textEl)
-          textEl.innerText =
-            file.name + " (" + (file.size / 1024).toFixed(1) + " KB)";
+        if (textEl) {
+          textEl.innerHTML = '<span class="text-emerald-400 font-semibold flex items-center gap-1"><i class="fa-solid fa-check"></i> ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)</span>';
+        }
+        // Hapus highlight error jika ada
+        const parentCard = event.target.closest(".rounded-2xl");
+        if (parentCard) {
+          parentCard.classList.remove("form-input-error", "border-rose-500", "ring-2", "ring-rose-500/40");
+        }
         const reader = new FileReader();
         reader.onload = function (e) {
           window.appState.files[key] = e.target.result;
@@ -6770,6 +6829,48 @@
             pData.Pelatihan_Diikuti || "";
           document.getElementById("p-resume-buku").value =
             pData.Buku_Diresume || "";
+
+          // Simpan referensi file yang sudah pernah diunggah sebelumnya di database
+          window.appState.existingFiles = {
+            foto: (pData.URL_Foto && pData.URL_Foto !== "#" && String(pData.URL_Foto).length > 10) ? pData.URL_Foto : null,
+            khs: (pData.URL_KHS && pData.URL_KHS !== "#" && String(pData.URL_KHS).length > 10) ? pData.URL_KHS : null,
+            cv: (pData.URL_CV && pData.URL_CV !== "#" && String(pData.URL_CV).length > 10) ? pData.URL_CV : null,
+            sertifikat: (pData.URL_Sertifikat && pData.URL_Sertifikat !== "#" && String(pData.URL_Sertifikat).length > 10) ? pData.URL_Sertifikat : null,
+            resume: (pData.URL_Resume && pData.URL_Resume !== "#" && String(pData.URL_Resume).length > 10) ? pData.URL_Resume : null,
+            jurnal: (pData.URL_Jurnal_Referensi || pData.URL_Jurnal) && (pData.URL_Jurnal_Referensi || pData.URL_Jurnal) !== "#" ? (pData.URL_Jurnal_Referensi || pData.URL_Jurnal) : null
+          };
+
+          // Tampilkan status preview untuk masing-masing berkas
+          var fileKeysList = [
+            { key: "foto", label: "Pas Foto Formal (3x4)" },
+            { key: "khs", label: "KHS Semester 1 & 2" },
+            { key: "cv", label: "CV / Resume" },
+            { key: "sertifikat", label: "Sertifikat Pendukung" },
+            { key: "resume", label: "Resume Jurnal" },
+            { key: "jurnal", label: "Jurnal Referensi" }
+          ];
+
+          fileKeysList.forEach(function(fk) {
+            var previewText = document.getElementById("preview-" + fk.key + "-text");
+            var existingUrl = window.appState.existingFiles[fk.key];
+            if (existingUrl) {
+              if (previewText) {
+                previewText.innerHTML = '<span class="text-emerald-400 font-semibold flex items-center gap-1"><i class="fa-solid fa-cloud-check"></i> Sudah Terunggah di Drive</span>';
+              }
+              if (fk.key === "foto") {
+                var fotoPreview = document.getElementById("preview-foto-img");
+                if (fotoPreview) {
+                  fotoPreview.src = existingUrl;
+                  fotoPreview.classList.remove("hidden");
+                }
+              }
+            } else {
+              if (previewText) {
+                previewText.innerHTML = '<span class="text-rose-400/90 font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-exclamation"></i> Wajib Diunggah</span>';
+              }
+            }
+          });
+
           const stBadge = document.getElementById("badge-status-pendaftaran");
           if (stBadge) {
             stBadge.innerText =
@@ -6886,6 +6987,85 @@
           window.showToast("Formulir Anda sudah disubmit sebelumnya dan telah dikunci permanen.", "error");
           return;
         }
+
+        // =========================================================================
+        // VALIDASI KETAT: WAJIB MENGISI SEMUANYA & MENGUNGGAH 6 BERKAS LENGKAP
+        // =========================================================================
+        const mandatoryFields = [
+          { id: "p-nama", label: "Nama Lengkap", section: "1. Identitas Personal" },
+          { id: "p-panggilan", label: "Nama Panggilan", section: "1. Identitas Personal" },
+          { id: "p-jk", label: "Jenis Kelamin", section: "1. Identitas Personal" },
+          { id: "p-ttl", label: "Tempat, Tanggal Lahir", section: "1. Identitas Personal" },
+          { id: "p-hp", label: "No. HP / WhatsApp", section: "1. Identitas Personal" },
+          { id: "p-alamat-asal", label: "Alamat Asal", section: "1. Identitas Personal" },
+          { id: "p-alamat-sekarang", label: "Alamat Sekarang / Kos", section: "1. Identitas Personal" },
+          { id: "p-hobby", label: "Hobby", section: "1. Identitas Personal" },
+          { id: "p-citacita", label: "Cita-Cita", section: "1. Identitas Personal" },
+          { id: "p-motto", label: "Motto Hidup", section: "1. Identitas Personal" },
+          { id: "p-semester", label: "Semester", section: "2. Akademik & Minat" },
+          { id: "p-prodi", label: "Program Studi", section: "2. Akademik & Minat" },
+          { id: "p-ipk", label: "IPK Kumulatif", section: "2. Akademik & Minat" },
+          { id: "p-bidang-1", label: "Bidang Utama Pilihan 1", section: "2. Akademik & Minat" },
+          { id: "p-bidang-2", label: "Bidang Pilihan 2", section: "2. Akademik & Minat" },
+          { id: "p-keterampilan", label: "Keterampilan Teknis", section: "2. Akademik & Minat" },
+          { id: "p-motivasi", label: "Motivasi Mendaftar Asisten Laboratorium", section: "2. Akademik & Minat" },
+          { id: "p-target", label: "Target di IELA", section: "2. Akademik & Minat" },
+          { id: "p-organisasi", label: "Riwayat Organisasi", section: "2. Akademik & Minat" },
+          { id: "p-pelatihan", label: "Pelatihan / Workshop", section: "2. Akademik & Minat" },
+          { id: "p-resume-buku", label: "Judul Jurnal Diresume", section: "2. Akademik & Minat" }
+        ];
+
+        const mandatoryFiles = [
+          { key: "foto", id: "file-foto", label: "1. Pas Foto Formal (3x4)", ext: "Foto Formal" },
+          { key: "khs", id: "file-khs", label: "2. KHS Semester 1 & 2 (PDF)", ext: "PDF / Dokumen" },
+          { key: "cv", id: "file-cv", label: "3. CV / Resume (PDF)", ext: "PDF / Dokumen" },
+          { key: "sertifikat", id: "file-sertifikat", label: "4. Sertifikat Pendukung (PDF)", ext: "PDF / Dokumen" },
+          { key: "resume", id: "file-resume", label: "5. Resume Jurnal (PDF)", ext: "PDF / Dokumen" },
+          { key: "jurnal", id: "file-jurnal", label: "6. Jurnal Referensi (PDF)", ext: "PDF / Dokumen" }
+        ];
+
+        // Bersihkan styling error sebelumnya
+        document.querySelectorAll(".form-input-error").forEach(function(el) {
+          el.classList.remove("form-input-error", "border-rose-500", "ring-2", "ring-rose-500/40");
+        });
+
+        const missingFields = [];
+        const missingFiles = [];
+
+        // 1. Cek isian data diri
+        mandatoryFields.forEach(function(f) {
+          const el = document.getElementById(f.id);
+          const val = el ? String(el.value || "").trim() : "";
+          if (!val) {
+            missingFields.push(f);
+            if (el) {
+              el.classList.add("form-input-error", "border-rose-500", "ring-2", "ring-rose-500/40");
+            }
+          }
+        });
+
+        // 2. Cek unggahan 6 berkas
+        mandatoryFiles.forEach(function(f) {
+          const hasNew = window.appState.files && window.appState.files[f.key];
+          const hasExisting = window.appState.existingFiles && window.appState.existingFiles[f.key] && window.appState.existingFiles[f.key] !== "#";
+          if (!hasNew && !hasExisting) {
+            missingFiles.push(f);
+            const fileInput = document.getElementById(f.id);
+            if (fileInput) {
+              const card = fileInput.closest(".rounded-2xl");
+              if (card) {
+                card.classList.add("form-input-error", "border-rose-500", "ring-2", "ring-rose-500/40");
+              }
+            }
+          }
+        });
+
+        // JIKA ADA YANG BELUM DIISI ATAU BELUM DIUNGGAH -> CEGAH SUBMIT & TAMPILKAN NOTIF LENGKAP
+        if (missingFields.length > 0 || missingFiles.length > 0) {
+          window.showIncompleteFormModal(missingFields, missingFiles);
+          return;
+        }
+
         window.showLoading(
           true,
           "Mengunggah Berkas ke Drive & Menyimpan Form...",
@@ -10281,6 +10461,84 @@
         }
       };
 
-    </script>
+    
+      window.appState.firstIncompleteId = null;
+
+      window.showIncompleteFormModal = function (missingFields, missingFiles) {
+        const container = document.getElementById("incomplete-items-container");
+        if (!container) return;
+
+        window.appState.firstIncompleteId = missingFiles.length > 0 ? missingFiles[0].id : (missingFields.length > 0 ? missingFields[0].id : null);
+
+        let html = '';
+
+        // Bagian Berkas yang Belum Diunggah
+        if (missingFiles.length > 0) {
+          html += '<div class="p-4 rounded-2xl bg-rose-950/40 border border-rose-500/40 space-y-2">' +
+            '<div class="flex items-center justify-between pb-1.5 border-b border-rose-500/20">' +
+              '<span class="font-bold text-rose-300 text-xs flex items-center gap-1.5">' +
+                '<i class="fa-solid fa-cloud-arrow-up text-rose-400"></i> ' + missingFiles.length + ' Berkas Belum Diunggah' +
+              '</span>' +
+              '<span class="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-bold">Wajib</span>' +
+            '</div>' +
+            '<ul class="space-y-1.5 pt-1">';
+          missingFiles.forEach(function (f) {
+            html += '<li class="text-xs text-rose-200 flex items-center justify-between gap-2 py-0.5">' +
+              '<span class="flex items-center gap-2"><i class="fa-solid fa-circle-xmark text-rose-400 text-xs shrink-0"></i> <strong>' + f.label + '</strong></span>' +
+              '<button type="button" onclick="window.scrollToField(&quot;' + f.id + '&quot;)" class="text-[10px] text-rose-300 underline hover:text-white shrink-0 cursor-pointer">Unggah &rarr;</button>' +
+            '</li>';
+          });
+          html += '</ul></div>';
+        }
+
+        // Bagian Isian Data Diri yang Belum Diisi
+        if (missingFields.length > 0) {
+          html += '<div class="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">' +
+            '<div class="flex items-center justify-between pb-1.5 border-b border-amber-500/20">' +
+              '<span class="font-bold text-amber-300 text-xs flex items-center gap-1.5">' +
+                '<i class="fa-solid fa-pen-to-square text-amber-400"></i> ' + missingFields.length + ' Kolom Data Belum Diisi' +
+              '</span>' +
+              '<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold">Wajib</span>' +
+            '</div>' +
+            '<ul class="space-y-1.5 pt-1 max-h-40 overflow-y-auto divide-y divide-amber-500/10">';
+          missingFields.forEach(function (f) {
+            html += '<li class="text-xs text-amber-200 flex items-center justify-between gap-2 py-1">' +
+              '<span class="flex items-center gap-2"><i class="fa-solid fa-circle-exclamation text-amber-400 text-xs shrink-0"></i> ' + f.label + '</span>' +
+              '<button type="button" onclick="window.scrollToField(&quot;' + f.id + '&quot;)" class="text-[10px] text-amber-300 underline hover:text-white shrink-0 cursor-pointer">Isi &rarr;</button>' +
+            '</li>';
+          });
+          html += '</ul></div>';
+        }
+
+        container.innerHTML = html;
+        window.openModal("modal-incomplete-pendaftaran");
+        window.showToast("Terdapat " + (missingFiles.length + missingFields.length) + " item yang belum lengkap. Silakan lengkapi agar bisa disubmit.", "error");
+      };
+
+      window.scrollToField = function (id) {
+        window.closeModal("modal-incomplete-pendaftaran");
+        setTimeout(function () {
+          const el = document.getElementById(id);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            const card = el.closest(".rounded-2xl") || el;
+            card.classList.add("ring-4", "ring-rose-400", "scale-[1.01]", "transition-all");
+            setTimeout(function () {
+              card.classList.remove("ring-4", "scale-[1.01]");
+              if (el.focus) el.focus();
+            }, 1200);
+          }
+        }, 200);
+      };
+
+      window.scrollToFirstIncomplete = function () {
+        if (window.appState.firstIncompleteId) {
+          window.scrollToField(window.appState.firstIncompleteId);
+        } else {
+          window.closeModal("modal-incomplete-pendaftaran");
+        }
+      };
+
+</script>
   </body>
 </html>

@@ -1163,6 +1163,41 @@ function submitFormPendaftaran(payload) {
     var oldJurnal = (data[targetRowIndex - 1].length > 31) ? data[targetRowIndex - 1][31] : "#";
     var urlJurnal = saveBase64File(payload.File_Jurnal_Base64, "JURNAL_REFERENSI") || oldJurnal;
 
+    // VALIDASI KETAT WAJIB MENGISI SEMUANYA & MENGUNGGAH 6 BERKAS LENGKAP
+    var missingServer = [];
+    if (!payload.Nama || String(payload.Nama).trim() === "") missingServer.push("Nama Lengkap");
+    if (!payload.Nama_Panggilan || String(payload.Nama_Panggilan).trim() === "") missingServer.push("Nama Panggilan");
+    if (!payload.TTL || String(payload.TTL).trim() === "") missingServer.push("Tempat, Tanggal Lahir");
+    if (!payload.No_HP || String(payload.No_HP).trim() === "") missingServer.push("No. HP / WhatsApp");
+    if (!payload.Alamat_Asal || String(payload.Alamat_Asal).trim() === "") missingServer.push("Alamat Asal");
+    if (!payload.Alamat_Sekarang || String(payload.Alamat_Sekarang).trim() === "") missingServer.push("Alamat Sekarang");
+    if (!payload.Hobby || String(payload.Hobby).trim() === "") missingServer.push("Hobby");
+    if (!payload.Cita_Cita || String(payload.Cita_Cita).trim() === "") missingServer.push("Cita-Cita");
+    if (!payload.Motto_Hidup || String(payload.Motto_Hidup).trim() === "") missingServer.push("Motto Hidup");
+    if (!payload.IPK || String(payload.IPK).trim() === "") missingServer.push("IPK");
+    if (!payload.Keterampilan || String(payload.Keterampilan).trim() === "") missingServer.push("Keterampilan Teknis");
+    if (!payload.Motivasi || String(payload.Motivasi).trim() === "") missingServer.push("Motivasi");
+    if (!payload.Target_IELA || String(payload.Target_IELA).trim() === "") missingServer.push("Target di IELA");
+    if (!payload.Riwayat_Organisasi || String(payload.Riwayat_Organisasi).trim() === "") missingServer.push("Riwayat Organisasi");
+    if (!payload.Pelatihan_Diikuti || String(payload.Pelatihan_Diikuti).trim() === "") missingServer.push("Pelatihan");
+    if (!payload.Buku_Diresume || String(payload.Buku_Diresume).trim() === "") missingServer.push("Judul Jurnal Diresume");
+
+    // Validasi 6 Berkas
+    if (!urlFoto || urlFoto === "#" || String(urlFoto).length < 10) missingServer.push("Pas Foto Formal (3x4)");
+    if (!urlKHS || urlKHS === "#" || String(urlKHS).length < 10) missingServer.push("KHS Semester 1 & 2");
+    if (!urlCV || urlCV === "#" || String(urlCV).length < 10) missingServer.push("CV / Resume");
+    if (!urlSertifikat || urlSertifikat === "#" || String(urlSertifikat).length < 10) missingServer.push("Sertifikat Pendukung");
+    if (!urlResume || urlResume === "#" || String(urlResume).length < 10) missingServer.push("Resume Jurnal");
+    if (!urlJurnal || urlJurnal === "#" || String(urlJurnal).length < 10) missingServer.push("Jurnal Referensi");
+
+    if (missingServer.length > 0) {
+      return {
+        success: false,
+        message: "Pengiriman formulir gagal! Terdapat " + missingServer.length + " item yang belum diisi/diunggah: " + missingServer.join(", "),
+        missing: missingServer
+      };
+    }
+
     var existingRow = data[targetRowIndex - 1];
     var updatedRow = [
       existingRow[0], existingRow[1], payload.NIM, payload.Nama,
