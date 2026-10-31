@@ -3120,9 +3120,19 @@
           <i class="fa-solid fa-xmark text-xl"></i>
         </button>
         <div class="space-y-1">
-          <h3 class="text-2xl font-black text-white flex items-center gap-2">
-            <i class="fa-solid fa-clipboard-check text-indigo-400"></i> Detail Penilaian
-          </h3>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-2xl font-black text-white flex items-center gap-2">
+              <i class="fa-solid fa-clipboard-check text-indigo-400"></i> Detail Penilaian
+            </h3>
+            <button
+              type="button"
+              id="btn-rekap-dossier"
+              onclick="window.openCandidateDetail(this.dataset.pId)"
+              class="text-xs bg-indigo-500/15 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <i class="fa-solid fa-folder-open text-indigo-400"></i> Buka Berkas &amp; Dossier
+            </button>
+          </div>
           <p id="rekap-detail-candidate-name" class="text-xs text-indigo-400 font-bold">Kandidat: -</p>
           <p id="rekap-detail-candidate-info" class="text-[10px] text-slate-400">NPM: - | Bidang: -</p>
         </div>
@@ -7787,7 +7797,12 @@
           const totalColor = avgTotal >= 85 ? "text-emerald-400" : (avgTotal >= 70 ? "text-amber-400" : "text-red-400");
           
           return '<tr class="hover:bg-slate-800/40 border-b border-slate-800/60 transition cursor-pointer" onclick="window.openRekapDetail(&quot;' + pId + '&quot;)">' +
-            '<td class="p-4"><p class="font-bold text-white text-sm">' + namaPendaftar + '</p></td>' +
+            '<td class="p-4" onclick="event.stopPropagation(); window.openCandidateDetail(\'' + pId + '\')">' +
+              '<div class="flex items-center gap-2 group cursor-pointer" title="Buka Berkas & Dossier ' + namaPendaftar + '">' +
+                '<p class="font-bold text-white text-sm group-hover:text-indigo-400 transition underline-offset-2 group-hover:underline">' + namaPendaftar + '</p>' +
+                '<span class="text-[10px] px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 group-hover:bg-indigo-600 group-hover:text-white transition flex items-center gap-1 font-semibold whitespace-nowrap"><i class="fa-solid fa-folder-open text-[10px]"></i> Dossier</span>' +
+              '</div>' +
+            '</td>' +
             '<td class="p-4"><p class="font-mono text-indigo-400 text-xs">' + nimPendaftar + '</p></td>' +
             '<td class="p-4 text-xs text-slate-300">' + bidang + '</td>' +
             '<td class="p-4 text-center font-bold text-slate-300">' + pEvals.length + ' Penguji</td>' +
@@ -7806,6 +7821,8 @@
         const pendaftar = window.appState.data.pendaftar.find(function(x) { return String(x.Pendaftar_ID).trim() === String(pendaftarId).trim(); });
         const userList = window.appState.data.users || [];
         
+        const btnDossier = document.getElementById("btn-rekap-dossier");
+        if (btnDossier) btnDossier.dataset.pId = pendaftarId;
         document.getElementById("rekap-detail-candidate-name").innerText = "Kandidat: " + (pendaftar ? pendaftar.Nama : pendaftarId);
         document.getElementById("rekap-detail-candidate-info").innerText = "NPM: " + (pendaftar ? pendaftar.NIM : "-") + " | Bidang: " + (pendaftar ? pendaftar.Bidang_Pilihan_1 : "-");
         

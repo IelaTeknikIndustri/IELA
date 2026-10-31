@@ -80,7 +80,7 @@ function sendTestLolosEmail(recipientEmail, targetNama, npm, statusType, customN
       ? String(customNote).trim()
       : "Ini adalah email konfirmasi resmi dari Sistem Informasi Rekrutmen Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban untuk periode kepengurusan 2027-2028.";
 
-    var subject = "[IELA UNIROW] 🎉 Selamat! Anda Dinyatakan " + st + " Periode 2027-2028";
+    var subject = "[PEMBERITAHUAN RESMI] Penetapan Hasil Seleksi Asisten Laboratorium IELA 2027/2028 - " + nama;
     var htmlBody = buildStatusEmailHtml(nama, nim, st, note);
 
     MailApp.sendEmail({
@@ -1240,121 +1240,216 @@ function savePenilaian(payload) {
 
 function buildStatusEmailHtml(targetNama, npm, status, customNote) {
   var sLower = String(status || "").toLowerCase();
-  
-  var theme = {
-    color: "#6366f1",
-    accentBg: "rgba(99, 102, 241, 0.12)",
-    badgeBorder: "#6366f1",
-    badgeText: "#818cf8",
-    bannerTitle: "Pemberitahuan Status Seleksi",
-    statusBadge: status || "Diproses",
-    headline: "Update Status Pendaftaran Seleksi Asisten IELA 2027-2028",
-    mainMessage: "Status pendaftaran Anda dalam Seleksi Asisten Laboratorium IELA 2027-2028 telah diperbarui.",
-    instruction: "Silakan pantau portal resmi IELA secara berkala untuk instruksi selanjutnya."
+  var today = new Date();
+  var months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  var dateStr = today.getDate() + " " + months[today.getMonth()] + " " + today.getFullYear();
+  var refYear = today.getFullYear();
+
+  var isLolosFinal = sLower.includes("lolos asisten") || sLower.includes("lolos lab") || sLower.includes("diterima");
+  var isLolosBerkas = sLower.includes("lolos seleksi berkas") || sLower.includes("lolos berkas");
+  var isTidakLolos = sLower.includes("tidak lolos") || sLower.includes("gagal") || sLower.includes("ditolak");
+  var isWawancara = sLower.includes("wawancara");
+  var isSubmitted = sLower.includes("submitted");
+
+  var config = {
+    refNumber: "B/042/IELA-UNIROW/SELEKSI/" + refYear,
+    perihal: "Pemberitahuan Penetapan Hasil Seleksi Asisten Laboratorium Periode 2027/2028",
+    color: "#10b981",
+    accentBg: "rgba(16, 185, 129, 0.12)",
+    badgeBorder: "#10b981",
+    badgeText: "#34d399",
+    categoryLabel: "SURAT KEPUTUSAN RESMI",
+    statusTitle: "DINYATAKAN LOLOS SELEKSI (DITERIMA)",
+    statusSubtitle: "Sebagai Asisten Laboratorium Teknik Industri (IELA) Periode Kepengurusan 2027/2028",
+    openingText: "Sehubungan dengan telah dilaksanakannya seluruh rangkaian tahapan Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban tahun akademik 2027/2028, meliputi seleksi administrasi berkas, uji kompetensi, dan wawancara panelis, dengan ini Panitia Seleksi bersama Koordinator Laboratorium menetapkan bahwa:",
+    instructions: [
+      "Menghadiri agenda <strong>Pembekalan & First Gathering Asisten Laboratorium</strong> sesuai jadwal dan tata tertib yang diumumkan melalui portal resmi IELA.",
+      "Mengikuti proses orientasi kerja, pengenalan inventaris instrumen, dan penempatan pembagian sub-laboratorium resmi.",
+      "Melakukan konfirmasi kesediaan dan penandatanganan <strong>Pakta Integritas serta Surat Perjanjian Komitmen Asisten</strong>."
+    ],
+    closingText: "Demikian surat pemberitahuan penetapan ini kami sampaikan secara resmi untuk dapat dipergunakan sebagaimana mestinya. Atas perhatian, dedikasi, dan kerja sama Saudara/i, kami sampaikan terima kasih."
   };
 
-  if (sLower.includes("tidak lolos") || sLower.includes("gagal") || sLower.includes("ditolak")) {
-    theme.color = "#ef4444";
-    theme.accentBg = "rgba(239, 68, 68, 0.12)";
-    theme.badgeBorder = "#ef4444";
-    theme.badgeText = "#f87171";
-    theme.bannerTitle = "Hasil Seleksi";
-    theme.statusBadge = "Tidak Lolos";
-    theme.headline = "Pemberitahuan Hasil Seleksi Calon Asisten Lab IELA 2027-2028";
-    theme.mainMessage = "Terima kasih banyak atas partisipasi, usaha keras, dan antusiasme Anda dalam mengikuti rangkaian Seleksi Calon Asisten Laboratorium IELA 2027-2028.<br><br>Setelah melalui proses pertimbangan yang ketat serta keterbatasan kuota formasi pada periode ini, kami menyampaikan permohonan maaf bahwa Anda <strong>belum dapat bergabung</strong> sebagai asisten laboratorium pada periode 2027-2028.";
-    theme.instruction = "Tetap semangat dalam studi akademik Anda. Pintu riset, praktikum, dan pembelajaran di Laboratorium IELA akan selalu terbuka untuk Anda di kesempatan mendatang.";
-  } else if (sLower.includes("lolos asisten") || sLower.includes("lolos lab") || sLower.includes("diterima")) {
-    theme.color = "#10b981";
-    theme.accentBg = "rgba(16, 185, 129, 0.15)";
-    theme.badgeBorder = "#10b981";
-    theme.badgeText = "#34d399";
-    theme.bannerTitle = "🎉 Selamat! Diterima";
-    theme.statusBadge = "Lolos Asisten Lab 2027";
-    theme.headline = "Selamat Bergabung sebagai Asisten Laboratorium IELA 2027-2028!";
-    theme.mainMessage = "Selamat dan sukses! Berdasarkan hasil evaluasi komprehensif berkas, performa wawancara, dan kompetensi yang telah Anda tunjukkan, Anda secara resmi dinyatakan <strong>DITERIMA & LOLOS SEBAGAI ASISTEN LABORATORIUM IELA</strong> untuk periode kepengurusan 2027-2028.";
-    theme.instruction = "Selamat bergabung di keluarga besar Industrial Engineering Laboratorium Assistant (IELA) Unirow! Informasi koordinasi agenda <em>First Gathering</em>, orientasi laboratorium, dan pembagian divisi kerja dapat dipantau melalui portal resmi IELA.";
-  } else if (sLower.includes("lolos seleksi berkas") || sLower.includes("lolos berkas")) {
-    theme.color = "#06b6d4";
-    theme.accentBg = "rgba(6, 182, 212, 0.15)";
-    theme.badgeBorder = "#06b6d4";
-    theme.badgeText = "#22d3ee";
-    theme.bannerTitle = "📄 Lolos Tahap Berkas";
-    theme.statusBadge = "Lolos Seleksi Berkas";
-    theme.headline = "Selamat! Anda Dinyatakan Lolos Seleksi Berkas Administrasi";
-    theme.mainMessage = "Selamat! Berkas pendaftaran dan dokumen lampiran yang Anda kirimkan telah diverifikasi oleh tim rekrutmen dan dinyatakan <strong>LOLOS SELEKSI BERKAS</strong>. Anda berhak melanjutkan ke tahapan <strong>Uji Wawancara & Evaluasi Praktikum</strong>.";
-    theme.instruction = "Silakan persiapkan diri Anda dengan baik. Informasi jadwal sesi wawancara dan tata tertib dapat dipantau langsung melalui portal resmi IELA.";
-  } else if (sLower.includes("submitted")) {
-    theme.color = "#3b82f6";
-    theme.accentBg = "rgba(59, 130, 246, 0.15)";
-    theme.badgeBorder = "#3b82f6";
-    theme.badgeText = "#60a5fa";
-    theme.bannerTitle = "📋 Berkas Diterima";
-    theme.statusBadge = "Submitted";
-    theme.headline = "Konfirmasi Penerimaan Berkas Pendaftaran Asisten Lab IELA";
-    theme.mainMessage = "Terima kasih telah mendaftar. Data diri dan seluruh dokumen berkas pendaftaran Anda telah berhasil kami terima dalam sistem rekrutmen Laboratorium IELA 2027-2028.";
-    theme.instruction = "Berkas Anda saat ini sedang dalam proses peninjauan administrasi oleh panitia. Silakan pantau pengumuman selanjutnya di portal resmi IELA.";
-  } else if (sLower.includes("wawancara")) {
-    theme.color = "#8b5cf6";
-    theme.accentBg = "rgba(139, 92, 246, 0.15)";
-    theme.badgeBorder = "#8b5cf6";
-    theme.badgeText = "#a78bfa";
-    theme.bannerTitle = "🎙️ Tahap Wawancara";
-    theme.statusBadge = "Jadwal Wawancara";
-    theme.headline = "Jadwal Wawancara Seleksi Asisten Lab IELA Ditetapkan";
-    theme.mainMessage = "Sesi wawancara untuk pendaftaran Anda telah dijadwalkan oleh tim penguji Laboratorium IELA.";
-    theme.instruction = "Harap hadir tepat waktu dan mempersiapkan resume jurnal serta dokumen yang dibutuhkan sesuai jadwal yang tertera di portal.";
+  if (isTidakLolos) {
+    config.perihal = "Pemberitahuan Hasil Seleksi Calon Asisten Laboratorium Periode 2027/2028";
+    config.color = "#ef4444";
+    config.accentBg = "rgba(239, 68, 68, 0.12)";
+    config.badgeBorder = "#ef4444";
+    config.badgeText = "#f87171";
+    config.categoryLabel = "SURAT PEMBERITAHUAN RESMI";
+    config.statusTitle = "BELUM MEMENUHI KUOTA KELULUSAN";
+    config.statusSubtitle = "Calon Asisten Laboratorium Teknik Industri (IELA) Periode 2027/2028";
+    config.openingText = "Sehubungan dengan telah diselesaikannya seluruh rangkaian tahapan Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban tahun akademik 2027/2028, Panitia Seleksi menyampaikan penghargaan dan terima kasih yang setinggi-tingginya atas partisipasi dan dedikasi yang Saudara/i tunjukkan.";
+    config.instructions = [
+      "Berdasarkan hasil rapat pleno pertimbangan dewan penguji dan keterbatasan kuota asisten pada periode ini, panitia memberitahukan bahwa Saudara/i <strong>belum dapat ditetapkan</strong> sebagai asisten laboratorium untuk kepengurusan 2027/2028.",
+      "Keputusan panitia seleksi bersifat mutlak, independen, dan telah melalui proses penilaian objektif secara komprehensif.",
+      "Saudara/i tetap dipersilakan untuk aktif berkontribusi dalam kegiatan praktikum, penelitian terpadu, dan berpartisipasi pada periode seleksi di masa mendatang."
+    ];
+  } else if (isLolosBerkas) {
+    config.perihal = "Pemberitahuan Hasil Verifikasi Berkas Administrasi Seleksi Asisten IELA";
+    config.color = "#06b6d4";
+    config.accentBg = "rgba(6, 182, 212, 0.12)";
+    config.badgeBorder = "#06b6d4";
+    config.badgeText = "#22d3ee";
+    config.categoryLabel = "HASIL VERIFIKASI ADMINISTRASI";
+    config.statusTitle = "DINYATAKAN LOLOS SELEKSI BERKAS";
+    config.statusSubtitle = "Berhak Melanjutkan ke Tahapan Uji Wawancara & Evaluasi Praktikum";
+    config.openingText = "Berdasarkan hasil verifikasi dokumen persyaratan administrasi yang telah Saudara/i unggah melalui portal resmi IELA, Panitia Rekrutmen memberitahukan bahwa berkas Saudara/i telah memenuhi seluruh kriteria kelayakan formal.";
+    config.instructions = [
+      "Mempersiapkan resume jurnal dan dokumen pendukung sesuai bidang laboratorium yang dipilih.",
+      "Memantau jadwal giliran sesi wawancara dan tata tertib pelaksanaan melalui portal resmi IELA.",
+      "Hadir tepat waktu sesuai jadwal yang telah ditentukan dengan mengenakan pakaian formal rapi."
+    ];
+  } else if (isWawancara) {
+    config.perihal = "Undangan Pelaksanaan Wawancara Seleksi Asisten Laboratorium IELA";
+    config.color = "#8b5cf6";
+    config.accentBg = "rgba(139, 92, 246, 0.12)";
+    config.badgeBorder = "#8b5cf6";
+    config.badgeText = "#a78bfa";
+    config.categoryLabel = "UNDANGAN SELEKSI RESMI";
+    config.statusTitle = "JADWAL WAWANCARA DITETAPKAN";
+    config.statusSubtitle = "Tahap Uji Kompetensi & Wawancara Panel Asisten Laboratorium";
+    config.openingText = "Melalui surat ini, Panitia Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Unirow mengundang Saudara/i untuk hadir mengikuti tahapan uji wawancara dan penilaian komparatif.";
+    config.instructions = [
+      "Memeriksa detail waktu, lokasi, dan panel penilai pada menu Antrean Wawancara portal IELA.",
+      "Membawa berkas cetak portofolio atau resume jurnal yang telah ditentukan panitia.",
+      "Konfirmasi kehadiran kepada sekretariat panitia seleksi laboratorium."
+    ];
+  } else if (isSubmitted) {
+    config.perihal = "Tanda Terima Pendaftaran Seleksi Calon Asisten Laboratorium IELA";
+    config.color = "#3b82f6";
+    config.accentBg = "rgba(59, 130, 246, 0.12)";
+    config.badgeBorder = "#3b82f6";
+    config.badgeText = "#60a5fa";
+    config.categoryLabel = "BUKTI PENDAFTARAN RESMI";
+    config.statusTitle = "BERKAS PENDAFTARAN DITERIMA (SUBMITTED)";
+    config.statusSubtitle = "Menunggu Proses Peninjauan & Verifikasi Dokumen oleh Panitia";
+    config.openingText = "Sistem Informasi Rekrutmen Laboratorium IELA telah menerima pengajuan data formulir dan dokumen persyaratan pendaftaran calon asisten dari Saudara/i.";
+    config.instructions = [
+      "Dokumen pendaftaran saat ini sedang dalam proses verifikasi administratif oleh panitia.",
+      "Pastikan nomor kontak WhatsApp aktif untuk menerima instruksi koordinasi berkas.",
+      "Informasi pengumuman kelolosan berkas akan dipublikasikan secara serentak di portal resmi."
+    ];
   }
+
+  var instructionListHtml = config.instructions.map(function(item) {
+    return "<li style='margin-bottom:8px; padding-left:4px;'>" + item + "</li>";
+  }).join("");
 
   var noteHtml = "";
   if (customNote && String(customNote).trim().length > 0) {
-    noteHtml = "<div style='margin-top:16px; padding:12px 16px; background:#0f172a; border-radius:8px; border:1px solid #334155; font-size:12px; color:#cbd5e1;'>" +
-      "<strong style='color:#f8fafc;'>Catatan Panitia:</strong> " + customNote +
+    noteHtml = 
+      "<div style='margin:20px 0; padding:14px 18px; background-color:#0b1120; border-left:4px solid #64748b; border-radius:6px; font-size:12px; color:#cbd5e1; line-height:1.6;'>" +
+        "<strong style='color:#f8fafc; font-size:12px; display:block; margin-bottom:4px;'>Catatan Tambahan Panitia Seleksi:</strong>" +
+        customNote +
       "</div>";
   }
 
-  var html = "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0; padding:20px; background-color:#0b0f19; font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif; color:#e2e8f0;'>" +
-    "<div style='max-width:580px; margin:0 auto; background-color:#131b2e; border:1px solid #1e293b; border-radius:16px; overflow:hidden; box-shadow:0 15px 35px rgba(0,0,0,0.5);'>" +
+  var html = "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0; padding:24px 12px; background-color:#070a12; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#e2e8f0; line-height:1.5;'>" +
+    "<div style='max-width:620px; margin:0 auto; background-color:#0f172a; border:1px solid #1e293b; border-radius:14px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.6);'>" +
     
-    // Top indicator line
-    "<div style='height:5px; background:" + theme.color + "; width:100%;'></div>" +
-    
-    // Header
-    "<div style='padding:24px 28px 18px 28px; border-bottom:1px solid #1e293b; background:#0f172a;'>" +
+    // Top colored indicator
+    "<div style='height:4px; background:" + config.color + "; width:100%;'></div>" +
+
+    // KOP RESMI LEMBAGA
+    "<div style='padding:24px 28px 20px 28px; background-color:#090d16; border-bottom:2px solid #1e293b;'>" +
       "<table style='width:100%; border-collapse:collapse;'>" +
         "<tr>" +
-          "<td>" +
-            "<h2 style='margin:0; font-size:17px; font-weight:800; color:#ffffff; letter-spacing:0.5px;'>LABORATORIUM IELA UNIROW</h2>" +
-            "<p style='margin:3px 0 0 0; font-size:11px; color:#94a3b8;'>Teknik Industri &bull; Universitas PGRI Ronggolawe Tuban</p>" +
+          "<td style='vertical-align:middle; width:64px; padding-right:16px;'>" +
+            "<img src='https://i.ibb.co/B5pjdF4v/Whats-App-Image-2026-09-30-at-18-36-50-1.jpg' alt='Logo IELA' width='54' height='54' style='display:block; width:54px; height:54px; object-fit:contain; border-radius:8px; background:#0f172a; padding:2px; border:1px solid #334155;' />" +
           "</td>" +
-          "<td style='text-align:right;'>" +
-            "<span style='display:inline-block; padding:4px 10px; border-radius:999px; font-size:10px; font-weight:700; background:" + theme.accentBg + "; color:" + theme.badgeText + "; border:1px solid " + theme.badgeBorder + ";'>" + theme.bannerTitle + "</span>" +
+          "<td style='vertical-align:middle;'>" +
+            "<div style='font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;'>Universitas PGRI Ronggolawe Tuban</div>" +
+            "<div style='font-size:11px; font-weight:700; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.5px;'>Fakultas Teknik &bull; Program Studi Teknik Industri</div>" +
+            "<h1 style='margin:3px 0 0 0; font-size:15px; font-weight:900; color:#ffffff; letter-spacing:0.5px;'>LABORATORIUM TEKNIK INDUSTRI (IELA)</h1>" +
+            "<div style='font-size:9.5px; color:#64748b; margin-top:3px;'>Gedung Lab Terpadu Lt. 2, Jl. Manunggal No. 61, Tuban &bull; Email: ielateknikindustri@gmail.com</div>" +
           "</td>" +
         "</tr>" +
       "</table>" +
     "</div>" +
 
-    // Body
-    "<div style='padding:28px;'>" +
-      "<p style='margin:0 0 16px 0; font-size:14px; color:#94a3b8;'>Kepada Yth.<br><strong style='color:#f8fafc; font-size:16px;'>" + targetNama + "</strong> <span style='font-family:monospace; color:" + theme.color + ";'>(NPM: " + npm + ")</span></p>" +
-
-      "<h3 style='margin:0 0 14px 0; font-size:16px; color:#ffffff; font-weight:700; line-height:1.4;'>" + theme.headline + "</h3>" +
-
-      // Status Box (Color-coded)
-      "<div style='padding:16px 20px; background-color:#0f172a; border-left:5px solid " + theme.color + "; border-radius:8px; margin:16px 0; border-top:1px solid #1e293b; border-right:1px solid #1e293b; border-bottom:1px solid #1e293b;'>" +
-        "<div style='font-size:10px; text-transform:uppercase; font-weight:700; color:#64748b; letter-spacing:1px; margin-bottom:5px;'>Status Pendaftaran Terkini:</div>" +
-        "<div style='font-size:20px; font-weight:800; color:" + theme.badgeText + ";'>" + theme.statusBadge + "</div>" +
-      "</div>" +
-
-      "<p style='margin:0 0 14px 0; font-size:13px; line-height:1.6; color:#cbd5e1;'>" + theme.mainMessage + "</p>" +
-      "<p style='margin:0 0 18px 0; font-size:13px; line-height:1.6; color:#94a3b8;'>" + theme.instruction + "</p>" +
-
-      noteHtml +
+    // METADATA SURAT RESMI
+    "<div style='padding:16px 28px; background-color:#0d1322; border-bottom:1px solid #1e293b; font-size:11.5px; color:#94a3b8;'>" +
+      "<table style='width:100%; border-collapse:collapse;'>" +
+        "<tr>" +
+          "<td style='width:70px; padding:2px 0; color:#64748b;'>Nomor</td>" +
+          "<td style='width:12px; padding:2px 0;'>:</td>" +
+          "<td style='padding:2px 0; font-family:monospace; color:#cbd5e1; font-weight:700;'>" + config.refNumber + "</td>" +
+          "<td style='text-align:right; padding:2px 0; color:#94a3b8;'>" + dateStr + "</td>" +
+        "</tr>" +
+        "<tr>" +
+          "<td style='padding:2px 0; color:#64748b;'>Lampiran</td>" +
+          "<td style='padding:2px 0;'>:</td>" +
+          "<td style='padding:2px 0; color:#cbd5e1;'>1 (Satu) Berkas Elektronik</td>" +
+          "<td style='text-align:right; padding:2px 0;'><span style='display:inline-block; padding:2px 8px; border-radius:4px; font-size:9.5px; font-weight:800; background:" + config.accentBg + "; color:" + config.badgeText + "; border:1px solid " + config.badgeBorder + "; letter-spacing:0.5px;'>" + config.categoryLabel + "</span></td>" +
+        "</tr>" +
+        "<tr>" +
+          "<td style='padding:2px 0; color:#64748b;'>Perihal</td>" +
+          "<td style='padding:2px 0;'>:</td>" +
+          "<td colspan='2' style='padding:2px 0; font-weight:700; color:#f1f5f9;'>" + config.perihal + "</td>" +
+        "</tr>" +
+      "</table>" +
     "</div>" +
 
-    // Footer
-    "<div style='padding:18px 28px; background-color:#090d16; border-top:1px solid #1e293b; font-size:11px; color:#64748b; text-align:center; line-height:1.5;'>" +
-      "<p style='margin:0 0 3px 0;'>Pesan otomatis dari Sistem Rekrutmen Asisten IELA 2027-2028.</p>" +
-      "<p style='margin:0;'>Industrial Engineering Laboratorium Assistant - UNIROW Tuban</p>" +
+    // ISI SURAT FORMAL
+    "<div style='padding:28px 28px 20px 28px;'>" +
+      
+      // Tujuan Surat
+      "<div style='margin-bottom:20px; font-size:13px; color:#cbd5e1; line-height:1.6;'>" +
+        "Kepada Yth.<br>" +
+        "<strong style='font-size:15px; color:#ffffff; letter-spacing:0.3px;'>" + targetNama + "</strong><br>" +
+        "<span style='font-size:12px; color:#94a3b8;'>NIM / NPM : <strong style='color:#f8fafc; font-family:monospace;'>" + npm + "</strong></span><br>" +
+        "<span style='font-size:12px; color:#94a3b8;'>Program Studi S1 Teknik Industri &ndash; Universitas PGRI Ronggolawe</span><br>" +
+        "<span style='font-size:12px; color:#94a3b8;'>Di Tempat</span>" +
+      "</div>" +
+
+      // Salam Pembuka & Paragraf Pengantar
+      "<p style='margin:0 0 12px 0; font-size:13px; color:#cbd5e1;'>Dengan hormat,</p>" +
+      "<p style='margin:0 0 16px 0; font-size:12.5px; line-height:1.7; color:#cbd5e1; text-align:justify;'>" +
+        config.openingText +
+      "</p>" +
+
+      // KOTAK STATUS KEPUTUSAN FORMAL
+      "<div style='margin:20px 0; padding:18px 22px; background-color:#0b1120; border-left:5px solid " + config.color + "; border-radius:8px; border-top:1px solid #1e293b; border-right:1px solid #1e293b; border-bottom:1px solid #1e293b;'>" +
+        "<div style='font-size:10px; font-weight:800; text-transform:uppercase; color:#64748b; letter-spacing:1px; margin-bottom:4px;'>Keputusan Panitia Seleksi:</div>" +
+        "<div style='font-size:17px; font-weight:900; color:" + config.badgeText + "; letter-spacing:0.5px;'>" + config.statusTitle + "</div>" +
+        "<div style='font-size:11.5px; color:#94a3b8; margin-top:3px;'>" + config.statusSubtitle + "</div>" +
+      "</div>" +
+
+      // INSTRUKSI / PETUNJUK TINDAK LANJUT
+      "<p style='margin:16px 0 8px 0; font-size:12.5px; font-weight:700; color:#f1f5f9;'>Ketentuan dan Petunjuk Tindak Lanjut:</p>" +
+      "<ol style='margin:0 0 18px 0; padding-left:20px; font-size:12.5px; line-height:1.7; color:#cbd5e1; text-align:justify;'>" +
+        instructionListHtml +
+      "</ol>" +
+
+      noteHtml +
+
+      // Kalimat Penutup
+      "<p style='margin:20px 0 24px 0; font-size:12.5px; line-height:1.7; color:#cbd5e1; text-align:justify;'>" +
+        config.closingText +
+      "</p>" +
+
+      // TANDA TANGAN & PENGESAHAN LEMBAGA
+      "<table style='width:100%; border-collapse:collapse; margin-top:24px; padding-top:16px; border-top:1px solid #1e293b;'>" +
+        "<tr>" +
+          "<td style='width:50%;'></td>" +
+          "<td style='width:50%; text-align:left; font-size:12px; color:#cbd5e1;'>" +
+            "<div>Tuban, " + dateStr + "</div>" +
+            "<div style='font-weight:700; color:#ffffff; margin-top:2px;'>Panitia Rekrutmen &amp; Seleksi Asisten</div>" +
+            "<div style='color:#94a3b8;'>Laboratorium Teknik Industri (IELA)</div>" +
+            "<div style='color:#94a3b8;'>Universitas PGRI Ronggolawe Tuban</div>" +
+            "<div style='margin-top:24px; font-weight:800; color:#f8fafc; border-bottom:1px solid #334155; display:inline-block; padding-bottom:2px;'>Koordinator Laboratorium IELA</div>" +
+            "<div style='font-size:10px; color:#64748b; margin-top:2px;'>NIDN / Kode Instruktur: IELA-UNIROW</div>" +
+          "</td>" +
+        "</tr>" +
+      "</table>" +
+
+    "</div>" +
+
+    // FOOTER DINAS
+    "<div style='padding:16px 28px; background-color:#070a12; border-top:1px solid #1e293b; font-size:10.5px; color:#64748b; line-height:1.5; text-align:center;'>" +
+      "Surat pemberitahuan ini diterbitkan secara sah dan otomatis melalui <strong>Sistem Informasi Rekrutmen Laboratorium Teknik Industri (IELA) UNIROW Tuban</strong>." +
+      "<div style='margin-top:4px; color:#475569;'>Dokumen elektronik ini tidak memerlukan tanda tangan basah fisik. Verifikasi keaslian dapat dilakukan melalui portal resmi IELA.</div>" +
     "</div>" +
 
     "</div></body></html>";
@@ -1600,7 +1695,7 @@ function updatePendaftarStatusAndNotify(payload) {
     var emailStatusText = "Belum dikirim";
     if (payload.sendEmail && targetEmail && targetEmail.indexOf("@") !== -1) {
       try {
-        var subject = "[IELA UNIROW] Update Status Seleksi Asisten Lab 2027-2028 - " + payload.newStatus;
+        var subject = "[PEMBERITAHUAN RESMI] Penetapan Status Seleksi Asisten Laboratorium IELA 2027/2028 - " + payload.newStatus;
         var htmlBody = buildStatusEmailHtml(targetNama, payload.npm, payload.newStatus, payload.catatan);
 
         MailApp.sendEmail({
