@@ -2077,15 +2077,34 @@
           </div>
         </div>
         <div id="admin-sub-rekap" class="admin-sub-content hidden space-y-6">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-bold text-white">
-              Rekapitulasi Nilai Seluruh Penguji
-            </h3>
-            <span
-              id="rekap-count-badge"
-              class="px-3 py-1 text-xs font-bold rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-              >0 Pendaftar Dinilai</span
-            >
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-check text-indigo-400"></i>
+                Rekapitulasi Nilai Seluruh Penguji
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Centang pendaftar untuk menetapkan kelulusan dan mengirimkan email keputusan resmi.
+              </p>
+            </div>
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+              <span
+                id="rekap-count-badge"
+                class="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 whitespace-nowrap"
+                >0 Pendaftar Dinilai</span
+              >
+              <button
+                id="btn-rekap-luluskan"
+                type="button"
+                onclick="window.openBatchLulusModal()"
+                class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                disabled
+                title="Centang minimal satu pendaftar untuk meluluskan"
+              >
+                <i class="fa-solid fa-graduation-cap text-sm"></i>
+                <span>Luluskan Terpilih (<span id="rekap-selected-count">0</span>)</span>
+              </button>
+            </div>
           </div>
           <div
             class="glass-card rounded-2xl border border-slate-800 overflow-hidden"
@@ -2096,12 +2115,22 @@
                   class="bg-slate-900/80 text-xs uppercase font-bold text-slate-400 border-b border-slate-800"
                 >
                   <tr>
+                    <th class="p-4 w-12 text-center">
+                      <input
+                        type="checkbox"
+                        id="rekap-select-all"
+                        class="w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-400 cursor-pointer"
+                        onchange="window.toggleSelectAllRekap(this.checked)"
+                        title="Pilih Semua"
+                      />
+                    </th>
                     <th class="p-4">Nama Pendaftar</th>
                     <th class="p-4">NPM</th>
                     <th class="p-4">Bidang Pilihan</th>
                     <th class="p-4 text-center">Jumlah Penguji</th>
                     <th class="p-4 text-center">Rata-Rata Nilai</th>
-                    <th class="p-4 text-center">Detail</th>
+                    <th class="p-4 text-center">Status Kelulusan</th>
+                    <th class="p-4 text-center">Aksi / Detail</th>
                   </tr>
                 </thead>
                 <tbody
@@ -3358,6 +3387,93 @@
             class="w-1/2 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition cursor-pointer shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5"
           >
             <i class="fa-solid fa-check"></i> Ya, Perbarui
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- MODAL KONFIRMASI KELULUSAN REKAP NILAI (BATCH & SINGLE) -->
+    <div
+      id="modal-confirm-lulus-rekap"
+      class="fixed inset-0 z-[75] hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
+      style="display: none"
+    >
+      <div
+        class="glass-card max-w-lg w-full p-6 sm:p-7 rounded-3xl border border-emerald-500/30 relative space-y-5 shadow-2xl my-auto max-h-[92vh] overflow-y-auto"
+      >
+        <button
+          type="button"
+          onclick="window.closeModal('modal-confirm-lulus-rekap')"
+          class="absolute top-5 right-5 text-slate-400 hover:text-white cursor-pointer"
+        >
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xl shrink-0">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white">
+              Konfirmasi Kelulusan Seleksi
+            </h3>
+            <p class="text-xs text-slate-400">
+              Penetapan status kelulusan & pengiriman email keputusan resmi
+            </p>
+          </div>
+        </div>
+
+        <!-- Daftar Pendaftar yang Dipilih -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-medium">Kandidat yang Dipilih:</span>
+            <span id="lulus-modal-count-badge" class="font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">0 Kandidat</span>
+          </div>
+          <div id="lulus-modal-candidates-list" class="max-h-36 overflow-y-auto p-3 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2 divide-y divide-slate-800/60 text-xs">
+            <!-- Dynamic list of candidates -->
+          </div>
+        </div>
+
+        <!-- Pilihan Status Baru -->
+        <div class="space-y-1.5 text-xs">
+          <label class="block font-bold text-slate-300">Pilih Status Kelulusan:</label>
+          <select id="lulus-modal-status-select" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white font-medium focus:border-emerald-500 focus:outline-none">
+            <option value="Lolos Asisten Lab 2027">Lolos Asisten Lab 2027 (Diterima Final)</option>
+            <option value="Lolos Seleksi">Lolos Seleksi</option>
+            <option value="Lolos Seleksi Berkas">Lolos Seleksi Berkas</option>
+          </select>
+        </div>
+
+        <!-- Catatan / Keterangan Tambahan -->
+        <div class="space-y-1.5 text-xs">
+          <label class="block font-bold text-slate-300">Catatan / Pesan Tambahan di Email (Opsional):</label>
+          <textarea id="lulus-modal-note" rows="2" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-xs focus:border-emerald-500 focus:outline-none resize-none" placeholder="Selamat, Anda dinyatakan lolos seleksi calon asisten laboratorium IELA periode kepengurusan 2027/2028."></textarea>
+        </div>
+
+        <!-- Opsi Kirim Email -->
+        <div class="p-3 bg-emerald-950/25 rounded-2xl border border-emerald-500/30 flex items-start gap-3">
+          <input type="checkbox" id="lulus-modal-send-email" class="w-4 h-4 mt-0.5 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-400 cursor-pointer" checked>
+          <label for="lulus-modal-send-email" class="text-xs text-slate-300 cursor-pointer select-none leading-relaxed">
+            <strong class="text-emerald-400">Kirim Email Notifikasi Resmi</strong><br>
+            Sistem akan secara otomatis mengirimkan <em>Surat Penetapan Keputusan Resmi</em> ke email pendaftar yang terdaftar di akun portal.
+          </label>
+        </div>
+
+        <!-- Tombol Aksi -->
+        <div class="flex items-center gap-3 pt-2">
+          <button
+            type="button"
+            onclick="window.closeModal('modal-confirm-lulus-rekap')"
+            class="w-1/2 py-2.5 px-4 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs font-bold transition cursor-pointer"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            id="btn-confirm-batch-lulus"
+            onclick="window.executeBatchLulus()"
+            class="w-1/2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold transition cursor-pointer shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Ya, Luluskan & Kirim</span>
           </button>
         </div>
       </div>
@@ -7832,7 +7948,8 @@
         if (badge) badge.innerText = pendaftarIds.length + " Pendaftar Dinilai";
 
         if (pendaftarIds.length === 0) {
-          tb.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-500 italic">Belum ada penguji yang memasukkan nilai.</td></tr>';
+          tb.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-500 italic">Belum ada penguji yang memasukkan nilai.</td></tr>';
+          window.updateRekapSelectedCount();
           return;
         }
 
@@ -7842,14 +7959,30 @@
           const namaPendaftar = pendaftar ? pendaftar.Nama : pId;
           const nimPendaftar = pendaftar ? pendaftar.NIM : "-";
           const bidang = pendaftar ? pendaftar.Bidang_Pilihan_1 || "-" : "-";
+          const currentStatus = pendaftar ? (pendaftar.Status_Pendaftaran || "Submitted") : "-";
           
           let sumTotal = 0;
           pEvals.forEach(function(e) { sumTotal += Number(e.Nilai_Bobot_Total || 0); });
           const avgTotal = (sumTotal / pEvals.length);
           const totalColor = avgTotal >= 85 ? "text-emerald-400" : (avgTotal >= 70 ? "text-amber-400" : "text-red-400");
           
+          const sLower = currentStatus.toLowerCase();
+          let statusBadge = '';
+          if (sLower.includes("tidak lolos") || sLower.includes("gagal") || sLower.includes("ditolak")) {
+            statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-red-500/15 text-red-300 border border-red-500/30 whitespace-nowrap inline-flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark text-[10px]"></i> ' + currentStatus + '</span>';
+          } else if (sLower.includes("lolos") || sLower.includes("asisten") || sLower.includes("iela") || sLower.includes("diterima")) {
+            statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 whitespace-nowrap inline-flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-[10px]"></i> ' + currentStatus + '</span>';
+          } else if (sLower.includes("submitted")) {
+            statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 whitespace-nowrap inline-flex items-center gap-1.5"><i class="fa-solid fa-envelope text-[10px]"></i> Submitted</span>';
+          } else {
+            statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-slate-800 text-slate-300 border border-slate-700 whitespace-nowrap">' + currentStatus + '</span>';
+          }
+          
           return '<tr class="hover:bg-slate-800/40 border-b border-slate-800/60 transition cursor-pointer" onclick="window.openRekapDetail(&quot;' + pId + '&quot;)">' +
-            '<td class="p-4" onclick="event.stopPropagation(); window.openCandidateDetail(\'' + pId + '\')">' +
+            '<td class="p-4 w-12 text-center" onclick="event.stopPropagation()">' +
+              '<input type="checkbox" class="rekap-candidate-check w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-400 cursor-pointer" value="' + pId + '" data-npm="' + nimPendaftar + '" data-nama="' + namaPendaftar + '" data-avg="' + avgTotal.toFixed(2) + '" onchange="window.updateRekapSelectedCount()">' +
+            '</td>' +
+            '<td class="p-4" onclick="event.stopPropagation(); window.openCandidateDetail(&quot;' + pId + '&quot;)">' +
               '<div class="flex items-center gap-2 group cursor-pointer" title="Buka Berkas & Dossier ' + namaPendaftar + '">' +
                 '<p class="font-bold text-white text-sm group-hover:text-indigo-400 transition underline-offset-2 group-hover:underline">' + namaPendaftar + '</p>' +
                 '<span class="text-[10px] px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 group-hover:bg-indigo-600 group-hover:text-white transition flex items-center gap-1 font-semibold whitespace-nowrap"><i class="fa-solid fa-folder-open text-[10px]"></i> Dossier</span>' +
@@ -7859,13 +7992,191 @@
             '<td class="p-4 text-xs text-slate-300">' + bidang + '</td>' +
             '<td class="p-4 text-center font-bold text-slate-300">' + pEvals.length + ' Penguji</td>' +
             '<td class="p-4 text-center font-bold font-mono ' + totalColor + ' text-sm">' + avgTotal.toFixed(2) + '</td>' +
-            '<td class="p-4 text-center">' +
-              '<button type="button" class="p-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-lg text-xs font-bold transition">' +
-                '<i class="fa-solid fa-list-check"></i>' +
-              '</button>' +
+            '<td class="p-4 text-center">' + statusBadge + '</td>' +
+            '<td class="p-4 text-center" onclick="event.stopPropagation()">' +
+              '<div class="flex items-center justify-center gap-2">' +
+                '<button type="button" onclick="window.luluskanSingleCandidate(&quot;' + pId + '&quot;, &quot;' + nimPendaftar + '&quot;, &quot;' + (namaPendaftar || '').replace(/'/g, '') + '&quot;)" class="px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-105" title="Luluskan ' + namaPendaftar + ' & Kirim Email">' +
+                  '<i class="fa-solid fa-graduation-cap"></i><span>Lulus</span>' +
+                '</button>' +
+                '<button type="button" onclick="window.openRekapDetail(&quot;' + pId + '&quot;)" class="p-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-lg text-xs font-bold transition cursor-pointer hover:scale-105" title="Rincian Nilai Seluruh Penguji">' +
+                  '<i class="fa-solid fa-list-check"></i>' +
+                '</button>' +
+              '</div>' +
             '</td>' +
             '</tr>';
         }).join("");
+
+        window.updateRekapSelectedCount();
+      };
+
+      /* =========================================================================
+         SISTEM CHECKLIST REKAP NILAI & KELULUSAN BATCH / SINGLE
+         ========================================================================= */
+      window.toggleSelectAllRekap = function (isChecked) {
+        const checkboxes = document.querySelectorAll(".rekap-candidate-check");
+        checkboxes.forEach(function (cb) {
+          cb.checked = isChecked;
+        });
+        window.updateRekapSelectedCount();
+      };
+
+      window.updateRekapSelectedCount = function () {
+        const checkboxes = document.querySelectorAll(".rekap-candidate-check");
+        const checkedBoxes = document.querySelectorAll(".rekap-candidate-check:checked");
+        const count = checkedBoxes.length;
+
+        const countEl = document.getElementById("rekap-selected-count");
+        if (countEl) countEl.innerText = count;
+
+        const btnLulus = document.getElementById("btn-rekap-luluskan");
+        if (btnLulus) {
+          btnLulus.disabled = (count === 0);
+        }
+
+        const selectAll = document.getElementById("rekap-select-all");
+        if (selectAll) {
+          selectAll.checked = (checkboxes.length > 0 && count === checkboxes.length);
+          selectAll.indeterminate = (count > 0 && count < checkboxes.length);
+        }
+      };
+
+      window.getSelectedRekapCandidates = function () {
+        const checkedBoxes = document.querySelectorAll(".rekap-candidate-check:checked");
+        const list = [];
+        checkedBoxes.forEach(function (cb) {
+          list.push({
+            pendaftarId: cb.value,
+            npm: cb.dataset.npm || "",
+            nama: cb.dataset.nama || "",
+            avg: cb.dataset.avg || "-"
+          });
+        });
+        return list;
+      };
+
+      window.openBatchLulusModal = function (specificList) {
+        const candidates = specificList || window.getSelectedRekapCandidates();
+        if (!candidates || candidates.length === 0) {
+          window.showToast("Pilih minimal satu pendaftar terlebih dahulu!");
+          return;
+        }
+
+        window.appState.pendingBatchLulus = candidates;
+
+        const badge = document.getElementById("lulus-modal-count-badge");
+        if (badge) badge.innerText = candidates.length + " Kandidat";
+
+        const listContainer = document.getElementById("lulus-modal-candidates-list");
+        if (listContainer) {
+          listContainer.innerHTML = candidates.map(function (c, idx) {
+            return '<div class="flex items-center justify-between py-1.5 first:pt-0 last:pb-0">' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 text-[10px] flex items-center justify-center font-bold">' + (idx + 1) + '</span>' +
+                '<div>' +
+                  '<p class="font-bold text-white text-xs">' + c.nama + '</p>' +
+                  '<p class="text-[10px] font-mono text-indigo-400">NPM: ' + c.npm + '</p>' +
+                '</div>' +
+              '</div>' +
+              '<span class="text-xs font-mono font-bold text-emerald-400">Rata-rata: ' + c.avg + '</span>' +
+            '</div>';
+          }).join("");
+        }
+
+        const noteInput = document.getElementById("lulus-modal-note");
+        if (noteInput && !noteInput.value.trim()) {
+          noteInput.value = "Selamat! Berdasarkan hasil evaluasi komprehensif seluruh penguji, Saudara/i dinyatakan LOLOS SELEKSI dan berhak ditetapkan sebagai Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban periode kepengurusan 2027/2028.";
+        }
+
+        window.openModal("modal-confirm-lulus-rekap");
+      };
+
+      window.luluskanSingleCandidate = function (pId, npm, nama) {
+        let avg = "-";
+        const evals = (window.appState.data.penilaianRekap || []).filter(function(x) {
+          return String(x.Pendaftar_ID).trim() === String(pId).trim();
+        });
+        if (evals.length > 0) {
+          let sum = 0;
+          evals.forEach(function(e) { sum += Number(e.Nilai_Bobot_Total || 0); });
+          avg = (sum / evals.length).toFixed(2);
+        }
+
+        window.openBatchLulusModal([{
+          pendaftarId: pId,
+          npm: npm,
+          nama: nama,
+          avg: avg
+        }]);
+      };
+
+      window.executeBatchLulus = function () {
+        const candidates = window.appState.pendingBatchLulus || [];
+        if (candidates.length === 0) return;
+
+        const statusSelect = document.getElementById("lulus-modal-status-select");
+        const newStatus = statusSelect ? statusSelect.value : "Lolos Asisten Lab 2027";
+
+        const noteInput = document.getElementById("lulus-modal-note");
+        const catatan = noteInput ? noteInput.value.trim() : "";
+
+        const sendEmailCheck = document.getElementById("lulus-modal-send-email");
+        const sendEmail = sendEmailCheck ? sendEmailCheck.checked : true;
+
+        window.closeModal("modal-confirm-lulus-rekap");
+        window.showLoading(true, "Meluluskan " + candidates.length + " kandidat & mengirim email...");
+
+        const payload = {
+          candidates: candidates,
+          newStatus: newStatus,
+          catatan: catatan,
+          sendEmail: sendEmail
+        };
+
+        // Optimistic UI Update: Update pendaftar list in memory
+        if (window.appState && window.appState.data && Array.isArray(window.appState.data.pendaftar)) {
+          candidates.forEach(function(c) {
+            const cleanNpm = String(c.npm || "").replace(/[^0-9]/g, "");
+            window.appState.data.pendaftar.forEach(function(cand) {
+              const candNim = String(cand.NIM || "").replace(/[^0-9]/g, "");
+              if (
+                (c.pendaftarId && String(cand.Pendaftar_ID).trim() === String(c.pendaftarId).trim()) ||
+                (cleanNpm && candNim === cleanNpm)
+              ) {
+                cand.Status_Pendaftaran = newStatus;
+              }
+            });
+          });
+          window.renderAdminRekapTable();
+          if (typeof window.renderAdminTable === "function") window.renderAdminTable();
+        }
+
+        if (window.checkIsGAS()) {
+          google.script.run
+            .withSuccessHandler(function (res) {
+              window.showLoading(false);
+              if (res && res.success) {
+                window.showToast(res.message);
+                window.appState.pendingBatchLulus = null;
+                window.initData(true);
+              } else {
+                window.showToast("Gagal meluluskan: " + (res ? res.message : "Error"));
+                window.initData(true);
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showLoading(false);
+              window.showToast("Error Server: " + err.toString());
+              window.initData(true);
+            })
+            .batchUpdatePendaftarStatusAndNotify(payload);
+        } else {
+          setTimeout(function () {
+            window.showLoading(false);
+            window.showToast(candidates.length + " kandidat berhasil diluluskan (Simulasi lokal)!");
+            window.appState.pendingBatchLulus = null;
+            window.renderAdminRekapTable();
+          }, 800);
+        }
       };
 
       window.openRekapDetail = function(pendaftarId) {

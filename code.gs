@@ -1812,6 +1812,141 @@ function updatePendaftarStatusAndNotify(payload) {
   }
 }
 
+/**
+ * Meluluskan banyak pendaftar sekaligus dari Rekap Nilai & mengirim email notifikasi resmi
+ */
+function batchUpdatePendaftarStatusAndNotify(payload) {
+  try {
+    var ss = getSpreadsheet();
+    var pSheet = ss.getSheetByName("PENDAFTAR");
+    if (!pSheet) return { success: false, message: "Sheet PENDAFTAR tidak ditemukan!" };
+
+    var data = pSheet.getDataRange().getDisplayValues();
+    if (data.length < 2) return { success: false, message: "Data lembar PENDAFTAR kosong!" };
+
+    var headers = data[0];
+    var colStatusIdx = findHeaderColumnIndex(headers, ["Status_Pendaftaran", "Status", "StatusPendaftaran"], 29);
+    var colPIdIdx = findHeaderColumnIndex(headers, ["Pendaftar_ID", "ID_Pendaftar", "ID"], 0);
+    var colNimIdx = findHeaderColumnIndex(headers, ["NIM", "Username_NIM", "NPM"], 2);
+    var colNamaIdx = findHeaderColumnIndex(headers, ["Nama", "Nama_Lengkap"], 3);
+
+    // Bersihkan data validation pada kolom Status_Pendaftaran agar tidak error validasi sheet
+    try {
+      pSheet.getRange(1, colStatusIdx + 1, pSheet.getLastRow(), 1).clearDataValidations();
+    } catch (eCleanVal) {}
+
+    var uSheet = ss.getSheetByName("USERS");
+    var uData = uSheet ? uSheet.getDataRange().getDisplayValues() : [];
+    var uHeaders = uData.length > 0 ? uData[0] : [];
+    var uNimIdx = findHeaderColumnIndex(uHeaders, ["Username_NIM", "NIM", "NPM"], 1);
+    var uEmailIdx = findHeaderColumnIndex(uHeaders, ["Email", "Email_Address"], 4);
+    var uNamaIdx = findHeaderColumnIndex(uHeaders, ["Nama_Lengkap", "Nama"], 3);
+
+    var candidates = payload.candidates || [];
+    var newStatus = String(payload.newStatus || "Lolos Asisten Lab 2027").trim();
+    var catatan = payload.catatan || "";
+    var sendEmail = payload.sendEmail !== false;
+
+    if (!Array.isArray(candidates) || candidates.length === 0) {
+      return { success: false, message: "Tidak ada kandidat yang dipilih untuk diluluskan!" };
+    }
+
+    var successCount = 0;
+    var emailCount = 0;
+    var details = [];
+
+    // Helper map pencarian pendaftar berdasarkan ID atau NIM
+    var candMap = {};
+    candidates.forEach(function(c) {
+      var pId = String(c.pendaftarId || "").trim().toLowerCase();
+      var npm = String(c.npm || "").replace(/[^0-9]/g, "");
+      if (pId) candMap[pId] = c;
+      if (npm) candMap[npm] = c;
+    });
+
+    for (var i = 1; i < data.length; i++) {
+      var rowPId = String(data[i][colPIdIdx] || "").trim().toLowerCase();
+      var rowNim = String(data[i][colNimIdx] || "").replace(/[^0-9]/g, "");
+      var matchedCand = candMap[rowPId] || candMap[rowNim];
+
+      if (matchedCand) {
+        // Tulis status baru pada lembar PENDAFTAR
+        try { pSheet.getRange(i + 1, colStatusIdx + 1).clearDataValidations(); } catch (ePVal) {}
+        pSheet.getRange(i + 1, colStatusIdx + 1).setValue(newStatus);
+        successCount++;
+
+        var candNama = data[i][colNamaIdx] || matchedCand.nama || "";
+        var candNpm = rowNim || matchedCand.npm || "";
+
+        // Sinkronisasi Tab Database: CALON_IELA atau LOLOS_BERKAS
+        var matchedRow = data[i].slice();
+        matchedRow[colStatusIdx] = newStatus;
+        var sLower = newStatus.toLowerCase();
+        if (sLower.includes("berkas")) {
+          syncCandidateToSheet(ss, "LOLOS_BERKAS", matchedRow, candNpm, rowPId);
+          removeCandidateFromSheet(ss, "CALON_IELA", candNpm, rowPId);
+        } else if (sLower.includes("asisten") || sLower.includes("iela") || sLower === "lolos") {
+          syncCandidateToSheet(ss, "CALON_IELA", matchedRow, candNpm, rowPId);
+          removeCandidateFromSheet(ss, "LOLOS_BERKAS", candNpm, rowPId);
+        }
+
+        // Cari alamat email dari USERS
+        var targetEmail = "";
+        if (uData.length > 1) {
+          for (var j = 1; j < uData.length; j++) {
+            var uNim = String(uData[j][uNimIdx] || "").replace(/[^0-9]/g, "");
+            if (candNpm && uNim === candNpm) {
+              targetEmail = uData[j][uEmailIdx];
+              break;
+            }
+          }
+        }
+
+        var emailSent = false;
+        var emailError = "";
+        if (sendEmail && targetEmail && targetEmail.indexOf("@") !== -1) {
+          try {
+            var subject = "[PEMBERITAHUAN RESMI] Penetapan Kelulusan Seleksi Asisten Laboratorium IELA 2027/2028 - " + newStatus;
+            var htmlBody = buildStatusEmailHtml(candNama, candNpm, newStatus, catatan);
+            MailApp.sendEmail({
+              to: targetEmail,
+              subject: subject,
+              htmlBody: htmlBody
+            });
+            emailSent = true;
+            emailCount++;
+          } catch (mailErr) {
+            emailError = mailErr.toString();
+            Logger.log("Gagal kirim email batch kelulusan ke " + targetEmail + ": " + emailError);
+          }
+        }
+
+        details.push({
+          pendaftarId: rowPId,
+          nama: candNama,
+          npm: candNpm,
+          email: targetEmail,
+          emailSent: emailSent,
+          emailError: emailError
+        });
+      }
+    }
+
+    SpreadsheetApp.flush();
+    invalidateCache("INITIAL_DATA");
+
+    return {
+      success: true,
+      count: successCount,
+      emailCount: emailCount,
+      details: details,
+      message: successCount + " pendaftar berhasil ditetapkan Lolos (" + emailCount + " email notifikasi resmi telah terkirim)."
+    };
+  } catch (err) {
+    return { success: false, message: "Terjadi kesalahan batch kelulusan: " + err.toString() };
+  }
+}
+
 function saveOrUpdateKonten(payload) {
   try {
     var ss = getSpreadsheet();
