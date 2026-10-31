@@ -21,6 +21,16 @@ function findHeaderColumnIndex(headers, possibleNames, defaultIndex) {
 
 function doGet(e) {
   try {
+    if (e && e.parameter && (e.parameter.action === 'clearUserValidations' || e.parameter.action === 'clearValidations')) {
+      var ss = getSpreadsheet();
+      var uSheet = ss.getSheetByName("USERS");
+      if (uSheet) {
+        try { uSheet.getDataRange().clearDataValidations(); } catch (e1) {}
+        try { uSheet.getRange(1, 1, Math.max(uSheet.getMaxRows(), 1), Math.max(uSheet.getMaxColumns(), 1)).clearDataValidations(); } catch (e2) {}
+      }
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Seluruh aturan validasi kaku pada sheet USERS berhasil dibersihkan!" })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     if (e && e.parameter && (e.parameter.action === 'sendTestLolosEmail' || e.parameter.action === 'testEmail')) {
       var to = e.parameter.to || 'luqmanf667@gmail.com';
       var nama = e.parameter.nama || 'M. Luqman Firdaus';
@@ -280,6 +290,14 @@ function getInitialData(forceRefresh) {
 
     var ss = getSpreadsheet();
     if (!ss) return { success: false, message: "Spreadsheet database tidak ditemukan!" };
+
+    // Otomatis bersihkan aturan data validation kaku pada lembar USERS agar penambahan custom role/jabatan lancar
+    try {
+      var uSheetCheck = ss.getSheetByName("USERS");
+      if (uSheetCheck) {
+        uSheetCheck.getDataRange().clearDataValidations();
+      }
+    } catch (eUVal) {}
 
     // Otomatis pastikan tab sheet LOLOS_BERKAS dan CALON_IELA terbuat di spreadsheet
     initSelectionSheets(ss);
@@ -798,7 +816,26 @@ function saveOrUpdateUser(payload) {
     var writeRowIdx = targetRow !== -1 ? targetRow : (sheet.getLastRow() + 1);
     var writeRange = sheet.getRange(writeRowIdx, 1, 1, headers.length);
     writeRange.setNumberFormat("@");
-    writeRange.setValues([outRow]);
+    
+    // Hapus data validation rules yang kaku dari Google Sheet agar custom role, jabatan, dan bidang bebas disimpan
+    try {
+      writeRange.clearDataValidations();
+      sheet.getRange(writeRowIdx, 1, 1, Math.max(sheet.getMaxColumns(), headers.length)).clearDataValidations();
+    } catch (eVal) {}
+
+    try {
+      writeRange.setValues([outRow]);
+    } catch (writeErr) {
+      // Jika masih terhalang data validation pada baris/kolom, bersihkan seluruh validasi pada sheet USERS dan ulangi
+      try {
+        sheet.getDataRange().clearDataValidations();
+        sheet.getRange(1, 1, Math.max(sheet.getMaxRows(), 1), Math.max(sheet.getMaxColumns(), 1)).clearDataValidations();
+        writeRange.clearDataValidations();
+        writeRange.setValues([outRow]);
+      } catch (retryErr) {
+        throw new Error("Gagal menyimpan pengguna karena batasan sel: " + retryErr.toString());
+      }
+    }
 
     var roleOpts = appendCustomUserOption_(ss, "USER_ROLE_OPTIONS", finalRole, "Daftar opsi Role kustom pada Manajemen User.");
     var jbOpts = appendCustomUserOption_(ss, "USER_JABATAN_BIDANG_OPTIONS", finalJabBid, "Daftar opsi Jabatan/Bidang kustom pada Manajemen User.");
@@ -1636,6 +1673,7 @@ function updatePendaftarStatusAndNotify(payload) {
       }
 
       if (isMatch) {
+        try { pSheet.getRange(i + 1, colStatusIdx + 1).clearDataValidations(); } catch (ePVal) {}
         pSheet.getRange(i + 1, colStatusIdx + 1).setValue(payload.newStatus);
         if (!targetNama && data[i][colNamaIdx]) targetNama = data[i][colNamaIdx];
         updatedRowsCount++;

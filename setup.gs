@@ -188,6 +188,9 @@ function seedCmsSettings() {
       uSheet.getRange(1, newCol).setValue("Jabatan_Bidang")
         .setFontWeight("bold").setBackground("#1E293B").setFontColor("#F8FAFC");
     }
+    try {
+      uSheet.getDataRange().clearDataValidations();
+    } catch (eDV) {}
   }
 
   var added = 0;
