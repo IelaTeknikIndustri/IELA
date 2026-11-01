@@ -41,6 +41,15 @@ function doGet(e) {
       return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
     }
 
+    if (e && e.parameter && (e.parameter.action === 'sendTestTidakLolosEmail' || e.parameter.action === 'testTidakLolosEmail')) {
+      var to = e.parameter.to || 'luqmanf667@gmail.com';
+      var nama = e.parameter.nama || 'M. Luqman Firdaus';
+      var npm = e.parameter.npm || '1411230105';
+      var note = e.parameter.note || '';
+      var result = sendTestTidakLolosEmail(to, nama, npm, note);
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+
     return HtmlService.createHtmlOutputFromFile('index')
       .setTitle('IELA WebApp - Profil & Recruitment Portal 2027-2028')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -67,6 +76,14 @@ function doPost(e) {
       var status = params.status || postData.status || 'Lolos Asisten Lab 2027';
       var note = params.note || postData.note || '';
       var result = sendTestLolosEmail(to, nama, npm, status, note);
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (action === 'sendTestTidakLolosEmail' || action === 'testTidakLolosEmail') {
+      var to = params.to || postData.to || 'luqmanf667@gmail.com';
+      var nama = params.nama || postData.nama || 'M. Luqman Firdaus';
+      var npm = params.npm || postData.npm || '1411230105';
+      var note = params.note || postData.note || '';
+      var result = sendTestTidakLolosEmail(to, nama, npm, note);
       return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
     }
   } catch (err) {}
@@ -102,6 +119,48 @@ function sendTestLolosEmail(recipientEmail, targetNama, npm, statusType, customN
     return {
       success: true,
       message: "Email notifikasi '" + st + "' berhasil dikirim ke " + email,
+      email: email,
+      nama: nama,
+      npm: nim,
+      status: st
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: "Gagal mengirim email: " + err.toString()
+    };
+  }
+}
+
+/**
+ * Mengirimkan email uji coba status Tidak Lolos (dengan surat resmi dan permohonan maaf) ke alamat email tujuan.
+ */
+function sendTestTidakLolosEmail(recipientEmail, targetNama, npm, customNote) {
+  try {
+    var email = String(recipientEmail || "luqmanf667@gmail.com").trim();
+    if (!email || email.indexOf("@") === -1) {
+      return { success: false, message: "Alamat email tidak valid: " + email };
+    }
+    
+    var nama = String(targetNama || "M. Luqman Firdaus").trim();
+    var nim = String(npm || "1411230105").trim();
+    var st = "Tidak Lolos";
+    var note = customNote !== undefined && String(customNote).trim() !== ""
+      ? String(customNote).trim()
+      : "";
+
+    var subject = "[PEMBERITAHUAN RESMI] Hasil Seleksi Calon Asisten Laboratorium IELA 2027/2028 - " + nama;
+    var htmlBody = buildStatusEmailHtml(nama, nim, st, note);
+
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: htmlBody
+    });
+
+    return {
+      success: true,
+      message: "Email resmi Tidak Lolos dengan permohonan maaf berhasil dikirim ke " + email,
       email: email,
       nama: nama,
       npm: nim,
@@ -1363,25 +1422,32 @@ function buildStatusEmailHtml(targetNama, npm, status, customNote) {
     statusTitle: "DINYATAKAN LOLOS SELEKSI (DITERIMA)",
     statusSubtitle: "Sebagai Asisten Laboratorium Teknik Industri (IELA) Periode Kepengurusan 2027/2028",
     openingText: "Sehubungan dengan telah dilaksanakannya seluruh rangkaian tahapan Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban tahun akademik 2027/2028, meliputi seleksi administrasi berkas, uji kompetensi, dan wawancara panelis, dengan ini Panitia Seleksi bersama Koordinator Laboratorium menetapkan bahwa:",
-    instructions: [],
+    sectionHeading: "Ketentuan dan Petunjuk Tindak Lanjut:",
+    instructions: [
+      "Mengonfirmasi kesediaan dan komitmen aktif sebagai Asisten Laboratorium IELA Periode 2027/2028.",
+      "Menghadiri agenda Pengarahan Perdana (First Briefing & Orientasi Asisten) sesuai jadwal yang akan diumumkan.",
+      "Bergabung ke dalam grup komunikasi resmi asisten laboratorium untuk koordinasi modul dan jadwal piket."
+    ],
     closingText: "Demikian surat pemberitahuan penetapan ini kami sampaikan secara resmi untuk dapat dipergunakan sebagaimana mestinya. Atas perhatian, dedikasi, dan kerja sama Saudara/i, kami sampaikan terima kasih."
   };
 
   if (isTidakLolos) {
-    config.perihal = "Pemberitahuan Hasil Seleksi Calon Asisten Laboratorium Periode 2027/2028";
-    config.color = "#ef4444";
-    config.accentBg = "rgba(239, 68, 68, 0.12)";
-    config.badgeBorder = "#ef4444";
-    config.badgeText = "#f87171";
+    config.refNumber = "B/088/IELA-UNIROW/SELEKSI/" + refYear;
+    config.perihal = "Pemberitahuan Penetapan Hasil Seleksi Calon Asisten Laboratorium Periode 2027/2028";
+    config.color = "#f43f5e";
+    config.accentBg = "rgba(244, 63, 94, 0.12)";
+    config.badgeBorder = "#f43f5e";
+    config.badgeText = "#fb7185";
     config.categoryLabel = "SURAT PEMBERITAHUAN RESMI";
-    config.statusTitle = "BELUM MEMENUHI KUOTA KELULUSAN";
-    config.statusSubtitle = "Calon Asisten Laboratorium Teknik Industri (IELA) Periode 2027/2028";
-    config.openingText = "Sehubungan dengan telah diselesaikannya seluruh rangkaian tahapan Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban tahun akademik 2027/2028, Panitia Seleksi menyampaikan penghargaan dan terima kasih yang setinggi-tingginya atas partisipasi dan dedikasi yang Saudara/i tunjukkan.";
+    config.statusTitle = "TIDAK LOLOS";
+    config.statusSubtitle = "Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Periode Kepengurusan 2027/2028";
+    config.openingText = "Sehubungan dengan telah dilaksanakannya seluruh tahapan proses Rekrutmen dan Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban periode kepengurusan 2027/2028, bersama surat ini Panitia Seleksi menyampaikan hasil ketetapan sebagai berikut:";
+    config.sectionHeading = "Penyampaian & Catatan Resmi Panitia Seleksi:";
     config.instructions = [
-      "Berdasarkan hasil rapat pleno pertimbangan dewan penguji dan keterbatasan kuota asisten pada periode ini, panitia memberitahukan bahwa Saudara/i <strong>belum dapat ditetapkan</strong> sebagai asisten laboratorium untuk kepengurusan 2027/2028.",
-      "Keputusan panitia seleksi bersifat mutlak, independen, dan telah melalui proses penilaian objektif secara komprehensif.",
-      "Saudara/i tetap dipersilakan untuk aktif berkontribusi dalam kegiatan praktikum, penelitian terpadu, dan berpartisipasi pada periode seleksi di masa mendatang."
+      "<strong>Permohonan Maaf yang Tulus:</strong> Segenap jajaran Panitia Seleksi dan Pengelola Laboratorium IELA menyampaikan <em>permohonan maaf yang sebesar-besarnya</em> karena pada periode kepengurusan 2027/2028 ini kami belum dapat memberikan kabar baik yang Saudara/i harapkan untuk bergabung dalam formasi Asisten Laboratorium.",
+      "<strong>Apresiasi dan Penghargaan Setinggi-tingginya:</strong> Kami menyampaikan rasa terima kasih dan apresiasi yang setinggi-tingginya atas partisipasi aktif, kerja keras, persiapan matang, dan antusiasme luar biasa yang telah Saudara/i persembahkan selama mengikuti seluruh tahapan seleksi. Kualitas, kecakapan akademis, dan integritas yang Saudara/i tunjukkan sangat membanggakan civitas akademika Teknik Industri."
     ];
+    config.closingText = "Demikian surat pemberitahuan ini kami sampaikan secara resmi dengan penuh rasa hormat. Kami senantiasa mendoakan kelancaran studi, kemudahan dalam menuntut ilmu, serta pencapaian prestasi akademik dan profesional terbaik bagi Saudara/i di masa mendatang. Atas perhatian, pengertian, dan kerja sama yang baik, kami haturkan terima kasih yang sebesar-besarnya.";
   } else if (isLolosBerkas) {
     config.perihal = "Pemberitahuan Hasil Verifikasi Berkas Administrasi Seleksi Asisten IELA";
     config.color = "#06b6d4";
@@ -1432,13 +1498,16 @@ function buildStatusEmailHtml(targetNama, npm, status, customNote) {
   var instructionsBlockHtml = "";
   if (config.instructions && config.instructions.length > 0) {
     var instructionListHtml = config.instructions.map(function(item) {
-      return "<li style='margin-bottom:8px; padding-left:4px;'>" + item + "</li>";
+      return "<li style='margin-bottom:10px; padding-left:4px;'>" + item + "</li>";
     }).join("");
+    var sectionHeading = config.sectionHeading || "Ketentuan dan Petunjuk Tindak Lanjut:";
     instructionsBlockHtml =
-      "<p style='margin:16px 0 8px 0; font-size:12.5px; font-weight:700; color:#f1f5f9;'>Ketentuan dan Petunjuk Tindak Lanjut:</p>" +
-      "<ol style='margin:0 0 18px 0; padding-left:20px; font-size:12.5px; line-height:1.7; color:#cbd5e1; text-align:justify;'>" +
-        instructionListHtml +
-      "</ol>";
+      "<div style='margin:18px 0; padding:16px 20px; background-color:#0b1120; border-radius:8px; border:1px solid #1e293b;'>" +
+        "<div style='font-size:12.5px; font-weight:700; color:#f1f5f9; margin-bottom:10px; letter-spacing:0.3px;'>" + sectionHeading + "</div>" +
+        "<ol style='margin:0; padding-left:20px; font-size:12.5px; line-height:1.75; color:#cbd5e1; text-align:justify;'>" +
+          instructionListHtml +
+        "</ol>" +
+      "</div>";
   }
 
   var noteHtml = "";
@@ -1798,7 +1867,10 @@ function updatePendaftarStatusAndNotify(payload) {
     var emailStatusText = "Belum dikirim";
     if (payload.sendEmail && targetEmail && targetEmail.indexOf("@") !== -1) {
       try {
-        var subject = "[PEMBERITAHUAN RESMI] Penetapan Status Seleksi Asisten Laboratorium IELA 2027/2028 - " + payload.newStatus;
+        var isTidakLolosStatus = String(payload.newStatus || "").toLowerCase().includes("tidak lolos");
+        var subject = isTidakLolosStatus
+          ? "[PEMBERITAHUAN RESMI] Hasil Seleksi Calon Asisten Laboratorium IELA 2027/2028 - " + targetNama
+          : "[PEMBERITAHUAN RESMI] Penetapan Status Seleksi Asisten Laboratorium IELA 2027/2028 - " + payload.newStatus;
         var htmlBody = buildStatusEmailHtml(targetNama, payload.npm, payload.newStatus, payload.catatan);
 
         MailApp.sendEmail({
