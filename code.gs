@@ -105,7 +105,7 @@ function sendTestLolosEmail(recipientEmail, targetNama, npm, statusType, customN
     var st = String(statusType || "Lolos Asisten Lab 2027").trim();
     var note = customNote !== undefined && String(customNote).trim() !== ""
       ? String(customNote).trim()
-      : "Ini adalah email konfirmasi resmi dari Sistem Informasi Rekrutmen Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban untuk periode kepengurusan 2027-2028.";
+      : "";
 
     var subject = "[PEMBERITAHUAN RESMI] Penetapan Hasil Seleksi Asisten Laboratorium IELA 2027/2028 - " + nama;
     var htmlBody = buildStatusEmailHtml(nama, nim, st, note);
@@ -1421,14 +1421,13 @@ function buildStatusEmailHtml(targetNama, npm, status, customNote) {
     categoryLabel: "SURAT KEPUTUSAN RESMI",
     statusTitle: "DINYATAKAN LOLOS SELEKSI (DITERIMA)",
     statusSubtitle: "Sebagai Asisten Laboratorium Teknik Industri (IELA) Periode Kepengurusan 2027/2028",
-    openingText: "Sehubungan dengan telah dilaksanakannya seluruh rangkaian tahapan Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban tahun akademik 2027/2028, meliputi seleksi administrasi berkas, uji kompetensi, dan wawancara panelis, dengan ini Panitia Seleksi bersama Koordinator Laboratorium menetapkan bahwa:",
-    sectionHeading: "Ketentuan dan Petunjuk Tindak Lanjut:",
+    openingText: "Sehubungan dengan telah dilaksanakannya seluruh tahapan proses Rekrutmen dan Seleksi Calon Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Tuban periode kepengurusan 2027/2028, bersama surat ini Panitia Seleksi menyampaikan hasil penetapan sebagai berikut:",
+    sectionHeading: "Penyampaian & Catatan Resmi Panitia Seleksi:",
     instructions: [
-      "Mengonfirmasi kesediaan dan komitmen aktif sebagai Asisten Laboratorium IELA Periode 2027/2028.",
-      "Menghadiri agenda Pengarahan Perdana (First Briefing & Orientasi Asisten) sesuai jadwal yang akan diumumkan.",
-      "Bergabung ke dalam grup komunikasi resmi asisten laboratorium untuk koordinasi modul dan jadwal piket."
+      "<strong>Ucapan Selamat yang Tulus:</strong> Segenap jajaran Panitia Seleksi dan Pengelola Laboratorium IELA mengucapkan <em>selamat yang sebesar-besarnya</em> atas keberhasilan Saudara/i yang telah dinyatakan lolos dan resmi terpilih sebagai Asisten Laboratorium Teknik Industri untuk periode kepengurusan 2027/2028.",
+      "<strong>Ucapan Terima Kasih:</strong> Kami menyampaikan terima kasih dan apresiasi yang setinggi-tingginya atas partisipasi aktif, dedikasi, serta performa luar biasa yang telah Saudara/i tunjukkan di setiap tahapan seleksi. Selamat bergabung dalam keluarga besar Laboratorium IELA."
     ],
-    closingText: "Demikian surat pemberitahuan penetapan ini kami sampaikan secara resmi untuk dapat dipergunakan sebagaimana mestinya. Atas perhatian, dedikasi, dan kerja sama Saudara/i, kami sampaikan terima kasih."
+    closingText: "Demikian surat keputusan penetapan ini kami sampaikan secara resmi untuk dapat dipergunakan sebagaimana mestinya. Atas perhatian, dedikasi, dan kerja sama Saudara/i, kami ucapkan terima kasih."
   };
 
   if (isTidakLolos) {
