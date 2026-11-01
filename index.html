@@ -2097,12 +2097,23 @@
                 id="btn-rekap-luluskan"
                 type="button"
                 onclick="window.openBatchLulusModal()"
-                class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                class="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
                 disabled
                 title="Centang minimal satu pendaftar untuk meluluskan"
               >
-                <i class="fa-solid fa-graduation-cap text-sm"></i>
-                <span>Luluskan Terpilih (<span id="rekap-selected-count">0</span>)</span>
+                <i class="fa-solid fa-graduation-cap text-xs"></i>
+                <span>Luluskan (<span id="rekap-selected-count">0</span>)</span>
+              </button>
+              <button
+                id="btn-rekap-tidak-loloskan"
+                type="button"
+                onclick="window.openBatchTidakLolosModal()"
+                class="px-3.5 py-2 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-500/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                disabled
+                title="Centang minimal satu pendaftar untuk menetapkan tidak lolos"
+              >
+                <i class="fa-solid fa-circle-xmark text-xs"></i>
+                <span>Tidak Lolos (<span id="rekap-selected-count-tidak-lolos">0</span>)</span>
               </button>
             </div>
           </div>
@@ -3474,6 +3485,93 @@
           >
             <i class="fa-solid fa-graduation-cap"></i>
             <span>Ya, Luluskan & Kirim</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI TIDAK LOLOS REKAP NILAI (BATCH & SINGLE) -->
+    <div
+      id="modal-confirm-tidak-lolos-rekap"
+      class="fixed inset-0 z-[75] hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
+      style="display: none"
+    >
+      <div
+        class="glass-card max-w-lg w-full p-6 sm:p-7 rounded-3xl border border-rose-500/30 relative space-y-5 shadow-2xl my-auto max-h-[92vh] overflow-y-auto"
+      >
+        <button
+          type="button"
+          onclick="window.closeModal('modal-confirm-tidak-lolos-rekap')"
+          class="absolute top-5 right-5 text-slate-400 hover:text-white cursor-pointer"
+        >
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xl shrink-0">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white">
+              Konfirmasi Penetapan Tidak Lolos
+            </h3>
+            <p class="text-xs text-slate-400">
+              Penetapan status tidak lolos &amp; pengiriman surat resmi permohonan maaf
+            </p>
+          </div>
+        </div>
+
+        <!-- Daftar Pendaftar yang Dipilih -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-medium">Kandidat yang Dipilih:</span>
+            <span id="tidak-lolos-modal-count-badge" class="font-bold text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/20">0 Kandidat</span>
+          </div>
+          <div id="tidak-lolos-modal-candidates-list" class="max-h-36 overflow-y-auto p-3 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2 divide-y divide-slate-800/60 text-xs">
+            <!-- Dynamic list of candidates -->
+          </div>
+        </div>
+
+        <!-- Status Penetapan (Fixed info) -->
+        <div class="space-y-1.5 text-xs">
+          <label class="block font-bold text-slate-300">Status Penetapan:</label>
+          <div class="w-full px-3.5 py-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 font-bold flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
+            <span>Tidak Lolos Seleksi Calon Asisten Lab IELA</span>
+          </div>
+        </div>
+
+        <!-- Catatan / Keterangan Tambahan -->
+        <div class="space-y-1.5 text-xs">
+          <label class="block font-bold text-slate-300">Catatan Tambahan di Email (Opsional):</label>
+          <textarea id="tidak-lolos-modal-note" rows="2" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-xs focus:border-rose-500 focus:outline-none resize-none" placeholder="Panitia Seleksi menyampaikan permohonan maaf dan terima kasih atas partisipasi Saudara/i."></textarea>
+        </div>
+
+        <!-- Opsi Kirim Email Surat Resmi -->
+        <div class="p-3 bg-rose-950/25 rounded-2xl border border-rose-500/30 flex items-start gap-3">
+          <input type="checkbox" id="tidak-lolos-modal-send-email" class="w-4 h-4 mt-0.5 rounded bg-slate-800 border-slate-700 text-rose-500 focus:ring-rose-400 cursor-pointer" checked>
+          <label for="tidak-lolos-modal-send-email" class="text-xs text-slate-300 cursor-pointer select-none leading-relaxed">
+            <strong class="text-rose-400">Kirim Email Surat Resmi dengan Permohonan Maaf</strong><br>
+            Sistem akan secara otomatis mengirimkan <em>Surat Pemberitahuan Resmi Tidak Lolos</em> bertema merah dengan permohonan maaf yang tulus dan apresiasi setinggi-tingginya ke email pendaftar.
+          </label>
+        </div>
+
+        <!-- Tombol Aksi -->
+        <div class="flex items-center gap-3 pt-2">
+          <button
+            type="button"
+            onclick="window.closeModal('modal-confirm-tidak-lolos-rekap')"
+            class="w-1/2 py-2.5 px-4 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs font-bold transition cursor-pointer"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            id="btn-confirm-batch-tidak-lolos"
+            onclick="window.executeBatchTidakLolos()"
+            class="w-1/2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-xs font-bold transition cursor-pointer shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-circle-xmark"></i>
+            <span>Ya, Tetapkan &amp; Kirim</span>
           </button>
         </div>
       </div>
@@ -8174,9 +8272,12 @@
             '<td class="p-4 text-center font-bold font-mono ' + totalColor + ' text-sm">' + avgTotal.toFixed(2) + '</td>' +
             '<td class="p-4 text-center">' + statusBadge + '</td>' +
             '<td class="p-4 text-center" onclick="event.stopPropagation()">' +
-              '<div class="flex items-center justify-center gap-2">' +
-                '<button type="button" onclick="window.luluskanSingleCandidate(&quot;' + pId + '&quot;, &quot;' + nimPendaftar + '&quot;, &quot;' + (namaPendaftar || '').replace(/'/g, '') + '&quot;)" class="px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-105" title="Luluskan ' + namaPendaftar + ' & Kirim Email">' +
-                  '<i class="fa-solid fa-graduation-cap"></i><span>Lulus</span>' +
+              '<div class="flex items-center justify-center gap-1.5">' +
+                '<button type="button" onclick="window.luluskanSingleCandidate(&quot;' + pId + '&quot;, &quot;' + nimPendaftar + '&quot;, &quot;' + (namaPendaftar || '').replace(/'/g, '') + '&quot;)" class="px-2 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-sm hover:scale-105" title="Luluskan ' + namaPendaftar + ' & Kirim Email">' +
+                  '<i class="fa-solid fa-graduation-cap text-[11px]"></i><span>Lulus</span>' +
+                '</button>' +
+                '<button type="button" onclick="window.tidakLoloskanSingleCandidate(&quot;' + pId + '&quot;, &quot;' + nimPendaftar + '&quot;, &quot;' + (namaPendaftar || '').replace(/'/g, '') + '&quot;)" class="px-2 py-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-sm hover:scale-105" title="Tetapkan ' + namaPendaftar + ' Tidak Lolos & Kirim Surat Permohonan Maaf">' +
+                  '<i class="fa-solid fa-circle-xmark text-[11px]"></i><span>Tidak Lolos</span>' +
                 '</button>' +
                 '<button type="button" onclick="window.openRekapDetail(&quot;' + pId + '&quot;)" class="p-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-lg text-xs font-bold transition cursor-pointer hover:scale-105" title="Rincian Nilai Seluruh Penguji">' +
                   '<i class="fa-solid fa-list-check"></i>' +
@@ -8208,15 +8309,145 @@
         const countEl = document.getElementById("rekap-selected-count");
         if (countEl) countEl.innerText = count;
 
+        const countTidakLolosEl = document.getElementById("rekap-selected-count-tidak-lolos");
+        if (countTidakLolosEl) countTidakLolosEl.innerText = count;
+
         const btnLulus = document.getElementById("btn-rekap-luluskan");
         if (btnLulus) {
           btnLulus.disabled = (count === 0);
+        }
+
+        const btnTidakLolos = document.getElementById("btn-rekap-tidak-loloskan");
+        if (btnTidakLolos) {
+          btnTidakLolos.disabled = (count === 0);
         }
 
         const selectAll = document.getElementById("rekap-select-all");
         if (selectAll) {
           selectAll.checked = (checkboxes.length > 0 && count === checkboxes.length);
           selectAll.indeterminate = (count > 0 && count < checkboxes.length);
+        }
+      };
+
+      window.openBatchTidakLolosModal = function (specificList) {
+        const candidates = specificList || window.getSelectedRekapCandidates();
+        if (!candidates || candidates.length === 0) {
+          window.showToast("Pilih minimal satu pendaftar terlebih dahulu!");
+          return;
+        }
+
+        window.appState.pendingBatchTidakLolos = candidates;
+
+        const badge = document.getElementById("tidak-lolos-modal-count-badge");
+        if (badge) badge.innerText = candidates.length + " Kandidat";
+
+        const listContainer = document.getElementById("tidak-lolos-modal-candidates-list");
+        if (listContainer) {
+          listContainer.innerHTML = candidates.map(function (c, idx) {
+            return '<div class="flex items-center justify-between py-1.5 first:pt-0 last:pb-0">' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="w-5 h-5 rounded-full bg-slate-800 text-slate-400 text-[10px] flex items-center justify-center font-bold">' + (idx + 1) + '</span>' +
+                '<div>' +
+                  '<p class="font-bold text-white text-xs">' + c.nama + '</p>' +
+                  '<p class="text-[10px] font-mono text-indigo-400">NPM: ' + c.npm + '</p>' +
+                '</div>' +
+              '</div>' +
+              '<span class="text-xs font-mono font-bold text-rose-400">Rata-rata: ' + c.avg + '</span>' +
+            '</div>';
+          }).join("");
+        }
+
+        const noteInput = document.getElementById("tidak-lolos-modal-note");
+        if (noteInput && !noteInput.value.trim()) {
+          noteInput.value = "Panitia Seleksi menyampaikan permohonan maaf dan terima kasih yang sebesar-besarnya atas partisipasi aktif Saudara/i.";
+        }
+
+        window.openModal("modal-confirm-tidak-lolos-rekap");
+      };
+
+      window.tidakLoloskanSingleCandidate = function (pId, npm, nama) {
+        let avg = "-";
+        const evals = (window.appState.data.penilaianRekap || []).filter(function(x) {
+          return String(x.Pendaftar_ID).trim() === String(pId).trim();
+        });
+        if (evals.length > 0) {
+          let sum = 0;
+          evals.forEach(function(e) { sum += Number(e.Nilai_Bobot_Total || 0); });
+          avg = (sum / evals.length).toFixed(2);
+        }
+
+        window.openBatchTidakLolosModal([{
+          pendaftarId: pId,
+          npm: npm,
+          nama: nama,
+          avg: avg
+        }]);
+      };
+
+      window.executeBatchTidakLolos = function () {
+        const candidates = window.appState.pendingBatchTidakLolos || [];
+        if (candidates.length === 0) return;
+
+        const noteInput = document.getElementById("tidak-lolos-modal-note");
+        const catatan = noteInput ? noteInput.value.trim() : "";
+
+        const sendEmailCheck = document.getElementById("tidak-lolos-modal-send-email");
+        const sendEmail = sendEmailCheck ? sendEmailCheck.checked : true;
+
+        window.closeModal("modal-confirm-tidak-lolos-rekap");
+        window.showLoading(true, "Menetapkan " + candidates.length + " kandidat Tidak Lolos & mengirim email...");
+
+        const payload = {
+          candidates: candidates,
+          newStatus: "Tidak Lolos",
+          catatan: catatan,
+          sendEmail: sendEmail
+        };
+
+        // Optimistic UI Update: Update pendaftar list in memory
+        if (window.appState && window.appState.data && Array.isArray(window.appState.data.pendaftar)) {
+          candidates.forEach(function(c) {
+            const cleanNpm = String(c.npm || "").replace(/[^0-9]/g, "");
+            window.appState.data.pendaftar.forEach(function(cand) {
+              const candNim = String(cand.NIM || "").replace(/[^0-9]/g, "");
+              if (
+                (c.pendaftarId && String(cand.Pendaftar_ID).trim() === String(c.pendaftarId).trim()) ||
+                (cleanNpm && candNim === cleanNpm)
+              ) {
+                cand.Status_Pendaftaran = "Tidak Lolos";
+              }
+            });
+          });
+          window.renderAdminRekapTable();
+          if (typeof window.renderAdminTable === "function") window.renderAdminTable();
+        }
+
+        if (window.checkIsGAS()) {
+          google.script.run
+            .withSuccessHandler(function (res) {
+              window.showLoading(false);
+              if (res && res.success) {
+                window.showToast(res.message);
+                window.appState.pendingBatchTidakLolos = null;
+                window.initData(true);
+              } else {
+                window.showToast("Gagal menetapkan: " + (res ? res.message : "Error"));
+                window.initData(true);
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showLoading(false);
+              window.showToast("Error Server: " + err.toString());
+              window.initData(true);
+            })
+            .batchUpdatePendaftarStatusAndNotify(payload);
+        } else {
+          setTimeout(function () {
+            window.showLoading(false);
+            window.showToast(candidates.length + " kandidat berhasil ditetapkan Tidak Lolos (Simulasi lokal)!");
+            window.appState.pendingBatchTidakLolos = null;
+            window.renderAdminRekapTable();
+          }, 800);
         }
       };
 

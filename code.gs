@@ -1989,11 +1989,15 @@ function batchUpdatePendaftarStatusAndNotify(payload) {
         var matchedRow = data[i].slice();
         matchedRow[colStatusIdx] = newStatus;
         var sLower = newStatus.toLowerCase();
+        var isTidakLolos = sLower.includes("tidak lolos");
         if (sLower.includes("berkas")) {
           syncCandidateToSheet(ss, "LOLOS_BERKAS", matchedRow, candNpm, rowPId);
           removeCandidateFromSheet(ss, "CALON_IELA", candNpm, rowPId);
         } else if (sLower.includes("asisten") || sLower.includes("iela") || sLower === "lolos") {
           syncCandidateToSheet(ss, "CALON_IELA", matchedRow, candNpm, rowPId);
+          removeCandidateFromSheet(ss, "LOLOS_BERKAS", candNpm, rowPId);
+        } else if (isTidakLolos) {
+          removeCandidateFromSheet(ss, "CALON_IELA", candNpm, rowPId);
           removeCandidateFromSheet(ss, "LOLOS_BERKAS", candNpm, rowPId);
         }
 
@@ -2013,7 +2017,10 @@ function batchUpdatePendaftarStatusAndNotify(payload) {
         var emailError = "";
         if (sendEmail && targetEmail && targetEmail.indexOf("@") !== -1) {
           try {
-            var subject = "[PEMBERITAHUAN RESMI] Penetapan Kelulusan Seleksi Asisten Laboratorium IELA 2027/2028 - " + newStatus;
+            var isBatchTidakLolos = String(newStatus || "").toLowerCase().includes("tidak lolos");
+            var subject = isBatchTidakLolos
+              ? "[PEMBERITAHUAN RESMI] Hasil Seleksi Calon Asisten Laboratorium IELA 2027/2028 - " + candNama
+              : "[PEMBERITAHUAN RESMI] Penetapan Kelulusan Seleksi Asisten Laboratorium IELA 2027/2028 - " + newStatus;
             var htmlBody = buildStatusEmailHtml(candNama, candNpm, newStatus, catatan);
             MailApp.sendEmail({
               to: targetEmail,
@@ -2047,7 +2054,7 @@ function batchUpdatePendaftarStatusAndNotify(payload) {
       count: successCount,
       emailCount: emailCount,
       details: details,
-      message: successCount + " pendaftar berhasil ditetapkan Lolos (" + emailCount + " email notifikasi resmi telah terkirim)."
+      message: successCount + " pendaftar berhasil ditetapkan '" + (newStatus.toLowerCase().includes("tidak lolos") ? "Tidak Lolos" : "Lolos") + "' (" + emailCount + " email notifikasi resmi telah terkirim)."
     };
   } catch (err) {
     return { success: false, message: "Terjadi kesalahan batch kelulusan: " + err.toString() };
