@@ -44,6 +44,13 @@
   display: inline !important;
 }
 
+/* Hero Watermark: Perfect vertical centering (prevents double translation) */
+.hero-iela-watermark {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  translate: none !important;
+}
+
 @layer utilities {
   .glass-card {
     background: rgba(30, 41, 59, 0.75);
