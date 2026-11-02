@@ -1,0 +1,125 @@
+---
+interface Props {
+  periode?: string;
+}
+
+const { periode = '2027/2028' } = Astro.props;
+---
+
+<section id="hero" class="relative pt-6 pb-12 sm:pt-10 sm:pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div
+    id="hero-stage"
+    class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950/80 to-slate-900 border border-slate-800/80 p-8 sm:p-12 shadow-2xl"
+  >
+    <!-- Background Auroras -->
+    <div
+      class="hero-aurora absolute -right-20 -top-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"
+    ></div>
+    <div
+      class="hero-aurora hero-aurora-b absolute -left-24 -bottom-32 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"
+    ></div>
+    <div class="hero-spot absolute inset-0 pointer-events-none"></div>
+
+    <!-- WATERMARK LOGO IELA: RODA GIGI ASLI BERPUTAR LANGSUNG MENEMPEL KE LOGO WARNA BIRU -->
+    <div
+      class="hero-iela-watermark absolute -right-6 sm:right-4 md:right-8 lg:right-12 top-1/2 -translate-y-1/2 w-[240px] h-[240px] sm:w-[300px] sm:h-[300px] md:w-[350px] md:h-[350px] lg:w-[380px] lg:h-[380px] pointer-events-none select-none z-0 overflow-visible opacity-45 hover:opacity-85 transition-opacity duration-700 flex items-center justify-center"
+    >
+      <!-- Aura Cahaya Halus di Belakang Logo -->
+      <div class="absolute inset-0 rounded-full bg-indigo-500/20 blur-2xl pointer-events-none"></div>
+
+      <!-- 1. Roda Gigi Asli Logo IELA (Berputar Mengelilingi Lingkaran Biru) -->
+      <img
+        src="/assets/iela-gear.webp"
+        alt=""
+        class="absolute inset-0 w-full h-full object-contain animate-gear-spin drop-shadow-[0_0_25px_rgba(99,102,241,0.25)] pointer-events-none select-none"
+        aria-hidden="true"
+      />
+
+      <!-- 2. Logo IELA Biru Asli (100% Bulat, Tetap Tegak di Tengah) -->
+      <img
+        src="/assets/iela-logo-round.webp"
+        alt="Logo IELA Unirow"
+        class="relative z-10 w-full h-full object-contain drop-shadow-[0_0_30px_rgba(30,58,138,0.5)] pointer-events-none select-none"
+      />
+    </div>
+
+    <!-- Content Row -->
+    <div class="relative z-10 max-w-3xl space-y-6">
+      <span
+        id="hero-badge"
+        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 backdrop-blur-sm"
+      >
+        <i class="fa-solid fa-circle-dot text-[8px] animate-pulse text-indigo-400"></i>
+        <span>Open Recruitment IELA Periode {periode}</span>
+      </span>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight">
+        <span>Pusat Keunggulan Riset &amp; Simulasi</span>
+        <span class="block bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-300 bg-clip-text text-transparent">
+          Teknik Industri
+        </span>
+        <span class="text-2xl sm:text-4xl text-slate-300 font-extrabold">Universitas PGRI Ronggolawe</span>
+      </h1>
+
+      <p class="text-slate-300/90 text-base sm:text-lg leading-relaxed max-w-2xl font-normal">
+        Menyelenggarakan praktikum unggulan berbagai divisi yaitu Ergonomi, Fisika Dasar, Statistika, Proses Manufaktur (Bubut, 3D Printing, CNC), dan Algoritma Pemrograman.
+      </p>
+
+      <div class="flex flex-wrap items-center gap-4 pt-2">
+        <a
+          href="/daftar"
+          class="bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 active:scale-95 text-white font-bold px-7 py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2.5 text-sm"
+        >
+          <i class="fa-solid fa-user-plus text-xs"></i>
+          <span>Daftar Asisten Sekarang</span>
+        </a>
+        <a
+          href="#profil"
+          class="bg-slate-800/80 hover:bg-slate-700/80 active:scale-95 text-slate-200 font-bold px-6 py-3.5 rounded-xl border border-slate-700/70 transition-all flex items-center gap-2 text-sm backdrop-blur-sm"
+        >
+          <i class="fa-solid fa-circle-info text-xs text-indigo-400"></i>
+          <span>Pelajari Profil Lab</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Metrics / Statistics Counter Row -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+    <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-indigo-500/30 transition-colors">
+      <i class="fa-solid fa-flask text-2xl text-indigo-400 mb-2"></i>
+      <p class="text-2xl sm:text-3xl font-black text-white">5 Divisi</p>
+      <p class="text-xs text-slate-400 font-medium">Sub-Laboratorium Riset</p>
+    </div>
+    <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-cyan-500/30 transition-colors">
+      <i class="fa-solid fa-users text-2xl text-cyan-400 mb-2"></i>
+      <p class="text-2xl sm:text-3xl font-black text-white">35+ Asisten</p>
+      <p class="text-xs text-slate-400 font-medium">Pengurus &amp; Instruktur</p>
+    </div>
+    <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-colors">
+      <i class="fa-solid fa-book-open text-2xl text-emerald-400 mb-2"></i>
+      <p class="text-2xl sm:text-3xl font-black text-white">8 Modul</p>
+      <p class="text-xs text-slate-400 font-medium">Praktikum Mandiri &amp; Terpadu</p>
+    </div>
+    <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-amber-500/30 transition-colors">
+      <i class="fa-solid fa-award text-2xl text-amber-400 mb-2"></i>
+      <p class="text-2xl sm:text-3xl font-black text-white">Unggul</p>
+      <p class="text-xs text-slate-400 font-medium">Standar Mutu Pendidikan</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes ielaGearSpin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .animate-gear-spin {
+    animation: ielaGearSpin 45s linear infinite;
+    transform-origin: 50% 50%;
+  }
+</style>

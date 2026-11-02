@@ -1,0 +1,77 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="mt-auto border-t border-slate-800/80 bg-slate-950/70 backdrop-blur-md pt-14 pb-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-slate-800/80">
+      
+      <!-- Brand & About -->
+      <div class="md:col-span-2 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-slate-900 border border-indigo-500/30 p-1 flex items-center justify-center">
+            <img
+              src="/assets/iela-logo.webp"
+              alt="Logo IELA"
+              class="w-full h-full object-contain rounded-lg"
+            />
+          </div>
+          <div>
+            <div class="text-sm font-black text-white tracking-wide">
+              IELA <span class="text-xs text-indigo-400 font-bold">UNIROW</span>
+            </div>
+            <p class="text-[10px] text-slate-400 uppercase tracking-wider">Laboratorium Teknik Industri</p>
+          </div>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed max-w-md">
+          Pusat riset, praktikum manufaktur, dan simulasi sistem industri modern pada Program Studi S1 Teknik Industri, Fakultas Teknik, Universitas PGRI Ronggolawe Tuban.
+        </p>
+        <div class="flex items-center gap-3 text-slate-400 text-sm">
+          <a href="mailto:ielateknikindustri@gmail.com" class="hover:text-indigo-400 transition-colors" title="Email Resmi">
+            <i class="fa-solid fa-envelope"></i>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener" class="hover:text-indigo-400 transition-colors" title="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="https://unirow.ac.id" target="_blank" rel="noopener" class="hover:text-indigo-400 transition-colors" title="Website Resmi Unirow">
+            <i class="fa-solid fa-globe"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider">Menu Navigasi</h4>
+        <ul class="space-y-2 text-xs text-slate-400">
+          <li><a href="/" class="hover:text-indigo-300 transition-colors">Beranda</a></li>
+          <li><a href="#profil" class="hover:text-indigo-300 transition-colors">Profil 5 Sub-Lab</a></li>
+          <li><a href="#galeri" class="hover:text-indigo-300 transition-colors">Galeri Dokumentasi</a></li>
+          <li><a href="#publikasi" class="hover:text-indigo-300 transition-colors">Publikasi Riset</a></li>
+          <li><a href="/daftar" class="hover:text-indigo-300 transition-colors">Formulir Recruitment</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider">Sekretariat Laboratorium</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Gedung Lab Terpadu Lt. 2<br>
+          Universitas PGRI Ronggolawe<br>
+          Jl. Manunggal No. 61, Tuban, Jawa Timur
+        </p>
+        <p class="text-xs font-mono text-indigo-400">
+          ielateknikindustri@gmail.com
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Copyright -->
+    <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
+      <p>&copy; {currentYear} Laboratorium Teknik Industri (IELA) UNIROW Tuban. All rights reserved.</p>
+      <p class="text-[10px] text-slate-400">
+        Astro v5 &bull; Supabase &bull; Vercel Edge
+      </p>
+    </div>
+  </div>
+</footer>

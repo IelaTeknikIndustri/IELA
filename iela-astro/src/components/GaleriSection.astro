@@ -1,0 +1,310 @@
+---
+import { supabase } from '../lib/supabase';
+
+interface GaleriItem {
+  foto_id: string;
+  judul_kegiatan: string;
+  deskripsi_kegiatan?: string;
+  tanggal_kegiatan?: string;
+  url_foto: string;
+  kategori_event?: string;
+}
+
+// Default fallback items from database
+const fallbackGaleri: GaleriItem[] = [
+  {
+    foto_id: 'GLR-001',
+    judul_kegiatan: 'Praktikum Perancangan Sistem Kerja & Ergonomi',
+    deskripsi_kegiatan: 'Sesi pengambilan data antropometri dan analisis postur kerja mahasiswa Teknik Industri.',
+    tanggal_kegiatan: '15 Februari 2026',
+    url_foto: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&q=80',
+    kategori_event: 'Praktikum'
+  },
+  {
+    foto_id: 'GLR-002',
+    judul_kegiatan: 'Studi Ekskursi & Benchmarking Manufaktur',
+    deskripsi_kegiatan: 'Kunjungan riset laboratorium ke industri pemesinan presisi dan manufaktur komponen.',
+    tanggal_kegiatan: '20 Februari 2026',
+    url_foto: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80',
+    kategori_event: 'Riset'
+  },
+  {
+    foto_id: 'GLR-3643',
+    judul_kegiatan: 'Identitas Resmi Laboratorium IELA',
+    deskripsi_kegiatan: 'Simbol roda gigi industri dan keilmuan rekayasa teknik industri UNIROW Tuban.',
+    tanggal_kegiatan: 'Januari 2026',
+    url_foto: '/assets/iela-logo-round.webp',
+    kategori_event: 'Institusi'
+  },
+  {
+    foto_id: 'GLR-004',
+    judul_kegiatan: 'Pelatihan Software Simulasi & Tata Letak Pabrik',
+    deskripsi_kegiatan: 'Workshop pemodelan antrean dan simulasi discrete-event untuk asisten lab.',
+    tanggal_kegiatan: 'Maret 2026',
+    url_foto: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80',
+    kategori_event: 'Pelatihan'
+  }
+];
+
+let galeriList: GaleriItem[] = fallbackGaleri;
+
+try {
+  const { data, error } = await supabase
+    .from('galeri_kegiatan')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (!error && data && data.length > 0) {
+    galeriList = data as GaleriItem[];
+  }
+} catch (e) {
+  console.log('Using fallback gallery data');
+}
+---
+
+<section id="galeri" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800/80">
+  <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+    <div>
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-3">
+        <i class="fa-solid fa-camera text-[10px]"></i>
+        <span>Dokumentasi Visual</span>
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        Galeri Kegiatan Laboratorium
+      </h2>
+      <p class="text-slate-400 text-sm mt-2 max-w-2xl">
+        Potret aktivitas praktikum, riset penelitian, workshop permesinan, dan kebersamaan pengurus Asisten Laboratorium Teknik Industri UNIROW.
+      </p>
+    </div>
+
+    <!-- Tombol Upload Foto untuk Admin -->
+    <button
+      type="button"
+      id="btn-open-upload-modal"
+      class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-300 hover:text-white font-bold text-xs tracking-wide border border-indigo-500/30 hover:border-indigo-400 transition-all flex items-center gap-2 self-start md:self-auto cursor-pointer"
+    >
+      <i class="fa-solid fa-cloud-arrow-up"></i>
+      <span>Upload Foto Baru</span>
+    </button>
+  </div>
+
+  <!-- Grid Galeri Foto -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {galeriList.map((item) => (
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 group hover:border-indigo-500/40 transition-all duration-300 hover:-translate-y-1">
+        <div class="relative aspect-video w-full overflow-hidden bg-slate-900">
+          <img
+            src={item.url_foto}
+            alt={item.judul_kegiatan}
+            loading="lazy"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          {item.kategori_event && (
+            <span class="absolute top-3 left-3 text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-cyan-300 border border-cyan-500/30">
+              {item.kategori_event}
+            </span>
+          )}
+        </div>
+        <div class="p-4">
+          {item.tanggal_kegiatan && (
+            <p class="text-[10px] text-slate-400 mb-1 flex items-center gap-1.5 font-medium">
+              <i class="fa-regular fa-calendar text-[9px] text-indigo-400"></i>
+              <span>{item.tanggal_kegiatan}</span>
+            </p>
+          )}
+          <h3 class="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors line-clamp-1">
+            {item.judul_kegiatan}
+          </h3>
+          {item.deskripsi_kegiatan && (
+            <p class="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+              {item.deskripsi_kegiatan}
+            </p>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Modal Upload Foto ke Supabase Storage -->
+  <div id="modal-upload-foto" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-up text-indigo-400"></i>
+          <h3 class="text-base font-bold text-white">Upload Foto ke Supabase Storage</h3>
+        </div>
+        <button type="button" id="btn-close-upload-modal" class="text-slate-400 hover:text-white text-lg cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="form-upload-galeri" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Judul Kegiatan / Foto *</label>
+          <input
+            type="text"
+            id="upload-judul"
+            required
+            placeholder="Contoh: Praktikum CNC Milling 2026"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 focus:outline-none focus:border-indigo-500"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Kategori Event</label>
+            <select
+              id="upload-kategori"
+              class="w-full px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 focus:outline-none focus:border-indigo-500"
+            >
+              <option value="Praktikum">Praktikum</option>
+              <option value="Riset">Riset & Ekskursi</option>
+              <option value="Workshop">Workshop</option>
+              <option value="Institusi">Institusi Lab</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Tanggal</label>
+            <input
+              type="date"
+              id="upload-tanggal"
+              class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Deskripsi Singkat</label>
+          <textarea
+            id="upload-deskripsi"
+            rows="2"
+            placeholder="Keterangan singkat dokumentasi kegiatan..."
+            class="w-full px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 focus:outline-none focus:border-indigo-500"
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Pilih File Foto (JPG / PNG / WEBP) *</label>
+          <input
+            type="file"
+            id="upload-file"
+            required
+            accept="image/*"
+            class="w-full px-3 py-2 rounded-xl bg-slate-800/80 border border-dashed border-slate-700 text-slate-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+          />
+          <p class="text-[10px] text-slate-400 mt-1">Maksimal 5MB. Foto otomatis disimpan ke Cloud Bucket Supabase.</p>
+        </div>
+
+        <div id="upload-status" class="hidden text-xs p-3 rounded-lg"></div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+          <button
+            type="button"
+            id="btn-cancel-upload"
+            class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700 cursor-pointer"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            id="btn-submit-upload"
+            class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-lg shadow-indigo-600/30 flex items-center gap-2 cursor-pointer"
+          >
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Upload Sekarang</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  const openBtn = document.getElementById('btn-open-upload-modal');
+  const closeBtn = document.getElementById('btn-close-upload-modal');
+  const cancelBtn = document.getElementById('btn-cancel-upload');
+  const modal = document.getElementById('modal-upload-foto');
+  const form = document.getElementById('form-upload-galeri') as HTMLFormElement | null;
+  const statusDiv = document.getElementById('upload-status');
+  const submitBtn = document.getElementById('btn-submit-upload');
+
+  function openModal() {
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+  }
+
+  function closeModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+    if (form) form.reset();
+    if (statusDiv) {
+      statusDiv.className = 'hidden';
+      statusDiv.textContent = '';
+    }
+  }
+
+  openBtn?.addEventListener('click', openModal);
+  closeBtn?.addEventListener('click', closeModal);
+  cancelBtn?.addEventListener('click', closeModal);
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fileInput = document.getElementById('upload-file') as HTMLInputElement;
+    const judulInput = document.getElementById('upload-judul') as HTMLInputElement;
+    const kategoriInput = document.getElementById('upload-kategori') as HTMLSelectElement;
+    const tanggalInput = document.getElementById('upload-tanggal') as HTMLInputElement;
+    const deskripsiInput = document.getElementById('upload-deskripsi') as HTMLTextAreaElement;
+
+    if (!fileInput?.files?.[0]) {
+      alert('Pilih file foto terlebih dahulu!');
+      return;
+    }
+
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('judul', judulInput.value);
+    formData.append('kategori', kategoriInput.value);
+    formData.append('tanggal', tanggalInput.value);
+    formData.append('deskripsi', deskripsiInput.value);
+
+    if (submitBtn) {
+      submitBtn.setAttribute('disabled', 'true');
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Mengunggah...</span>';
+    }
+
+    if (statusDiv) {
+      statusDiv.className = 'text-xs p-3 rounded-lg bg-indigo-950/60 text-indigo-300 border border-indigo-500/30 block';
+      statusDiv.textContent = 'Sedang mengunggah foto ke Supabase Storage...';
+    }
+
+    try {
+      const res = await fetch('/api/galeri/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const json = await res.json();
+
+      if (json.success) {
+        if (statusDiv) {
+          statusDiv.className = 'text-xs p-3 rounded-lg bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 block';
+          statusDiv.textContent = 'Foto berhasil diunggah! Memperbarui halaman...';
+        }
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        throw new Error(json.message || 'Gagal mengunggah foto');
+      }
+    } catch (err: any) {
+      if (statusDiv) {
+        statusDiv.className = 'text-xs p-3 rounded-lg bg-rose-950/60 text-rose-300 border border-rose-500/30 block';
+        statusDiv.textContent = err.message || 'Terjadi kesalahan saat mengunggah foto.';
+      }
+      if (submitBtn) {
+        submitBtn.removeAttribute('disabled');
+        submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> <span>Coba Lagi</span>';
+      }
+    }
+  });
+</script>

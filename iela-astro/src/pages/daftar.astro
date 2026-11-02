@@ -1,0 +1,855 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="Formulir Pendaftaran Asisten Laboratorium IELA 2027/2028 - UNIROW"
+  description="Pendaftaran Resmi Calon Asisten Laboratorium Teknik Industri (IELA) Universitas PGRI Ronggolawe Periode 2027/2028. Khusus Mahasiswa Aktif Semester 3 dengan IPK Minimal 3.00."
+>
+  <Navbar />
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    <!-- Header Banner -->
+    <div class="mb-8">
+      <a href="/" class="inline-flex items-center gap-2 text-xs text-indigo-400 hover:text-indigo-300 font-semibold mb-4 transition-colors">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Kembali ke Beranda</span>
+      </a>
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+        <div>
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-2">
+            <i class="fa-solid fa-id-card-clip text-[10px]"></i>
+            <span>Rekrutmen Khusus Semester 3 &bull; Periode 2027/2028</span>
+          </span>
+          <h1 class="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Formulir Pendaftaran Calon Asisten
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Persyaratan Mutlak: Mahasiswa aktif <strong>Semester 3</strong>, <strong>IPK Kumulatif &ge; 3.00</strong>, serta melampirkan ke-8 berkas persyaratan lengkap.
+          </p>
+        </div>
+        <div class="shrink-0 flex items-center gap-2">
+          <span class="inline-block px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+            Status: Terbuka
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Registration Form -->
+    <form id="form-pendaftaran-iela" class="space-y-8">
+      
+      <!-- 1. IDENTITAS PERSONAL MAHASISWA -->
+      <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
+        <h2 class="text-base font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2.5">
+          <i class="fa-solid fa-user-circle text-indigo-400"></i>
+          <span>1. Identitas Personal Mahasiswa</span>
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">NIM / NPM Mahasiswa *</label>
+            <input
+              type="text"
+              id="p-nim"
+              name="nim"
+              required
+              placeholder="Contoh: 1411240001"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-mono focus:outline-none focus:border-indigo-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Nama Lengkap Sesuai KTM *</label>
+            <input
+              type="text"
+              id="p-nama"
+              name="nama"
+              required
+              placeholder="Contoh: M. Luqman Firdaus"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Nama Panggilan *</label>
+            <input
+              type="text"
+              id="p-panggilan"
+              name="namaPanggilan"
+              required
+              placeholder="Contoh: Luqman"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Jenis Kelamin *</label>
+            <select
+              id="p-jk"
+              name="jk"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            >
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Tempat, Tanggal Lahir *</label>
+            <input
+              type="text"
+              id="p-ttl"
+              name="ttl"
+              required
+              placeholder="Tuban, 15 Mei 2005"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">No. WhatsApp Aktif *</label>
+            <input
+              type="text"
+              id="p-hp"
+              name="hp"
+              required
+              placeholder="0812xxxxxxxx"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Alamat Asal (Sesuai KTP) *</label>
+            <textarea
+              id="p-alamat-asal"
+              name="alamatAsal"
+              rows="2"
+              required
+              placeholder="Alamat domisili asal / rumah orang tua..."
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            ></textarea>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Alamat Sekarang / Kos di Tuban *</label>
+            <textarea
+              id="p-alamat-sekarang"
+              name="alamatSekarang"
+              rows="2"
+              required
+              placeholder="Alamat tempat tinggal saat masa perkuliahan..."
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Hobby *</label>
+            <input
+              type="text"
+              id="p-hobby"
+              name="hobby"
+              required
+              placeholder="Contoh: Robotika, Desain CAD"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Cita-Cita *</label>
+            <input
+              type="text"
+              id="p-citacita"
+              name="citaCita"
+              required
+              placeholder="Contoh: Production Engineer"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Motto Hidup *</label>
+            <input
+              type="text"
+              id="p-motto"
+              name="motto"
+              required
+              placeholder="Prinsip semangat hidup..."
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. AKADEMIK & PEMINATAN SUB-LABORATORIUM -->
+      <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
+        <h2 class="text-base font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2.5">
+          <i class="fa-solid fa-graduation-cap text-cyan-400"></i>
+          <span>2. Informasi Akademik &amp; Peminatan Divisi</span>
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          
+          <!-- Semester Aktif: Strictly Semester 3 (No Dropdown) -->
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">
+              Semester Aktif *
+              <span class="text-[10px] text-indigo-400 font-bold ml-1">(Khusus Semester 3)</span>
+            </label>
+            <div class="relative">
+              <input
+                type="text"
+                id="p-semester"
+                name="semester"
+                readonly
+                value="Semester 3"
+                class="w-full bg-slate-900 border border-indigo-500/30 rounded-xl px-4 py-2.5 text-indigo-300 font-bold font-mono cursor-not-allowed select-none"
+              />
+              <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-indigo-400 text-xs">
+                <i class="fa-solid fa-lock"></i>
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Pendaftaran angkatan ini hanya dibuka khusus untuk Semester 3.</p>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Program Studi *</label>
+            <input
+              type="text"
+              id="p-prodi"
+              name="prodi"
+              readonly
+              value="S1 Teknik Industri"
+              class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-400"
+            />
+          </div>
+
+          <!-- IPK Kumulatif: Strictly Minimal 3.00 -->
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">
+              IPK Kumulatif Terakhir *
+              <span class="text-[10px] text-rose-400 font-bold ml-1">(Wajib &ge; 3.00)</span>
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="3.00"
+              max="4.00"
+              id="p-ipk"
+              name="ipk"
+              required
+              placeholder="Minimal 3.00 (contoh: 3.50)"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-mono focus:outline-none focus:border-indigo-500"
+            />
+            <p id="ipk-warning-hint" class="text-[10px] text-slate-400 mt-1">Syarat kelayakan administrasi: IPK kumulatif minimal 3.00.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Pilihan Divisi 1 (Prioritas Utama) *</label>
+            <select
+              id="p-bidang-1"
+              name="pilihan1"
+              required
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            >
+              <option value="Ergonomi">Ergonomi</option>
+              <option value="Fisika Dasar">Fisika Dasar</option>
+              <option value="Statistika">Statistika</option>
+              <option value="Proses Manufaktur">Proses Manufaktur</option>
+              <option value="Algoritma Pemrograman">Algoritma Pemrograman</option>
+            </select>
+
+            <!-- SUB-PILIHAN MANUFAKTUR UNTUK DIVISI 1 -->
+            <div id="box-sub-manufaktur-1" class="hidden mt-2.5 p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 space-y-1.5 transition-all">
+              <div class="flex items-center justify-between text-xs font-bold text-indigo-300">
+                <span class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-gears text-indigo-400"></i>
+                  <span>Sub-Peminatan Manufaktur (Pilihan 1) *</span>
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-semibold">Spesialisasi</span>
+              </div>
+              <select
+                id="p-sub-manufaktur-1"
+                name="sub_manufaktur_1"
+                class="w-full bg-slate-900 border border-indigo-500/50 rounded-xl px-3.5 py-2 text-white font-medium text-xs focus:outline-none focus:border-indigo-400"
+              >
+                <option value="Bubut">Bubut (Mesin Bubut Konvensional)</option>
+                <option value="3D Printing">3D Printing (Additive Manufacturing)</option>
+                <option value="CNC">CNC (Computer Numerical Control)</option>
+              </select>
+              <p class="text-[10px] text-slate-400">Tentukan fokus konsentrasi praktikum manufaktur utama Anda.</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Pilihan Divisi 2 (Alternatif) *</label>
+            <select
+              id="p-bidang-2"
+              name="pilihan2"
+              required
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            >
+              <option value="Proses Manufaktur">Proses Manufaktur</option>
+              <option value="Ergonomi">Ergonomi</option>
+              <option value="Fisika Dasar">Fisika Dasar</option>
+              <option value="Statistika">Statistika</option>
+              <option value="Algoritma Pemrograman">Algoritma Pemrograman</option>
+            </select>
+
+            <!-- SUB-PILIHAN MANUFAKTUR UNTUK DIVISI 2 -->
+            <div id="box-sub-manufaktur-2" class="hidden mt-2.5 p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 space-y-1.5 transition-all">
+              <div class="flex items-center justify-between text-xs font-bold text-cyan-300">
+                <span class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-gears text-cyan-400"></i>
+                  <span>Sub-Peminatan Manufaktur (Pilihan 2) *</span>
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-semibold">Spesialisasi Alternatif</span>
+              </div>
+              <select
+                id="p-sub-manufaktur-2"
+                name="sub_manufaktur_2"
+                class="w-full bg-slate-900 border border-cyan-500/50 rounded-xl px-3.5 py-2 text-white font-medium text-xs focus:outline-none focus:border-cyan-400"
+              >
+                <option value="3D Printing">3D Printing (Additive Manufacturing)</option>
+                <option value="Bubut">Bubut (Mesin Bubut Konvensional)</option>
+                <option value="CNC">CNC (Computer Numerical Control)</option>
+              </select>
+              <p class="text-[10px] text-slate-400">Tentukan alternatif fokus konsentrasi praktikum manufaktur Anda.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Keterampilan Teknis &amp; Software Dikuasai *</label>
+            <input
+              type="text"
+              id="p-keterampilan"
+              name="keterampilan"
+              required
+              placeholder="Contoh: SolidWorks, AutoCAD, SPSS, Python, Mesin Bubut..."
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Motivasi Mendaftar Asisten Laboratorium *</label>
+            <textarea
+              id="p-motivasi"
+              name="motivasi"
+              rows="3"
+              required
+              placeholder="Jelaskan alasan kuat Anda ingin mengabdi dan berkontribusi di Laboratorium IELA..."
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Target &amp; Rencana Kontribusi di IELA *</label>
+            <textarea
+              id="p-target"
+              name="targetIela"
+              rows="2"
+              required
+              placeholder="Target inovasi modul, penelitian, atau pengelolaan praktikum..."
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+            ></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Riwayat Organisasi *</label>
+              <input
+                type="text"
+                id="p-organisasi"
+                name="organisasi"
+                required
+                placeholder="HIMA, BEM, UKM..."
+                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Pelatihan yang Pernah Diikuti *</label>
+              <input
+                type="text"
+                id="p-pelatihan"
+                name="pelatihan"
+                required
+                placeholder="Workshop CAD, Seminar K3..."
+                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Judul Jurnal yang Diresume *</label>
+              <input
+                type="text"
+                id="p-resume-buku"
+                name="resumeBuku"
+                required
+                placeholder="Judul artikel jurnal acuan..."
+                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. UNGGAH DOKUMEN PERSYARATAN RESMI (8 BERKAS LENGKAP) -->
+      <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-2">
+          <h2 class="text-base font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-file-shield text-emerald-400"></i>
+            <span>3. Unggah Dokumen Berkas Persyaratan</span>
+          </h2>
+          <span class="text-[11px] font-bold text-rose-400 bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20 self-start sm:self-auto">
+            * 8 Berkas Wajib Dilampirkan (Semua Wajib Lengkap)
+          </span>
+        </div>
+
+        <p class="text-xs text-slate-400">
+          Seluruh berkas di bawah ini bersifat <strong>wajib</strong>. Jika ada salah satu berkas yang belum diunggah, formulir tidak dapat dikirimkan.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- 1. Pas Foto -->
+          <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2.5 transition-all">
+            <label class="block text-xs font-bold text-slate-200">
+              1. Pas Foto Formal (3x4) *
+            </label>
+            <input
+              type="file"
+              id="file-foto"
+              name="file_foto"
+              accept="image/*"
+              class="block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+            />
+            <p id="preview-foto-text" class="text-[10px] text-slate-500 font-mono italic">Belum dipilih</p>
+          </div>
+
+          <!-- 2. KHS -->
+          <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2.5 transition-all">
+            <label class="block text-xs font-bold text-slate-200">
+              2. KHS Semester 1 &amp; 2 (PDF) *
+            </label>
+            <input
+              type="file"
+              id="file-khs"
+              name="file_khs"
+              accept=".pdf,image/*"
+              class="block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+            />
+            <p id="preview-khs-text" class="text-[10px] text-slate-500 font-mono italic">Belum dipilih</p>
+          </div>
+
+          <!-- 3. CV / Resume -->
+          <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2.5 transition-all">
+            <label class="block text-xs font-bold text-slate-200">
+              3. Curriculum Vitae / CV (PDF) *
+            </label>
+            <input
+              type="file"
+              id="file-cv"
+              name="file_cv"
+              accept=".pdf,image/*"
+              class="block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+            />
+            <p id="preview-cv-text" class="text-[10px] text-slate-500 font-mono italic">Belum dipilih</p>
+          </div>
+
+          <!-- 4. Sertifikat Pendukung -->
+          <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2.5 transition-all">
+            <label class="block text-xs font-bold text-slate-200">
+              4. Sertifikat Pendukung (PDF) *
+            </label>
+            <input
+              type="file"
+              id="file-sertifikat"
+              name="file_sertifikat"
+              accept=".pdf,image/*"
+              class="block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+            />
+            <p id="preview-sertifikat-text" class="text-[10px] text-slate-500 font-mono italic">Belum dipilih</p>
+          </div>
+
+          <!-- 5. Resume Jurnal -->
+          <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2.5 transition-all">
+            <label class="block text-xs font-bold text-slate-200">
+              5. Resume Jurnal Ilmiah (PDF) *
+            </label>
+            <input
+              type="file"
+              id="file-resume"
+              name="file_resume"
+              accept=".pdf,image/*"
+              class="block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+            />
+            <p id="preview-resume-text" class="text-[10px] text-slate-500 font-mono italic">Belum dipilih</p>
+          </div>
+
+          <!-- 6. Jurnal Referensi -->
+          <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2.5 transition-all">
+            <label class="block text-xs font-bold text-slate-200">
+              6. Jurnal Referensi Asli (PDF) *
+            </label>
+            <input
+              type="file"
+              id="file-jurnal"
+              name="file_jurnal"
+              accept=".pdf,image/*"
+              class="block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+            />
+            <p id="preview-jurnal-text" class="text-[10px] text-slate-500 font-mono italic">Belum dipilih</p>
+          </div>
+
+          <!-- 7. Bukti Follow Instagram IELA -->
+          <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2.5 transition-all">
+            <label class="block text-xs font-bold text-slate-200">
+              7. Bukti Follow IG IELA *
+            </label>
+            <input
+              type="file"
+              id="file-follow-ig"
+              name="file_follow_ig"
+              accept="image/*,.pdf"
+              class="block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+            />
+            <p id="preview-follow-ig-text" class="text-[10px] text-slate-500 font-mono italic">Belum dipilih</p>
+          </div>
+
+          <!-- 8. Bukti Follow TikTok IELA -->
+          <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2.5 transition-all">
+            <label class="block text-xs font-bold text-slate-200">
+              8. Bukti Follow TikTok IELA *
+            </label>
+            <input
+              type="file"
+              id="file-follow-tiktok"
+              name="file_follow_tiktok"
+              accept="image/*,.pdf"
+              class="block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+            />
+            <p id="preview-follow-tiktok-text" class="text-[10px] text-slate-500 font-mono italic">Belum dipilih</p>
+          </div>
+
+        </div>
+
+        <button
+          type="submit"
+          id="btn-submit-pendaftaran"
+          class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-2xl transition-all cursor-pointer shadow-lg shadow-emerald-600/30 text-sm flex items-center justify-center gap-2"
+        >
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Kirim Formulir Pendaftaran &amp; 8 Berkas Persyaratan</span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- MODAL PERINGATAN BERKAS / DATA BELUM LENGKAP -->
+    <div id="modal-incomplete" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>
+            <h3 class="text-base font-bold text-white">Formulir Belum Lengkap</h3>
+          </div>
+          <button type="button" id="btn-close-incomplete" class="text-slate-400 hover:text-white text-lg cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-300">
+          Demi standar verifikasi administrasi yang valid, Anda <strong>wajib melengkapi seluruh data dan mengunggah ke-8 berkas persyaratan</strong> di bawah ini sebelum dapat mengirim formulir:
+        </p>
+
+        <div id="incomplete-items-container" class="space-y-3 max-h-72 overflow-y-auto"></div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+          <button
+            type="button"
+            id="btn-ok-incomplete"
+            class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs cursor-pointer shadow-lg shadow-indigo-600/20"
+          >
+            Lengkapi Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL SUKSES PENDAFTARAN -->
+    <div id="modal-success" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
+      <div class="bg-slate-900 border border-emerald-500/30 rounded-3xl max-w-md w-full p-6 shadow-2xl text-center space-y-4">
+        <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto text-2xl border border-emerald-500/30">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold text-white">Pendaftaran Berhasil Terkirim!</h3>
+          <p class="text-xs text-slate-400 mt-1">
+            Data diri dan ke-8 dokumen persyaratan Anda telah tercatat sah di Database Laboratorium IELA.
+          </p>
+        </div>
+
+        <div class="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 text-left text-xs space-y-2">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Nomor Registrasi:</span>
+            <span id="res-reg-id" class="font-mono font-bold text-indigo-300">REG-2026-XXXX</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">NIM Mahasiswa:</span>
+            <span id="res-nim" class="font-mono text-slate-200">1411xxxx</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Nama Lengkap:</span>
+            <span id="res-nama" class="font-bold text-white">Nama</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Status:</span>
+            <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-bold text-[10px]">Submitted (Terverifikasi)</span>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-slate-400">
+          Email konfirmasi tanda terima resmi telah dikirimkan. Pantau terus status seleksi berkas melalui portal pengumuman resmi IELA.
+        </p>
+
+        <a
+          href="/"
+          class="inline-block w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs tracking-wide shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
+        >
+          Selesai &amp; Kembali ke Beranda
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  // Handle file picker label previews for all 8 files
+  const fileKeys = ['foto', 'khs', 'cv', 'sertifikat', 'resume', 'jurnal', 'follow-ig', 'follow-tiktok'];
+  fileKeys.forEach((k) => {
+    const input = document.getElementById(`file-${k}`) as HTMLInputElement | null;
+    const txt = document.getElementById(`preview-${k}-text`);
+    input?.addEventListener('change', () => {
+      if (input.files && input.files[0]) {
+        if (txt) {
+          txt.textContent = input.files[0].name;
+          txt.className = 'text-[10px] text-emerald-400 font-mono font-bold';
+        }
+      }
+    });
+  });
+
+  const form = document.getElementById('form-pendaftaran-iela') as HTMLFormElement;
+  const submitBtn = document.getElementById('btn-submit-pendaftaran');
+  const modalIncomplete = document.getElementById('modal-incomplete');
+  const modalSuccess = document.getElementById('modal-success');
+  const incompleteContainer = document.getElementById('incomplete-items-container');
+
+  const closeIncompleteBtn = document.getElementById('btn-close-incomplete');
+  const okIncompleteBtn = document.getElementById('btn-ok-incomplete');
+
+  closeIncompleteBtn?.addEventListener('click', () => modalIncomplete?.classList.add('hidden'));
+  okIncompleteBtn?.addEventListener('click', () => modalIncomplete?.classList.add('hidden'));
+
+  // Toggle Sub-Peminatan Manufaktur (Bubut, 3D Printing, CNC)
+  const bidang1 = document.getElementById('p-bidang-1') as HTMLSelectElement | null;
+  const bidang2 = document.getElementById('p-bidang-2') as HTMLSelectElement | null;
+  const boxSub1 = document.getElementById('box-sub-manufaktur-1');
+  const boxSub2 = document.getElementById('box-sub-manufaktur-2');
+
+  function syncManufakturVisibility() {
+    if (bidang1?.value === 'Proses Manufaktur') {
+      boxSub1?.classList.remove('hidden');
+    } else {
+      boxSub1?.classList.add('hidden');
+    }
+
+    if (bidang2?.value === 'Proses Manufaktur') {
+      boxSub2?.classList.remove('hidden');
+    } else {
+      boxSub2?.classList.add('hidden');
+    }
+  }
+
+  bidang1?.addEventListener('change', syncManufakturVisibility);
+  bidang2?.addEventListener('change', syncManufakturVisibility);
+  syncManufakturVisibility();
+
+  // Mandatory fields
+  const mandatoryFields = [
+    { id: 'p-nim', label: 'NIM / NPM Mahasiswa' },
+    { id: 'p-nama', label: 'Nama Lengkap' },
+    { id: 'p-panggilan', label: 'Nama Panggilan' },
+    { id: 'p-ttl', label: 'Tempat, Tanggal Lahir' },
+    { id: 'p-hp', label: 'No. WhatsApp' },
+    { id: 'p-alamat-asal', label: 'Alamat Asal' },
+    { id: 'p-alamat-sekarang', label: 'Alamat Sekarang / Kos' },
+    { id: 'p-hobby', label: 'Hobby' },
+    { id: 'p-citacita', label: 'Cita-Cita' },
+    { id: 'p-motto', label: 'Motto Hidup' },
+    { id: 'p-ipk', label: 'IPK Kumulatif (Minimal 3.00)' },
+    { id: 'p-bidang-1', label: 'Pilihan Divisi 1 (Prioritas Utama)' },
+    { id: 'p-bidang-2', label: 'Pilihan Divisi 2 (Alternatif)' },
+    { id: 'p-keterampilan', label: 'Keterampilan Teknis' },
+    { id: 'p-motivasi', label: 'Motivasi Mendaftar' },
+    { id: 'p-target', label: 'Target di IELA' },
+    { id: 'p-organisasi', label: 'Riwayat Organisasi' },
+    { id: 'p-pelatihan', label: 'Pelatihan yang Pernah Diikuti' },
+    { id: 'p-resume-buku', label: 'Judul Jurnal Diresume' }
+  ];
+
+  // 8 Mandatory files (including Bukti Follow IG & TikTok)
+  const mandatoryFiles = [
+    { id: 'file-foto', label: '1. Pas Foto Formal (3x4)' },
+    { id: 'file-khs', label: '2. KHS Semester 1 & 2' },
+    { id: 'file-cv', label: '3. Curriculum Vitae / CV' },
+    { id: 'file-sertifikat', label: '4. Sertifikat Pendukung' },
+    { id: 'file-resume', label: '5. Resume Jurnal Ilmiah' },
+    { id: 'file-jurnal', label: '6. Jurnal Referensi Asli' },
+    { id: 'file-follow-ig', label: '7. Bukti Follow Instagram @iela_unirow' },
+    { id: 'file-follow-tiktok', label: '8. Bukti Follow TikTok @iela_unirow' }
+  ];
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Reset previous error classes
+    document.querySelectorAll('.border-rose-500').forEach((el) => {
+      el.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500/40');
+    });
+
+    const missingFields: { id: string; label: string }[] = [];
+    const missingFiles: typeof mandatoryFiles = [];
+
+    // 1. Check textual inputs
+    mandatoryFields.forEach((f) => {
+      const el = document.getElementById(f.id) as HTMLInputElement | HTMLTextAreaElement | null;
+      if (!el || !el.value.trim()) {
+        missingFields.push(f);
+        el?.classList.add('border-rose-500', 'ring-2', 'ring-rose-500/40');
+      }
+    });
+
+    // 2. Strict check for IPK >= 3.00
+    const ipkInput = document.getElementById('p-ipk') as HTMLInputElement | null;
+    const ipkVal = ipkInput ? parseFloat(ipkInput.value) : 0;
+    if (isNaN(ipkVal) || ipkVal < 3.00) {
+      if (!missingFields.some(f => f.id === 'p-ipk')) {
+        missingFields.push({ id: 'p-ipk', label: 'IPK Kumulatif (Harus Minimal 3.00)' });
+      }
+      ipkInput?.classList.add('border-rose-500', 'ring-2', 'ring-rose-500/40');
+    }
+
+    // 3. Strict check for ALL 8 mandatory files
+    mandatoryFiles.forEach((f) => {
+      const input = document.getElementById(f.id) as HTMLInputElement | null;
+      if (!input || !input.files || input.files.length === 0) {
+        missingFiles.push(f);
+        const card = input?.closest('.rounded-2xl');
+        card?.classList.add('border-rose-500', 'ring-2', 'ring-rose-500/40');
+      }
+    });
+
+    // JIKA ADA YANG KURANG, CEGAH SUBMIT & BUKA MODAL PERINGATAN LENGKAP
+    if (missingFields.length > 0 || missingFiles.length > 0) {
+      if (incompleteContainer) {
+        let html = '';
+        if (missingFiles.length > 0) {
+          html += `
+            <div class="p-3.5 rounded-2xl bg-rose-950/40 border border-rose-500/40 space-y-1.5">
+              <div class="flex items-center justify-between pb-1 border-b border-rose-500/20 text-xs font-bold text-rose-300">
+                <span><i class="fa-solid fa-cloud-arrow-up text-rose-400"></i> ${missingFiles.length} Berkas Belum Diunggah</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300">Wajib Semua</span>
+              </div>
+              <ul class="space-y-1 pt-1">
+                ${missingFiles.map((f) => `<li class="text-xs text-rose-200 flex items-center gap-2"><i class="fa-solid fa-circle-xmark text-rose-400 text-[10px]"></i> ${f.label}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+
+        if (missingFields.length > 0) {
+          html += `
+            <div class="p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 space-y-1.5">
+              <div class="flex items-center justify-between pb-1 border-b border-amber-500/20 text-xs font-bold text-amber-300">
+                <span><i class="fa-solid fa-pen-to-square text-amber-400"></i> ${missingFields.length} Data / Syarat Belum Lengkap</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">Wajib</span>
+              </div>
+              <ul class="space-y-1 pt-1 max-h-36 overflow-y-auto">
+                ${missingFields.map((f) => `<li class="text-xs text-amber-200 flex items-center gap-2"><i class="fa-solid fa-circle-exclamation text-amber-400 text-[10px]"></i> ${f.label}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+
+        incompleteContainer.innerHTML = html;
+      }
+
+      modalIncomplete?.classList.remove('hidden');
+      modalIncomplete?.classList.add('flex');
+      return;
+    }
+
+    // Submit form payload
+    const formData = new FormData(form);
+
+    // Format pilihan divisi dengan sub-manufaktur (Bubut, 3D Printing, CNC) jika memilih Proses Manufaktur
+    const b1Val = bidang1?.value || '';
+    const sub1Val = (document.getElementById('p-sub-manufaktur-1') as HTMLSelectElement | null)?.value || 'Bubut';
+    if (b1Val === 'Proses Manufaktur') {
+      formData.set('pilihan1', `Proses Manufaktur (${sub1Val})`);
+    }
+
+    const b2Val = bidang2?.value || '';
+    const sub2Val = (document.getElementById('p-sub-manufaktur-2') as HTMLSelectElement | null)?.value || '3D Printing';
+    if (b2Val === 'Proses Manufaktur') {
+      formData.set('pilihan2', `Proses Manufaktur (${sub2Val})`);
+    }
+
+    if (submitBtn) {
+      submitBtn.setAttribute('disabled', 'true');
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Mengunggah 8 Berkas & Menyimpan ke Database...</span>';
+    }
+
+    try {
+      const res = await fetch('/api/pendaftaran/submit', {
+        method: 'POST',
+        body: formData
+      });
+      const json = await res.json();
+
+      if (json.success) {
+        const regEl = document.getElementById('res-reg-id');
+        const nimEl = document.getElementById('res-nim');
+        const namaEl = document.getElementById('res-nama');
+
+        if (regEl) regEl.textContent = json.pendaftar_id;
+        if (nimEl) nimEl.textContent = json.nim;
+        if (namaEl) namaEl.textContent = json.nama;
+
+        modalSuccess?.classList.remove('hidden');
+        modalSuccess?.classList.add('flex');
+      } else {
+        throw new Error(json.message || 'Gagal menyimpan pendaftaran');
+      }
+    } catch (err: any) {
+      alert('Terjadi kesalahan: ' + err.message);
+      if (submitBtn) {
+        submitBtn.removeAttribute('disabled');
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span>Coba Kirim Lagi</span>';
+      }
+    }
+  });
+</script>

@@ -1,0 +1,111 @@
+---
+const subLabs = [
+  {
+    code: 'ERGONOMI',
+    name: 'Divisi Ergonomi',
+    subtitle: 'Perancangan Sistem Kerja & Ergonomi',
+    icon: 'fa-solid fa-person-digging',
+    color: 'from-amber-500 to-orange-500',
+    borderHover: 'group-hover:border-amber-500/50',
+    description: 'Fokus pada pengukuran kerja, studi waktu dan gerakan, antropometri tubuh manusia, fisiologi kerja, serta evaluasi postur ergonomis (RULA, REBA, Nordic Body Map).',
+    badges: ['Studi Waktu & Gerak', 'Antropometri', 'Biomekanika Kerja']
+  },
+  {
+    code: 'FISIKA',
+    name: 'Divisi Fisika Dasar',
+    subtitle: 'Praktikum & Instrumentasi Fisika Teknik',
+    icon: 'fa-solid fa-atom',
+    color: 'from-blue-500 to-cyan-500',
+    borderHover: 'group-hover:border-cyan-500/50',
+    description: 'Eksperimen prinsip-prinsip fundamental fisika teknik industri: pengukuran presisi jangka sorong/mikrometer, mekanika partikel, termodinamika, optik, dan listrik magnet.',
+    badges: ['Pengukuran Presisi', 'Mekanika & Kalor', 'Kelistrikan Teknik']
+  },
+  {
+    code: 'STATISTIKA',
+    name: 'Divisi Statistika',
+    subtitle: 'Statistika Industri & Teori Probabilitas',
+    icon: 'fa-solid fa-chart-pie',
+    color: 'from-rose-500 to-pink-500',
+    borderHover: 'group-hover:border-rose-500/50',
+    description: 'Pengolahan data eksperimen kuantitatif, distribusi probabilitas, pengujian hipotesis statistik, analisis variansi (ANOVA), regresi multivariat, dan statistical quality control.',
+    badges: ['Uji Hipotesis & ANOVA', 'Regresi Multivariat', 'SPSS / Minitab']
+  },
+  {
+    code: 'MANUFAKTUR',
+    name: 'Divisi Proses Manufaktur',
+    subtitle: 'Bubut, 3D Printing & Permesinan CNC',
+    icon: 'fa-solid fa-gears',
+    color: 'from-indigo-500 to-purple-500',
+    borderHover: 'group-hover:border-indigo-500/50',
+    description: 'Penguasaan teknologi manufaktur terpadu: operasional mesin bubut dan frais konvensional, pemrograman G-Code CNC Milling & Lathe, serta additive manufacturing 3D Printing.',
+    badges: ['Mesin Bubut Konvensional', '3D Printing Presisi', 'Mesin CNC Milling']
+  },
+  {
+    code: 'ALPRO',
+    name: 'Divisi Algoritma Pemrograman',
+    subtitle: 'Komputasi Industri & Rekayasa Perangkat Lunak',
+    icon: 'fa-solid fa-laptop-code',
+    color: 'from-emerald-500 to-teal-500',
+    borderHover: 'group-hover:border-emerald-500/50',
+    description: 'Pengembangan logika komputasi industri, pemrograman Python / C++, struktur data terstruktur, optimasi algoritma rekayasa, dan otomatisasi sistem informasi industri.',
+    badges: ['Logika Algoritma', 'Pemrograman Python', 'Otomasi Industri']
+  }
+];
+---
+
+<section id="profil" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="text-center max-w-3xl mx-auto mb-14">
+    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-3">
+      <i class="fa-solid fa-cube text-[10px]"></i>
+      <span>Struktur Divisi Laboratorium</span>
+    </span>
+    <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+      5 Divisi Praktikum Unggulan IELA
+    </h2>
+    <p class="text-slate-400 text-sm sm:text-base mt-3 leading-relaxed">
+      Menyelenggarakan praktikum unggulan berbagai divisi yaitu Ergonomi, Fisika Dasar, Statistika, Proses Manufaktur (Bubut, 3D Printing, CNC), dan Algoritma Pemrograman.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {subLabs.map((lab) => (
+      <div class={`glass-card rounded-2xl p-7 border border-slate-800 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden flex flex-col justify-between ${lab.borderHover}`}>
+        
+        <div>
+          <!-- Icon & Code Badge -->
+          <div class="flex items-center justify-between mb-5">
+            <div class={`w-12 h-12 rounded-xl bg-gradient-to-br ${lab.color} flex items-center justify-center text-white text-xl shadow-lg shadow-black/40`}>
+              <i class={lab.icon}></i>
+            </div>
+            <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
+              {lab.code}
+            </span>
+          </div>
+
+          <!-- Title -->
+          <h3 class="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors mb-1">
+            {lab.name}
+          </h3>
+          <p class="text-xs font-semibold text-indigo-400 mb-2.5">
+            {lab.subtitle}
+          </p>
+
+          <!-- Description -->
+          <p class="text-xs text-slate-400 leading-relaxed mb-6">
+            {lab.description}
+          </p>
+        </div>
+
+        <!-- Badges -->
+        <div class="flex flex-wrap gap-1.5 pt-4 border-t border-slate-800/80">
+          {lab.badges.map((b) => (
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 border border-slate-700/60">
+              {b}
+            </span>
+          ))}
+        </div>
+
+      </div>
+    ))}
+  </div>
+</section>

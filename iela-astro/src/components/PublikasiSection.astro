@@ -1,0 +1,123 @@
+---
+import { supabase } from '../lib/supabase';
+
+interface PublikasiItem {
+  publikasi_id: string;
+  nama_penulis: string;
+  judul_artikel: string;
+  link_artikel?: string;
+  nama_jurnal?: string;
+  tahun?: number;
+  bidang_sublab?: string;
+}
+
+const fallbackPublikasi: PublikasiItem[] = [
+  {
+    publikasi_id: 'PUB-2452',
+    nama_penulis: 'Muhammad Naufal Rafiq Zawawi',
+    judul_artikel: 'Formulation of a Marketing Strategy Analysis for XYZ Hand-Painted Batik MSMEs in Tuban Regency Using SWOT and QSPM',
+    link_artikel: 'https://jurnal.yudharta.ac.id/v2/index.php/jkie/article/view/6989',
+    nama_jurnal: 'JKIE (Journal Knowledge Industrial Engineering)',
+    tahun: 2026,
+    bidang_sublab: 'Marketing Strategy & SWOT-QSPM'
+  },
+  {
+    publikasi_id: 'PUB-1481',
+    nama_penulis: 'Marisa Anggun Aulia',
+    judul_artikel: 'Service Quality at Tuban Public Service Mall Using the Potential Gain in Customer Value Method (PGCV)',
+    link_artikel: 'https://jurnal.yudharta.ac.id/v2/index.php/jkie/article/view/6987',
+    nama_jurnal: 'JKIE (Journal Knowledge Industrial Engineering)',
+    tahun: 2026,
+    bidang_sublab: 'Service Quality & PGCV Method'
+  },
+  {
+    publikasi_id: 'PUB-1249',
+    nama_penulis: 'Tim Asisten Riset IELA',
+    judul_artikel: 'Ergonomic Evaluation and Biomechanical Workload Optimization in Small Manufacturing Industry',
+    link_artikel: 'https://unirow.ac.id',
+    nama_jurnal: 'Prosiding Seminar Nasional Rekayasa Teknik Industri',
+    tahun: 2025,
+    bidang_sublab: 'Ergonomi & Biomekanika'
+  }
+];
+
+let publikasiList: PublikasiItem[] = fallbackPublikasi;
+
+try {
+  const { data, error } = await supabase
+    .from('publikasi')
+    .select('*')
+    .order('tahun', { ascending: false });
+
+  if (!error && data && data.length > 0) {
+    publikasiList = data as PublikasiItem[];
+  }
+} catch (e) {
+  console.log('Using fallback publikasi data');
+}
+---
+
+<section id="publikasi" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800/80">
+  <div class="max-w-3xl mb-12">
+    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-3">
+      <i class="fa-solid fa-graduation-cap text-[10px]"></i>
+      <span>Riset Ilmiah &amp; Karya Akademis</span>
+    </span>
+    <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+      Publikasi &amp; Jurnal Laboratorium
+    </h2>
+    <p class="text-slate-400 text-sm mt-2 leading-relaxed">
+      Kumpulan artikel jurnal ilmiah, prosiding konferensi, dan penelitian terapan yang dihasilkan oleh dosen pembimbing bersama asisten laboratorium IELA UNIROW Tuban.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {publikasiList.map((pub) => (
+      <div class="glass-card rounded-2xl p-6 border border-slate-800 hover:border-indigo-500/40 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between group">
+        <div>
+          <!-- Header Meta -->
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-3">
+            <span class="font-bold text-indigo-400 font-mono text-[11px] px-2 py-0.5 rounded bg-indigo-950/60 border border-indigo-500/20">
+              {pub.tahun || 2026}
+            </span>
+            <span class="text-[11px] text-slate-400 font-medium truncate max-w-[180px]">
+              {pub.nama_jurnal || 'Jurnal Terakreditasi'}
+            </span>
+          </div>
+
+          <!-- Title -->
+          <h3 class="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-3">
+            {pub.judul_artikel}
+          </h3>
+
+          <!-- Author -->
+          <p class="text-xs text-slate-300 flex items-center gap-2 mb-4 font-medium">
+            <i class="fa-regular fa-user text-indigo-400 text-xs"></i>
+            <span>{pub.nama_penulis}</span>
+          </p>
+        </div>
+
+        <!-- Footer / Link -->
+        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <span class="text-[10px] text-slate-400 truncate max-w-[170px]">
+            {pub.bidang_sublab || 'Teknik Industri'}
+          </span>
+          {pub.link_artikel ? (
+            <a
+              href={pub.link_artikel}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+            >
+              <span>Buka Jurnal</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
+          ) : (
+            <span class="text-xs text-slate-400">Arsip Lab</span>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
