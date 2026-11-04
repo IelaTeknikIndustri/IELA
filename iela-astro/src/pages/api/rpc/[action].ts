@@ -685,11 +685,34 @@ export const POST: APIRoute = async ({ params, request }) => {
 
     if (action === 'deleteUserAccount') {
       const uId = String(typeof args[0] === 'object' && args[0] !== null ? (args[0].userId || args[0].id || args[0].username_nim || '') : (args[0] || '')).trim();
-      try {
-        await client.from('users_profile').delete().or(`user_id.eq.${uId},username_nim.eq.${uId}`);
-      } catch (e) {
-        console.error('Failed to delete user in Supabase:', e);
+      if (!uId) {
+        return new Response(JSON.stringify({ success: false, message: 'ID pengguna wajib diisi.' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
       }
+
+      const { data: deletedUsers, error: deleteError } = await client
+        .from('users_profile')
+        .delete()
+        .or(`user_id.eq.${uId},username_nim.eq.${uId}`)
+        .select('user_id');
+
+      if (deleteError) {
+        console.error('Failed to delete user in Supabase:', deleteError);
+        return new Response(JSON.stringify({ success: false, message: `Gagal menghapus akun dari Supabase: ${deleteError.message}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      if (!deletedUsers || deletedUsers.length === 0) {
+        return new Response(JSON.stringify({ success: false, message: 'Akun pengguna tidak ditemukan di Supabase.' }), {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
       localStore.USERS = (localStore.USERS || []).filter((u: any) => String(u.User_ID) !== uId && String(u.Username_NIM) !== uId);
       return new Response(JSON.stringify({ success: true, message: 'Akun asisten berhasil dihapus!' }), {
         headers: { 'Content-Type': 'application/json' }
