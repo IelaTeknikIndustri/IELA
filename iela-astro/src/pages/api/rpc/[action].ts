@@ -614,51 +614,71 @@ export const POST: APIRoute = async ({ params, request }) => {
       const p = args[0] || {};
       const uId = String(p.userId || `USR-${Math.floor(100 + Math.random() * 900)}`).trim();
       const uNim = String(p.usernameNim || p.username || '').trim();
-      const nama = String(p.namaLengkap || p.name || '').trim();
-      const role = String(p.role || 'Anggota').trim();
-      const div = String(p.bidangDivisi || '').trim();
-      const jab = String(p.jabatanDivisi || '').trim();
-      const jabBid = String(p.jabatanBidang || (jab ? `${jab} / ${div}` : div)).trim();
+      const nama = String(p.namaLengkap ?? p.nama ?? p.name ?? '').trim();
+      const role = String(p.role ?? 'Anggota').trim();
+      const div = String(p.bidangDivisi ?? '').trim();
+      const jab = String(p.jabatanDivisi ?? '').trim();
+      const jabBid = String(p.jabatanBidang ?? (jab ? `${jab} / ${div}` : div)).trim();
 
-      const userRow: any = {
-        user_id: uId,
-        nama_lengkap: nama,
-        role: role,
-        bidang_divisi: div,
-        jabatan_divisi: jab,
-        jabatan_bidang: jabBid,
-        status_aktif: p.statusAktif !== false && p.statusAktif !== 'Non-Aktif'
-      };
+      // Inline role/status edits send only the changed field. Updating a full
+      // profile with those partial payloads used to replace the name with ''.
+      const isPartialUpdate = Boolean(p.userId) && !('namaLengkap' in p || 'nama' in p || 'name' in p || 'usernameNim' in p || 'username' in p);
+      const userRow: any = { user_id: uId };
+      if ('namaLengkap' in p || 'nama' in p || 'name' in p) userRow.nama_lengkap = nama;
+      if ('role' in p) userRow.role = role;
+      if ('bidangDivisi' in p) userRow.bidang_divisi = div;
+      if ('jabatanDivisi' in p) userRow.jabatan_divisi = jab;
+      if ('jabatanBidang' in p || 'jabatanDivisi' in p || 'bidangDivisi' in p) userRow.jabatan_bidang = jabBid;
+      if ('statusAktif' in p) userRow.status_aktif = p.statusAktif !== false && p.statusAktif !== 'Non-Aktif';
       if (uNim) userRow.username_nim = uNim;
       if (p.password) userRow.password_hash = hashPassword(p.password);
 
-      try {
-        await client.from('users_profile').upsert(userRow, { onConflict: 'user_id' });
-      } catch (e) {
-        console.error('Failed to upsert user in Supabase:', e);
+      const { data: savedRow, error: saveError } = isPartialUpdate
+        ? await client.from('users_profile').update(userRow).eq('user_id', uId).select('*').maybeSingle()
+        : await client.from('users_profile').upsert(userRow, { onConflict: 'user_id' }).select('*').single();
+
+      if (saveError) {
+        console.error('Failed to save user in Supabase:', saveError);
+        return new Response(JSON.stringify({ success: false, message: `Gagal menyimpan perubahan ke Supabase: ${saveError.message}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        });
       }
+
+      if (!savedRow) {
+        return new Response(JSON.stringify({ success: false, message: 'Pengguna tidak ditemukan di Supabase.' }), {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      const savedNama = savedRow.nama_lengkap || nama;
+      const savedRole = savedRow.role || role;
+      const savedDiv = savedRow.bidang_divisi || '';
+      const savedJab = savedRow.jabatan_divisi || '';
+      const savedJabBid = savedRow.jabatan_bidang || '';
 
       const idxU = (localStore.USERS || []).findIndex((x: any) => String(x.User_ID) === uId);
       const userItem = {
         User_ID: uId,
         user_id: uId,
-        Username_NIM: uNim,
-        username_nim: uNim,
-        Nama_Lengkap: nama,
-        nama_lengkap: nama,
-        Role: role,
-        role: role,
-        Bidang_Divisi: div,
-        Jabatan_Divisi: jab,
-        Jabatan_Bidang: jabBid,
-        Status_Aktif: p.statusAktif !== false && p.statusAktif !== 'Non-Aktif' ? 'Aktif' : 'Non-Aktif'
+        Username_NIM: savedRow.username_nim,
+        username_nim: savedRow.username_nim,
+        Nama_Lengkap: savedNama,
+        nama_lengkap: savedNama,
+        Role: savedRole,
+        role: savedRole,
+        Bidang_Divisi: savedDiv,
+        Jabatan_Divisi: savedJab,
+        Jabatan_Bidang: savedJabBid,
+        Status_Aktif: savedRow.status_aktif ? 'Aktif' : 'Non-Aktif'
       };
       if (idxU !== -1) localStore.USERS[idxU] = userItem;
       else (localStore.USERS = localStore.USERS || []).push(userItem);
 
       return new Response(JSON.stringify({
         success: true,
-        message: `Data asisten '${nama}' berhasil disimpan!`,
+        message: `Data pengguna '${savedNama}' berhasil disimpan ke Supabase!`,
         user: userItem
       }), { headers: { 'Content-Type': 'application/json' } });
     }
