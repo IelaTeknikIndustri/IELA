@@ -2470,6 +2470,7 @@ import '../styles/global.css';
                   class="bg-slate-900/80 text-[11px] uppercase font-bold text-slate-400 border-b border-slate-800"
                 >
                   <tr>
+                    <th class="p-3.5 w-14 text-center whitespace-nowrap">No.</th>
                     <th class="p-3.5 whitespace-nowrap">User ID</th>
                     <th class="p-3.5 whitespace-nowrap">NPM / Username</th>
                     <th class="p-3.5 min-w-[170px]">Nama Lengkap</th>
@@ -9147,12 +9148,12 @@ import '../styles/global.css';
 
         if (list.length === 0) {
           tb.innerHTML =
-            '<tr><td colspan="7" class="p-6 text-center text-slate-500 italic">Tidak ada data pengguna yang cocok dengan filter.</td></tr>';
+            '<tr><td colspan="8" class="p-6 text-center text-slate-500 italic">Tidak ada data pengguna yang cocok dengan filter.</td></tr>';
           return;
         }
 
         tb.innerHTML = list
-          .map(function (x) {
+          .map(function (x, index) {
             var uid = String(x.User_ID || "").trim();
             var uidEsc = window.escUserHtml(uid);
             var uname = String(x.Username_NIM || "-").trim();
@@ -9221,6 +9222,9 @@ import '../styles/global.css';
 
             return (
               '<tr class="hover:bg-slate-800/40 border-b border-slate-800/60 transition">' +
+              '<td class="p-3.5 text-center font-mono text-xs text-slate-500 tabular-nums">' +
+              (index + 1) +
+              "</td>" +
               '<td class="p-3.5 font-mono text-xs text-slate-400 whitespace-nowrap">' +
               window.escUserHtml(uid || "-") +
               "</td>" +
