@@ -2037,12 +2037,21 @@ import '../styles/global.css';
             <div class="flex flex-wrap items-center gap-2">
               <button
                 type="button"
+                onclick="window.openImportBackupModal()"
+                title="Import kembali file Backup Excel (.xlsx) atau CSV (.csv) — termasuk Data Pendaftar, Berkas, &amp; Penilaian Wawancara"
+                class="px-3 py-2 rounded-xl border border-indigo-500/40 bg-indigo-600/20 hover:bg-indigo-600/35 text-indigo-200 hover:text-white text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-file-arrow-up text-indigo-400"></i>
+                <span>Import Backup</span>
+              </button>
+              <button
+                type="button"
                 onclick="window.exportPendaftarExcel()"
-                title="Unduh arsip data seluruh pendaftar ke file Microsoft Excel (.xlsx) siap pakai"
+                title="Unduh Backup Lengkap (Data Pendaftar + Penilaian Wawancara + Rekap Peringkat) ke 1 file Excel (.xlsx)"
                 class="px-3 py-2 rounded-xl border border-slate-700 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5"
               >
                 <i class="fa-solid fa-file-excel text-emerald-400"></i>
-                <span>Export Excel</span>
+                <span>Export Backup (.xlsx)</span>
               </button>
               <button
                 type="button"
@@ -2386,6 +2395,15 @@ import '../styles/global.css';
                 class="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 whitespace-nowrap"
                 >0 Pendaftar Dinilai</span
               >
+              <button
+                type="button"
+                onclick="window.openImportBackupModal()"
+                title="Import kembali file Backup Excel (.xlsx) atau CSV (.csv) beserta Penilaian Wawancara"
+                class="px-3 py-2 rounded-xl border border-indigo-500/40 bg-indigo-600/20 hover:bg-indigo-600/35 text-indigo-200 hover:text-white text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap"
+              >
+                <i class="fa-solid fa-file-arrow-up text-indigo-400"></i>
+                <span>Import Backup</span>
+              </button>
               <button
                 type="button"
                 onclick="window.exportRekapNilaiExcel()"
@@ -3077,6 +3095,125 @@ import '../styles/global.css';
       </div>
     </div>
     <!-- MODAL 8: GANTI PASSWORD -->
+    <!-- MODAL IMPORT BACKUP REKRUTMEN & PENILAIAN -->
+    <div
+      id="modal-import-backup"
+      class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
+      style="display: none"
+    >
+      <div class="glass-card max-w-2xl w-full p-6 sm:p-7 rounded-3xl border border-indigo-500/35 relative space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <button
+          type="button"
+          onclick="window.closeModal('modal-import-backup')"
+          class="absolute top-5 right-5 text-slate-400 hover:text-white cursor-pointer"
+        >
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+
+        <div class="space-y-1 pr-6">
+          <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">Pemulihan Arsip &amp; Presentasi</span>
+          <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-file-arrow-up text-indigo-400"></i>
+            <span>Import Backup Rekrutmen</span>
+          </h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Unggah file backup <strong class="text-slate-200">.xlsx</strong> atau <strong class="text-slate-200">.csv</strong> untuk langsung memulihkan Data Pendaftar, Berkas Dossier, Antrean Wawancara, dan Rekap Penilaian Penguji dalam sekali klik.
+          </p>
+        </div>
+
+        <input
+          type="file"
+          id="import-backup-file-input"
+          accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          class="hidden"
+          onchange="window.onImportBackupFileSelected(event)"
+        />
+
+        <div
+          onclick="document.getElementById('import-backup-file-input').click()"
+          class="border-2 border-dashed border-slate-700 hover:border-indigo-500/70 bg-slate-900/60 hover:bg-slate-900/90 rounded-2xl p-6 text-center cursor-pointer transition group"
+        >
+          <div class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition">
+            <i class="fa-solid fa-file-excel text-emerald-400 text-xl"></i>
+          </div>
+          <p id="import-backup-filename" class="text-sm font-bold text-white">
+            Klik di sini untuk memilih file Backup (.xlsx / .csv)
+          </p>
+          <p class="text-[11px] text-slate-400 mt-1">
+            Mendukung file Backup Excel multi-sheet baru maupun file Backup CSV sebelumnya
+          </p>
+        </div>
+
+        <div id="import-backup-preview-box" class="hidden space-y-3 bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-bold text-slate-200">Ringkasan Isi File Backup:</span>
+            <div class="flex flex-wrap items-center gap-2">
+              <span id="import-preview-pendaftar-badge" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">0 Pendaftar</span>
+              <span id="import-preview-penilaian-badge" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">0 Penilaian</span>
+            </div>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-800">
+            <table class="w-full text-left text-[11px] text-slate-300">
+              <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px]">
+                <tr>
+                  <th class="px-3 py-2">NPM</th>
+                  <th class="px-3 py-2">Nama Kandidat</th>
+                  <th class="px-3 py-2">Pilihan 1</th>
+                  <th class="px-3 py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody id="import-backup-preview-tbody" class="divide-y divide-slate-800/70"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-300 mb-1">Mode Pemasukan Data</label>
+            <select id="import-backup-mode" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer">
+              <option value="merge">Gabungkan &amp; Perbarui (Aman)</option>
+              <option value="replace">Timpa / Ganti Seluruh Data Saat Ini</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <label class="flex items-start gap-2.5 bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 cursor-pointer w-full">
+              <input type="checkbox" id="import-backup-enrich" checked class="mt-0.5 rounded bg-slate-800 border-slate-600 text-indigo-500 focus:ring-indigo-500 cursor-pointer" />
+              <span class="text-[11px] text-slate-300 leading-snug">
+                Lengkapi otomatis berkas Dossier &amp; riwayat penilaian yang cocok bila belum ada di CSV
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
+          <button
+            type="button"
+            id="btn-submit-import-backup"
+            onclick="window.handleSubmitImportBackup()"
+            disabled
+            class="w-full sm:flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl transition cursor-pointer shadow-lg shadow-indigo-600/25 text-xs inline-flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Masukkan File Backup ke Web</span>
+          </button>
+        </div>
+
+        <div class="border-t border-slate-800/90 pt-4 space-y-2">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 text-center">
+            Atau Mode Siap Presentasi Instan (Tanpa Cari File)
+          </p>
+          <button
+            type="button"
+            onclick="window.handleQuickRestorePresentationSeed()"
+            class="w-full py-2.5 px-4 rounded-xl border border-emerald-500/35 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-200 hover:text-white text-xs font-bold transition cursor-pointer inline-flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i>
+            <span>Muat Langsung Arsip Lengkap Rekrutmen (38 Pendaftar + 551 Penilaian)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div
       id="modal-ganti-password"
       class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
@@ -8402,7 +8539,7 @@ import '../styles/global.css';
           .join("");
       };
 
-      window.downloadStyledXlsx = function (fileName, sheetName, columns, dataRows) {
+      window.downloadMultiSheetXlsx = function (fileName, sheets) {
         var enc = new TextEncoder();
         var crcTable = new Uint32Array(256);
         for (var n = 0; n < 256; n++) {
@@ -8433,40 +8570,54 @@ import '../styles/global.css';
           return s;
         };
 
-        var lastCol = colLetter(columns.length - 1);
-        var totalRows = dataRows.length + 1;
-        var colsXml = columns.map(function (col, i) {
-          return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + (col.width || 18) + '" customWidth="1"/>';
-        }).join("");
+        var sheetFiles = (sheets || []).map(function (sh, sIdx) {
+          var columns = sh.columns || [];
+          var dataRows = sh.rows || [];
+          var lastCol = colLetter(Math.max(0, columns.length - 1));
+          var totalRows = dataRows.length + 1;
+          var colsXml = columns.map(function (col, i) {
+            return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + (col.width || 18) + '" customWidth="1"/>';
+          }).join("");
 
-        var rowsXml = '<row r="1" ht="26" customHeight="1">' +
-          columns.map(function (col, i) {
-            return '<c r="' + colLetter(i) + '1" s="1" t="inlineStr"><is><t xml:space="preserve">' + escXml(col.header) + '</t></is></c>';
-          }).join("") +
-          '</row>';
-
-        dataRows.forEach(function (row, rIdx) {
-          var rNum = rIdx + 2;
-          var isEven = rIdx % 2 === 1;
-          rowsXml += '<row r="' + rNum + '" ht="21" customHeight="1">' +
-            columns.map(function (col, cIdx) {
-              var ref = colLetter(cIdx) + rNum;
-              var raw = row[cIdx];
-              var styleIdx = isEven ? 2 : 0;
-              if (col.kind === "center") styleIdx = isEven ? 4 : 3;
-              else if (col.kind === "wrap") styleIdx = isEven ? 6 : 5;
-              else if (col.kind === "status") {
-                var low = String(raw || "").toLowerCase();
-                if (low.indexOf("tidak lolos") !== -1 || low.indexOf("gagal") !== -1) styleIdx = 8;
-                else if (low.indexOf("lolos") !== -1 || low.indexOf("asisten") !== -1) styleIdx = 7;
-                else styleIdx = isEven ? 4 : 3;
-              }
-              if (col.numeric && raw !== "" && raw !== null && raw !== undefined && !isNaN(Number(raw))) {
-                return '<c r="' + ref + '" s="' + styleIdx + '"><v>' + Number(raw) + '</v></c>';
-              }
-              return '<c r="' + ref + '" s="' + styleIdx + '" t="inlineStr"><is><t xml:space="preserve">' + escXml(raw) + '</t></is></c>';
+          var rowsXml = '<row r="1" ht="26" customHeight="1">' +
+            columns.map(function (col, i) {
+              return '<c r="' + colLetter(i) + '1" s="1" t="inlineStr"><is><t xml:space="preserve">' + escXml(col.header) + '</t></is></c>';
             }).join("") +
             '</row>';
+
+          dataRows.forEach(function (row, rIdx) {
+            var rNum = rIdx + 2;
+            var isEven = rIdx % 2 === 1;
+            rowsXml += '<row r="' + rNum + '" ht="21" customHeight="1">' +
+              columns.map(function (col, cIdx) {
+                var ref = colLetter(cIdx) + rNum;
+                var raw = row[cIdx];
+                var styleIdx = isEven ? 2 : 0;
+                if (col.kind === "center") styleIdx = isEven ? 4 : 3;
+                else if (col.kind === "wrap") styleIdx = isEven ? 6 : 5;
+                else if (col.kind === "status") {
+                  var low = String(raw || "").toLowerCase();
+                  if (low.indexOf("tidak lolos") !== -1 || low.indexOf("gagal") !== -1) styleIdx = 8;
+                  else if (low.indexOf("lolos") !== -1 || low.indexOf("asisten") !== -1) styleIdx = 7;
+                  else styleIdx = isEven ? 4 : 3;
+                }
+                if (col.numeric && raw !== "" && raw !== null && raw !== undefined && !isNaN(Number(raw))) {
+                  return '<c r="' + ref + '" s="' + styleIdx + '"><v>' + Number(raw) + '</v></c>';
+                }
+                return '<c r="' + ref + '" s="' + styleIdx + '" t="inlineStr"><is><t xml:space="preserve">' + escXml(raw) + '</t></is></c>';
+              }).join("") +
+              '</row>';
+          });
+
+          var xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+            '<dimension ref="A1:' + lastCol + totalRows + '"/>' +
+            '<sheetViews><sheetView ' + (sIdx === 0 ? 'tabSelected="1" ' : '') + 'workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
+            '<cols>' + colsXml + '</cols>' +
+            '<sheetData>' + rowsXml + '</sheetData>' +
+            '<autoFilter ref="A1:' + lastCol + totalRows + '"/>' +
+            '</worksheet>';
+          return { idx: sIdx + 1, title: String(sh.name || ("Sheet" + (sIdx + 1))).slice(0, 31), xml: xml };
         });
 
         var contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
@@ -8474,7 +8625,9 @@ import '../styles/global.css';
           '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
           '<Default Extension="xml" ContentType="application/xml"/>' +
           '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
-          '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+          sheetFiles.map(function (sf) {
+            return '<Override PartName="/xl/worksheets/sheet' + sf.idx + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
+          }).join("") +
           '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
           '</Types>';
 
@@ -8485,13 +8638,19 @@ import '../styles/global.css';
 
         var workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
           '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
-          '<sheets><sheet name="' + escXml(String(sheetName || "Data IELA").slice(0, 31)) + '" sheetId="1" r:id="rId1"/></sheets>' +
-          '</workbook>';
+          '<sheets>' +
+          sheetFiles.map(function (sf) {
+            return '<sheet name="' + escXml(sf.title) + '" sheetId="' + sf.idx + '" r:id="rId' + sf.idx + '"/>';
+          }).join("") +
+          '</sheets></workbook>';
 
+        var stylesRelId = sheetFiles.length + 1;
         var workbookRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
           '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-          '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
-          '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+          sheetFiles.map(function (sf) {
+            return '<Relationship Id="rId' + sf.idx + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + sf.idx + '.xml"/>';
+          }).join("") +
+          '<Relationship Id="rId' + stylesRelId + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
           '</Relationships>';
 
         var styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
@@ -8528,23 +8687,16 @@ import '../styles/global.css';
           '</cellXfs>' +
           '</styleSheet>';
 
-        var sheet1 = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-          '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
-          '<dimension ref="A1:' + lastCol + totalRows + '"/>' +
-          '<sheetViews><sheetView tabSelected="1" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
-          '<cols>' + colsXml + '</cols>' +
-          '<sheetData>' + rowsXml + '</sheetData>' +
-          '<autoFilter ref="A1:' + lastCol + totalRows + '"/>' +
-          '</worksheet>';
-
         var files = [
           { name: "[Content_Types].xml", data: enc.encode(contentTypes) },
           { name: "_rels/.rels", data: enc.encode(rootRels) },
           { name: "xl/workbook.xml", data: enc.encode(workbook) },
           { name: "xl/_rels/workbook.xml.rels", data: enc.encode(workbookRels) },
-          { name: "xl/styles.xml", data: enc.encode(styles) },
-          { name: "xl/worksheets/sheet1.xml", data: enc.encode(sheet1) }
+          { name: "xl/styles.xml", data: enc.encode(styles) }
         ];
+        sheetFiles.forEach(function (sf) {
+          files.push({ name: "xl/worksheets/sheet" + sf.idx + ".xml", data: enc.encode(sf.xml) });
+        });
 
         var localParts = [], centralParts = [], offset = 0;
         files.forEach(function (f) {
@@ -8557,14 +8709,11 @@ import '../styles/global.css';
           lv.setUint32(0, 0x04034b50, true);
           lv.setUint16(4, 20, true);
           lv.setUint16(6, 0x0800, true);
-          lv.setUint16(8, 0, true);
-          lv.setUint16(10, 0, true);
           lv.setUint16(12, 0x21, true);
           lv.setUint32(14, crc, true);
           lv.setUint32(18, size, true);
           lv.setUint32(22, size, true);
           lv.setUint16(26, nameBytes.length, true);
-          lv.setUint16(28, 0, true);
           local.set(nameBytes, 30);
           local.set(f.data, 30 + nameBytes.length);
           localParts.push(local);
@@ -8575,18 +8724,11 @@ import '../styles/global.css';
           cv.setUint16(4, 20, true);
           cv.setUint16(6, 20, true);
           cv.setUint16(8, 0x0800, true);
-          cv.setUint16(10, 0, true);
-          cv.setUint16(12, 0, true);
           cv.setUint16(14, 0x21, true);
           cv.setUint32(16, crc, true);
           cv.setUint32(20, size, true);
           cv.setUint32(24, size, true);
           cv.setUint16(28, nameBytes.length, true);
-          cv.setUint16(30, 0, true);
-          cv.setUint16(32, 0, true);
-          cv.setUint16(34, 0, true);
-          cv.setUint16(36, 0, true);
-          cv.setUint32(38, 0, true);
           cv.setUint32(42, offset, true);
           central.set(nameBytes, 46);
           centralParts.push(central);
@@ -8622,73 +8764,13 @@ import '../styles/global.css';
         }, 250);
       };
 
-      window.exportPendaftarExcel = function (customPrefix) {
-        var list = window.appState.data.pendaftar || [];
-        if (list.length === 0) {
-          if (!customPrefix) window.showToast("Belum ada data pendaftar untuk diunduh.");
-          return false;
-        }
-        var cleanPhone = function (val) {
-          var s = String(val || "").trim().replace(/\.0$/, "");
-          if (/^8\d{7,13}$/.test(s)) s = "0" + s;
-          return s || "-";
-        };
-        var columns = [
-          { header: "No", width: 6, kind: "center", numeric: true },
-          { header: "ID Pendaftar", width: 14, kind: "center" },
-          { header: "NPM", width: 15, kind: "center" },
-          { header: "Nama Lengkap", width: 30 },
-          { header: "Panggilan", width: 15 },
-          { header: "Jenis Kelamin", width: 15, kind: "center" },
-          { header: "Tempat, Tanggal Lahir", width: 24 },
-          { header: "No. WhatsApp / HP", width: 18, kind: "center" },
-          { header: "Semester", width: 10, kind: "center", numeric: true },
-          { header: "Program Studi", width: 23 },
-          { header: "IPK", width: 9, kind: "center", numeric: true },
-          { header: "Pilihan Sub-Lab 1", width: 27 },
-          { header: "Pilihan Sub-Lab 2", width: 27 },
-          { header: "Status Seleksi", width: 23, kind: "status" },
-          { header: "Keterampilan", width: 36, kind: "wrap" },
-          { header: "Motivasi Mendaftar", width: 44, kind: "wrap" }
-        ];
-        var rows = list.map(function (x, idx) {
-          var cleanNim = String(x.NIM || "").trim().replace(/\.0$/, "");
-          var cleanSem = String(x.Semester || "").trim().replace(/\.0$/, "");
-          return [
-            idx + 1,
-            x.Pendaftar_ID || "-",
-            cleanNim,
-            x.Nama || "-",
-            x.Nama_Panggilan || "-",
-            x.Jenis_Kelamin || "-",
-            x.TTL || "-",
-            cleanPhone(x.No_HP),
-            cleanSem,
-            x.Prodi || "Teknik Industri",
-            x.IPK || "",
-            x.Bidang_Pilihan_1 || "-",
-            x.Bidang_Pilihan_2 || "-",
-            x.Status_Pendaftaran || "Draft",
-            x.Keterampilan || "-",
-            x.Motivasi || "-"
-          ];
-        });
-        var periode = String(window.getPengaturanVal("ACTIVE_PERIODE", "2027-2028")).replace(/[^a-zA-Z0-9_-]/g, "-");
-        var dateStr = new Date().toISOString().slice(0, 10);
-        var fileName = (customPrefix || "Data_Pendaftar_IELA") + "_" + periode + "_" + dateStr + ".xlsx";
-        window.downloadStyledXlsx(fileName, "Data Pendaftar IELA", columns, rows);
-        if (!customPrefix) window.showToast("File Excel (" + list.length + " pendaftar) berhasil diunduh!");
-        return true;
+      window.downloadStyledXlsx = function (fileName, sheetName, columns, dataRows) {
+        window.downloadMultiSheetXlsx(fileName, [{ name: sheetName, columns: columns, rows: dataRows }]);
       };
-      window.exportPendaftarCsv = window.exportPendaftarExcel;
 
-      window.exportRekapNilaiExcel = function () {
+      window.buildRekapRankingSheet = function () {
         var evals = window.appState.data.penilaianRekap || [];
         var pendaftarList = window.appState.data.pendaftar || [];
-        if (evals.length === 0) {
-          window.showToast("Belum ada data penilaian wawancara untuk diunduh.");
-          return false;
-        }
         var grouped = {};
         evals.forEach(function (e) {
           if (!grouped[e.Pendaftar_ID]) grouped[e.Pendaftar_ID] = [];
@@ -8710,7 +8792,6 @@ import '../styles/global.css';
           });
           var cnt = pEvals.length;
           return {
-            pId: pId,
             nim: p ? String(p.NIM || "").replace(/\.0$/, "") : "-",
             nama: p ? (p.Nama || pId) : pId,
             bidang1: p ? (p.Bidang_Pilihan_1 || "-") : "-",
@@ -8726,33 +8807,585 @@ import '../styles/global.css';
           };
         }).sort(function (a, b) { return b.avgTot - a.avgTot; });
 
-        var columns = [
-          { header: "Peringkat", width: 11, kind: "center", numeric: true },
+        return {
+          name: "Rekap Peringkat",
+          columns: [
+            { header: "Peringkat", width: 11, kind: "center", numeric: true },
+            { header: "NPM", width: 15, kind: "center" },
+            { header: "Nama Kandidat", width: 30 },
+            { header: "Pilihan Sub-Lab 1", width: 26 },
+            { header: "Pilihan Sub-Lab 2", width: 26 },
+            { header: "Jml Penguji", width: 13, kind: "center", numeric: true },
+            { header: "Pengetahuan", width: 14, kind: "center", numeric: true },
+            { header: "Keterampilan", width: 14, kind: "center", numeric: true },
+            { header: "Kedisiplinan", width: 14, kind: "center", numeric: true },
+            { header: "Attitude", width: 12, kind: "center", numeric: true },
+            { header: "Nilai Akhir", width: 14, kind: "center", numeric: true },
+            { header: "Status Keputusan", width: 23, kind: "status" },
+            { header: "Catatan Evaluasi Penguji", width: 45, kind: "wrap" }
+          ],
+          rows: items.map(function (it, idx) {
+            return [
+              idx + 1, it.nim, it.nama, it.bidang1, it.bidang2,
+              it.cnt, it.avg1, it.avg2, it.avg3, it.avg4, it.avgTot,
+              it.status, it.catatan
+            ];
+          }),
+          count: items.length
+        };
+      };
+
+      window.exportPendaftarExcel = function (customPrefix) {
+        var list = window.appState.data.pendaftar || [];
+        var evals = window.appState.data.penilaianRekap || [];
+        if (list.length === 0 && evals.length === 0) {
+          if (!customPrefix) window.showToast("Belum ada data pendaftar untuk diunduh.");
+          return false;
+        }
+        var cleanPhone = function (val) {
+          var s = String(val || "").trim().replace(/\.0$/, "");
+          if (/^8\d{7,13}$/.test(s)) s = "0" + s;
+          return s || "-";
+        };
+        var pendaftarColumns = [
+          { header: "No", width: 6, kind: "center", numeric: true },
+          { header: "Pendaftar_ID", width: 14, kind: "center" },
           { header: "NPM", width: 15, kind: "center" },
-          { header: "Nama Kandidat", width: 30 },
-          { header: "Pilihan Sub-Lab 1", width: 26 },
-          { header: "Pilihan Sub-Lab 2", width: 26 },
-          { header: "Jml Penguji", width: 13, kind: "center", numeric: true },
-          { header: "Pengetahuan", width: 14, kind: "center", numeric: true },
-          { header: "Keterampilan", width: 14, kind: "center", numeric: true },
-          { header: "Kedisiplinan", width: 14, kind: "center", numeric: true },
-          { header: "Attitude", width: 12, kind: "center", numeric: true },
-          { header: "Nilai Akhir", width: 14, kind: "center", numeric: true },
-          { header: "Status Keputusan", width: 23, kind: "status" },
-          { header: "Catatan Evaluasi Penguji", width: 45, kind: "wrap" }
+          { header: "Nama_Lengkap", width: 30 },
+          { header: "Nama_Panggilan", width: 15 },
+          { header: "Jenis_Kelamin", width: 15, kind: "center" },
+          { header: "TTL", width: 24 },
+          { header: "No_HP", width: 18, kind: "center" },
+          { header: "Alamat_Asal", width: 30, kind: "wrap" },
+          { header: "Alamat_Sekarang", width: 30, kind: "wrap" },
+          { header: "Semester", width: 10, kind: "center", numeric: true },
+          { header: "Prodi", width: 23 },
+          { header: "IPK", width: 9, kind: "center", numeric: true },
+          { header: "Bidang_Pilihan_1", width: 27 },
+          { header: "Bidang_Pilihan_2", width: 27 },
+          { header: "Status_Pendaftaran", width: 23, kind: "status" },
+          { header: "Keterampilan", width: 36, kind: "wrap" },
+          { header: "Motivasi", width: 44, kind: "wrap" },
+          { header: "Target_IELA", width: 36, kind: "wrap" },
+          { header: "Hobby", width: 18 },
+          { header: "Cita_Cita", width: 18 },
+          { header: "Motto_Hidup", width: 28, kind: "wrap" },
+          { header: "Riwayat_Organisasi", width: 30, kind: "wrap" },
+          { header: "Pelatihan_Diikuti", width: 30, kind: "wrap" },
+          { header: "Buku_Diresume", width: 32, kind: "wrap" },
+          { header: "URL_Foto", width: 28 },
+          { header: "URL_KHS", width: 28 },
+          { header: "URL_CV", width: 28 },
+          { header: "URL_Sertifikat", width: 28 },
+          { header: "URL_Resume", width: 28 },
+          { header: "URL_Jurnal_Referensi", width: 28 },
+          { header: "QR_Code_ID", width: 18, kind: "center" }
         ];
-        var rows = items.map(function (it, idx) {
+        var pendaftarRows = list.map(function (x, idx) {
+          var cleanNim = String(x.NIM || "").trim().replace(/\.0$/, "");
+          var cleanSem = String(x.Semester || "").trim().replace(/\.0$/, "");
           return [
-            idx + 1, it.nim, it.nama, it.bidang1, it.bidang2,
-            it.cnt, it.avg1, it.avg2, it.avg3, it.avg4, it.avgTot,
-            it.status, it.catatan
+            idx + 1,
+            x.Pendaftar_ID || "-",
+            cleanNim,
+            x.Nama || "-",
+            x.Nama_Panggilan || "-",
+            x.Jenis_Kelamin || "-",
+            x.TTL || "-",
+            cleanPhone(x.No_HP),
+            x.Alamat_Asal || "",
+            x.Alamat_Sekarang || "",
+            cleanSem,
+            x.Prodi || "Teknik Industri",
+            x.IPK || "",
+            x.Bidang_Pilihan_1 || "-",
+            x.Bidang_Pilihan_2 || "-",
+            x.Status_Pendaftaran || "Draft",
+            x.Keterampilan || "-",
+            x.Motivasi || "-",
+            x.Target_IELA || "",
+            x.Hobby || "",
+            x.Cita_Cita || "",
+            x.Motto_Hidup || "",
+            x.Riwayat_Organisasi || "",
+            x.Pelatihan_Diikuti || "",
+            x.Buku_Diresume || "",
+            x.URL_Foto || "",
+            x.URL_KHS || "",
+            x.URL_CV || "",
+            x.URL_Sertifikat || "",
+            x.URL_Resume || "",
+            x.URL_Jurnal_Referensi || "",
+            x.QR_Code_ID || ""
           ];
         });
+
+        var pByPid = {};
+        list.forEach(function (x) { pByPid[String(x.Pendaftar_ID || "").trim()] = x; });
+        var usersById = {};
+        (window.appState.data.users || []).forEach(function (u) { usersById[String(u.User_ID || "").trim()] = u; });
+
+        var penilaianColumns = [
+          { header: "Penilaian_ID", width: 16, kind: "center" },
+          { header: "Pendaftar_ID", width: 14, kind: "center" },
+          { header: "NPM", width: 15, kind: "center" },
+          { header: "Nama_Pendaftar", width: 28 },
+          { header: "User_ID_Penilai", width: 15, kind: "center" },
+          { header: "Nama_Penilai", width: 26 },
+          { header: "Skor_Pengetahuan", width: 16, kind: "center", numeric: true },
+          { header: "Skor_Keterampilan", width: 16, kind: "center", numeric: true },
+          { header: "Skor_Kedisiplinan", width: 16, kind: "center", numeric: true },
+          { header: "Skor_Attitude", width: 14, kind: "center", numeric: true },
+          { header: "Nilai_Bobot_Total", width: 16, kind: "center", numeric: true },
+          { header: "Catatan_Evaluasi", width: 38, kind: "wrap" },
+          { header: "Tanggal_Penilaian", width: 22, kind: "center" }
+        ];
+        var penilaianRows = evals.map(function (ev) {
+          var cand = pByPid[String(ev.Pendaftar_ID || "").trim()];
+          var usr = usersById[String(ev.User_ID_Penilai || "").trim()];
+          return [
+            ev.Penilaian_ID || "",
+            ev.Pendaftar_ID || "",
+            cand ? String(cand.NIM || "").replace(/\.0$/, "") : "",
+            ev.Nama_Pendaftar || (cand ? cand.Nama : ""),
+            ev.User_ID_Penilai || "",
+            ev.Nama_Penilai || (usr ? usr.Nama_Lengkap : ""),
+            ev.Skor_Pengetahuan || 0,
+            ev.Skor_Keterampilan || 0,
+            ev.Skor_Kedisiplinan || 0,
+            ev.Skor_Attitude || 0,
+            ev.Nilai_Bobot_Total || 0,
+            ev.Catatan_Evaluasi || "-",
+            ev.Tanggal_Penilaian || ""
+          ];
+        });
+
+        var sheets = [
+          { name: "Data Pendaftar", columns: pendaftarColumns, rows: pendaftarRows },
+          { name: "Penilaian Wawancara", columns: penilaianColumns, rows: penilaianRows },
+          window.buildRekapRankingSheet()
+        ];
+
         var periode = String(window.getPengaturanVal("ACTIVE_PERIODE", "2027-2028")).replace(/[^a-zA-Z0-9_-]/g, "-");
         var dateStr = new Date().toISOString().slice(0, 10);
-        window.downloadStyledXlsx("Rekap_Nilai_Wawancara_IELA_" + periode + "_" + dateStr + ".xlsx", "Rekap Nilai Wawancara", columns, rows);
-        window.showToast("File Excel Rekap Nilai (" + items.length + " kandidat) berhasil diunduh!");
+        var fileName = (customPrefix || "Backup_Lengkap_IELA") + "_" + periode + "_" + dateStr + ".xlsx";
+        window.downloadMultiSheetXlsx(fileName, sheets);
+        if (!customPrefix) {
+          window.showToast("Backup Excel lengkap (" + list.length + " pendaftar & " + evals.length + " penilaian) berhasil diunduh!");
+        }
         return true;
+      };
+      window.exportPendaftarCsv = window.exportPendaftarExcel;
+
+      window.exportRekapNilaiExcel = function () {
+        var rk = window.buildRekapRankingSheet();
+        if (rk.count === 0) {
+          window.showToast("Belum ada data penilaian wawancara untuk diunduh.");
+          return false;
+        }
+        var periode = String(window.getPengaturanVal("ACTIVE_PERIODE", "2027-2028")).replace(/[^a-zA-Z0-9_-]/g, "-");
+        var dateStr = new Date().toISOString().slice(0, 10);
+        window.downloadStyledXlsx("Rekap_Nilai_Wawancara_IELA_" + periode + "_" + dateStr + ".xlsx", rk.name, rk.columns, rk.rows);
+        window.showToast("File Excel Rekap Nilai (" + rk.count + " kandidat) berhasil diunduh!");
+        return true;
+      };
+
+      /* =========================================================================
+         FITUR IMPORT & PULIHKAN BACKUP (.XLSX MULTI-SHEET & .CSV)
+         ========================================================================= */
+      window.pendingImportBackupPayload = null;
+
+      window.parseCsvTextToGrid = function (text) {
+        var raw = String(text || "").replace(/^\uFEFF/, "").replace(/^sep=.\r?\n/i, "");
+        var firstLine = raw.split(/\r?\n/)[0] || "";
+        var commaCount = 0, semiCount = 0, tabCount = 0, inQ = false;
+        for (var i = 0; i < firstLine.length; i++) {
+          var ch = firstLine[i];
+          if (ch === '"') inQ = !inQ;
+          else if (!inQ) {
+            if (ch === ",") commaCount++;
+            else if (ch === ";") semiCount++;
+            else if (ch === "\t") tabCount++;
+          }
+        }
+        var delim = (tabCount > commaCount && tabCount > semiCount) ? "\t" : (semiCount > commaCount ? ";" : ",");
+        var rows = [], row = [], cur = "", inQuotes = false;
+        for (var j = 0; j < raw.length; j++) {
+          var c = raw[j];
+          if (inQuotes) {
+            if (c === '"') {
+              if (raw[j + 1] === '"') { cur += '"'; j++; }
+              else inQuotes = false;
+            } else cur += c;
+          } else {
+            if (c === '"') inQuotes = true;
+            else if (c === delim) { row.push(cur); cur = ""; }
+            else if (c === "\r") {
+              if (raw[j + 1] === "\n") j++;
+              row.push(cur); rows.push(row); row = []; cur = "";
+            } else if (c === "\n") {
+              row.push(cur); rows.push(row); row = []; cur = "";
+            } else cur += c;
+          }
+        }
+        if (cur.length > 0 || row.length > 0) { row.push(cur); rows.push(row); }
+        var nonEmpty = rows.filter(function (r) {
+          return r.some(function (cell) { return String(cell || "").trim() !== ""; });
+        });
+        if (nonEmpty.length > 0 && nonEmpty[0].length === 1 && nonEmpty[0][0].indexOf(",") !== -1) {
+          var rejoined = nonEmpty.map(function (r) { return r[0]; }).join("\n");
+          if (rejoined !== raw) return window.parseCsvTextToGrid(rejoined);
+        }
+        return nonEmpty;
+      };
+
+      window.inflateRawBytesBrowser = async function (compressed) {
+        var ds = new DecompressionStream("deflate-raw");
+        var writer = ds.writable.getWriter();
+        writer.write(compressed);
+        writer.close();
+        var reader = ds.readable.getReader();
+        var chunks = [], total = 0;
+        while (true) {
+          var res = await reader.read();
+          if (res.done) break;
+          chunks.push(res.value);
+          total += res.value.length;
+        }
+        var out = new Uint8Array(total);
+        var offset = 0;
+        chunks.forEach(function (ck) { out.set(ck, offset); offset += ck.length; });
+        return out;
+      };
+
+      window.parseXlsxBufferToSheets = async function (arrayBuffer) {
+        var bytes = new Uint8Array(arrayBuffer);
+        var dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        var dec = new TextDecoder("utf-8");
+
+        var eocdPos = -1;
+        for (var i = bytes.length - 22; i >= Math.max(0, bytes.length - 65557); i--) {
+          if (dv.getUint32(i, true) === 0x06054b50) { eocdPos = i; break; }
+        }
+        if (eocdPos === -1) throw new Error("Format file .xlsx tidak dikenali.");
+
+        var totalEntries = dv.getUint16(eocdPos + 10, true);
+        var cdOffset = dv.getUint32(eocdPos + 16, true);
+        var entries = {};
+        var ptr = cdOffset;
+
+        for (var eIdx = 0; eIdx < totalEntries; eIdx++) {
+          if (dv.getUint32(ptr, true) !== 0x02014b50) break;
+          var method = dv.getUint16(ptr + 10, true);
+          var compSize = dv.getUint32(ptr + 20, true);
+          var nameLen = dv.getUint16(ptr + 28, true);
+          var extraLen = dv.getUint16(ptr + 30, true);
+          var commentLen = dv.getUint16(ptr + 32, true);
+          var localOffset = dv.getUint32(ptr + 42, true);
+          var name = dec.decode(bytes.subarray(ptr + 46, ptr + 46 + nameLen));
+
+          var localNameLen = dv.getUint16(localOffset + 26, true);
+          var localExtraLen = dv.getUint16(localOffset + 28, true);
+          var dataStart = localOffset + 30 + localNameLen + localExtraLen;
+          entries[name] = { method: method, compData: bytes.subarray(dataStart, dataStart + compSize) };
+          ptr += 46 + nameLen + extraLen + commentLen;
+        }
+
+        var readEntryXml = async function (entryName) {
+          var ent = entries[entryName];
+          if (!ent) return "";
+          if (ent.method === 0) return dec.decode(ent.compData);
+          if (ent.method === 8) return dec.decode(await window.inflateRawBytesBrowser(ent.compData));
+          throw new Error("Kompresi ZIP tidak didukung (" + ent.method + ").");
+        };
+
+        var unescXml = function (s) {
+          return String(s || "")
+            .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+            .replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, "&");
+        };
+
+        var sharedStrings = [];
+        var ssXml = await readEntryXml("xl/sharedStrings.xml");
+        if (ssXml) {
+          var siRegex = /<si\b[^>]*>([\s\S]*?)<\/si>/g;
+          var m;
+          while ((m = siRegex.exec(ssXml)) !== null) {
+            var tRegex = /<t(?:\s+[^>]*)?>([\s\S]*?)<\/t>/g;
+            var tm, txt = "";
+            while ((tm = tRegex.exec(m[1])) !== null) txt += unescXml(tm[1]);
+            sharedStrings.push(txt);
+          }
+        }
+
+        var colToIdx = function (ref) {
+          var letters = (ref.match(/^[A-Z]+/i) || ["A"])[0].toUpperCase();
+          var idx = 0;
+          for (var c = 0; c < letters.length; c++) idx = idx * 26 + (letters.charCodeAt(c) - 64);
+          return idx - 1;
+        };
+
+        var sheetKeys = Object.keys(entries)
+          .filter(function (k) { return /^xl\/worksheets\/sheet\d+\.xml$/i.test(k); })
+          .sort(function (a, b) {
+            var na = parseInt((a.match(/\d+/) || ["0"])[0], 10);
+            var nb = parseInt((b.match(/\d+/) || ["0"])[0], 10);
+            return na - nb;
+          });
+
+        var parsedSheets = [];
+        for (var s = 0; s < sheetKeys.length; s++) {
+          var sheetXml = await readEntryXml(sheetKeys[s]);
+          var grid = [];
+          var rowRegex = /<row\b[^>]*>([\s\S]*?)<\/row>/g;
+          var rm;
+          while ((rm = rowRegex.exec(sheetXml)) !== null) {
+            var rowArr = [];
+            var cellRegex = /<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
+            var cm, nextCol = 0;
+            while ((cm = cellRegex.exec(rm[1])) !== null) {
+              var attrs = cm[1] || "";
+              var inner = cm[2] || "";
+              var refM = attrs.match(/\br="([A-Z]+\d+)"/i);
+              var cIdx = refM ? colToIdx(refM[1]) : nextCol;
+              nextCol = cIdx + 1;
+              var typeM = attrs.match(/\bt="([^"]+)"/);
+              var cType = typeM ? typeM[1] : "";
+              var val = "";
+              if (cType === "inlineStr") {
+                var tr = /<t(?:\s+[^>]*)?>([\s\S]*?)<\/t>/g;
+                var tMatch;
+                while ((tMatch = tr.exec(inner)) !== null) val += unescXml(tMatch[1]);
+              } else {
+                var vM = inner.match(/<v(?:\s+[^>]*)?>([\s\S]*?)<\/v>/);
+                var rawV = vM ? unescXml(vM[1]) : "";
+                if (cType === "s") {
+                  var sIdx = parseInt(rawV, 10);
+                  val = (!isNaN(sIdx) && sharedStrings[sIdx] !== undefined) ? sharedStrings[sIdx] : rawV;
+                } else val = rawV;
+              }
+              while (rowArr.length < cIdx) rowArr.push("");
+              rowArr[cIdx] = val;
+            }
+            if (rowArr.some(function (x) { return String(x || "").trim() !== ""; })) grid.push(rowArr);
+          }
+          if (grid.length > 0 && grid[0].length === 1 && String(grid[0][0] || "").indexOf(",") !== -1) {
+            grid = window.parseCsvTextToGrid(grid.map(function (r) { return r[0]; }).join("\n"));
+          }
+          if (grid.length > 0) parsedSheets.push(grid);
+        }
+        return parsedSheets;
+      };
+
+      window.extractBackupPayloadFromGrids = function (grids) {
+        var pendaftarList = [];
+        var penilaianList = [];
+        var normKey = function (h) {
+          return String(h || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+        };
+
+        (grids || []).forEach(function (grid) {
+          if (!grid || grid.length < 2) return;
+          var headers = grid[0].map(normKey);
+          var hasSkor = headers.indexOf("skor_pengetahuan") !== -1 || (headers.indexOf("pengetahuan") !== -1 && headers.indexOf("keterampilan") !== -1);
+          var isRekapSummary = headers.indexOf("peringkat") !== -1 && headers.indexOf("jml_penguji") !== -1;
+
+          if (hasSkor && !isRekapSummary) {
+            for (var r = 1; r < grid.length; r++) {
+              var row = grid[r];
+              var obj = {};
+              headers.forEach(function (h, i) { obj[h] = row[i] !== undefined ? row[i] : ""; });
+              penilaianList.push({
+                Penilaian_ID: obj.penilaian_id || "",
+                Pendaftar_ID: obj.pendaftar_id || obj.id_pendaftar || "",
+                NPM: obj.npm || obj.nim || "",
+                Nama_Pendaftar: obj.nama_pendaftar || obj.nama_kandidat || obj.nama || "",
+                User_ID_Penilai: obj.user_id_penilai || "USR-001",
+                Nama_Penilai: obj.nama_penilai || obj.nama_penguji || "",
+                Skor_Pengetahuan: obj.skor_pengetahuan || obj.pengetahuan || 0,
+                Skor_Keterampilan: obj.skor_keterampilan || obj.keterampilan || 0,
+                Skor_Kedisiplinan: obj.skor_kedisiplinan || obj.kedisiplinan || 0,
+                Skor_Attitude: obj.skor_attitude || obj.attitude || 0,
+                Nilai_Bobot_Total: obj.nilai_bobot_total || obj.nilai_akhir || 0,
+                Catatan_Evaluasi: obj.catatan_evaluasi || obj.catatan || "-",
+                Tanggal_Penilaian: obj.tanggal_penilaian || ""
+              });
+            }
+          } else if (!isRekapSummary && (headers.indexOf("npm") !== -1 || headers.indexOf("nim") !== -1 || headers.indexOf("pendaftar_id") !== -1)) {
+            if (pendaftarList.length > 0) return; // Utamakan sheet pendaftar utama pertama
+            for (var pr = 1; pr < grid.length; pr++) {
+              var prow = grid[pr];
+              var po = {};
+              headers.forEach(function (h, i) { po[h] = prow[i] !== undefined ? prow[i] : ""; });
+              var nimVal = po.npm || po.nim || "";
+              var namaVal = po.nama_lengkap || po.nama || po.nama_calon || po.nama_kandidat || "";
+              if (!String(nimVal).trim() && !String(namaVal).trim()) continue;
+              pendaftarList.push({
+                Pendaftar_ID: po.pendaftar_id || po.id_pendaftar || "",
+                NIM: nimVal,
+                Nama: namaVal,
+                Nama_Panggilan: po.nama_panggilan || po.panggilan || "",
+                Jenis_Kelamin: po.jenis_kelamin || "",
+                TTL: po.ttl || po.tempat_tanggal_lahir || "",
+                No_HP: po.no_hp || po.no_whatsapp_hp || po.whatsapp || "",
+                Alamat_Asal: po.alamat_asal || "",
+                Alamat_Sekarang: po.alamat_sekarang || "",
+                Semester: po.semester || "3",
+                Prodi: po.prodi || po.program_studi || "Teknik Industri",
+                IPK: po.ipk || "",
+                Bidang_Pilihan_1: po.bidang_pilihan_1 || po.pilihan_sub_lab_1 || po.pilihan_1 || "",
+                Bidang_Pilihan_2: po.bidang_pilihan_2 || po.pilihan_sub_lab_2 || po.pilihan_2 || "",
+                Status_Pendaftaran: po.status_pendaftaran || po.status_seleksi || po.status || "Submitted",
+                Keterampilan: po.keterampilan || "",
+                Motivasi: po.motivasi || po.motivasi_mendaftar || "",
+                Target_IELA: po.target_iela || "",
+                Hobby: po.hobby || "",
+                Cita_Cita: po.cita_cita || "",
+                Motto_Hidup: po.motto_hidup || "",
+                Riwayat_Organisasi: po.riwayat_organisasi || "",
+                Pelatihan_Diikuti: po.pelatihan_diikuti || "",
+                Buku_Diresume: po.buku_diresume || "",
+                URL_Foto: po.url_foto || "",
+                URL_KHS: po.url_khs || "",
+                URL_CV: po.url_cv || "",
+                URL_Sertifikat: po.url_sertifikat || "",
+                URL_Resume: po.url_resume || "",
+                URL_Jurnal_Referensi: po.url_jurnal_referensi || "",
+                QR_Code_ID: po.qr_code_id || ""
+              });
+            }
+          }
+        });
+
+        return { pendaftarList: pendaftarList, penilaianList: penilaianList };
+      };
+
+      window.openImportBackupModal = function () {
+        window.pendingImportBackupPayload = null;
+        var inp = document.getElementById("import-backup-file-input");
+        if (inp) inp.value = "";
+        var fn = document.getElementById("import-backup-filename");
+        if (fn) fn.innerText = "Klik di sini untuk memilih file Backup (.xlsx / .csv)";
+        var box = document.getElementById("import-backup-preview-box");
+        if (box) box.classList.add("hidden");
+        var btn = document.getElementById("btn-submit-import-backup");
+        if (btn) btn.disabled = true;
+        window.openModal("modal-import-backup");
+      };
+
+      window.onImportBackupFileSelected = async function (event) {
+        var file = event && event.target && event.target.files ? event.target.files[0] : null;
+        if (!file) return;
+        var fnEl = document.getElementById("import-backup-filename");
+        if (fnEl) fnEl.innerText = "Membaca file: " + file.name + " ...";
+
+        try {
+          var grids = [];
+          if (/\.xlsx$/i.test(file.name)) {
+            var ab = await file.arrayBuffer();
+            grids = await window.parseXlsxBufferToSheets(ab);
+          } else {
+            var txt = await file.text();
+            grids = [window.parseCsvTextToGrid(txt)];
+          }
+
+          var extracted = window.extractBackupPayloadFromGrids(grids);
+          if (extracted.pendaftarList.length === 0 && extracted.penilaianList.length === 0) {
+            if (fnEl) fnEl.innerText = "Format kolom tidak dikenali pada " + file.name;
+            window.showToast("Tidak ditemukan kolom NPM/Nama atau Penilaian yang valid di dalam file tersebut.");
+            return;
+          }
+
+          window.pendingImportBackupPayload = extracted;
+          if (fnEl) fnEl.innerText = "File terpilih: " + file.name;
+
+          var pBadge = document.getElementById("import-preview-pendaftar-badge");
+          var eBadge = document.getElementById("import-preview-penilaian-badge");
+          if (pBadge) pBadge.innerText = extracted.pendaftarList.length + " Data Pendaftar";
+          if (eBadge) {
+            eBadge.innerText = extracted.penilaianList.length > 0
+              ? (extracted.penilaianList.length + " Penilaian Wawancara")
+              : "Penilaian & Berkas Otomatis Dilengkapi";
+          }
+
+          var tbody = document.getElementById("import-backup-preview-tbody");
+          if (tbody) {
+            tbody.innerHTML = extracted.pendaftarList.slice(0, 5).map(function (p) {
+              return '<tr>' +
+                '<td class="px-3 py-1.5 font-mono text-indigo-300">' + String(p.NIM || "-").replace(/\.0$/, "") + '</td>' +
+                '<td class="px-3 py-1.5 font-semibold text-white">' + (p.Nama || "-") + '</td>' +
+                '<td class="px-3 py-1.5 text-slate-300">' + (p.Bidang_Pilihan_1 || "-") + '</td>' +
+                '<td class="px-3 py-1.5 text-emerald-300 font-semibold">' + (p.Status_Pendaftaran || "-") + '</td>' +
+                '</tr>';
+            }).join("") + (extracted.pendaftarList.length > 5
+              ? '<tr><td colspan="4" class="px-3 py-1.5 text-center text-slate-500 italic">... dan ' + (extracted.pendaftarList.length - 5) + ' peserta lainnya</td></tr>'
+              : '');
+          }
+
+          var box = document.getElementById("import-backup-preview-box");
+          if (box) box.classList.remove("hidden");
+          var btn = document.getElementById("btn-submit-import-backup");
+          if (btn) btn.disabled = false;
+        } catch (err) {
+          console.error("Gagal membaca file backup:", err);
+          if (fnEl) fnEl.innerText = "Gagal membaca file: " + file.name;
+          window.showToast("Gagal membaca file: " + (err.message || err));
+        }
+      };
+
+      window.executeImportRecruitmentRpc = function (payload, loadingMsg) {
+        window.showLoading(true, loadingMsg || "Memulihkan data pendaftar, berkas, & penilaian wawancara...");
+        if (window.checkIsGAS()) {
+          google.script.run
+            .withSuccessHandler(function (res) {
+              window.showLoading(false);
+              if (res && res.success) {
+                window.closeModal("modal-import-backup");
+                window.showToast(res.message || "Backup berhasil dimasukkan ke sistem!");
+                window.initData(true);
+              } else {
+                window.showToast("Gagal import: " + (res ? res.message : "Error"));
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showLoading(false);
+              window.showToast("Error Server: " + err.toString());
+            })
+            .importRecruitmentBackup(payload);
+        } else {
+          window.showLoading(false);
+          window.closeModal("modal-import-backup");
+          window.showToast("Data backup berhasil dimuat!");
+        }
+      };
+
+      window.handleSubmitImportBackup = function () {
+        if (!window.pendingImportBackupPayload) {
+          window.showToast("Pilih file backup (.xlsx / .csv) terlebih dahulu.");
+          return;
+        }
+        var modeEl = document.getElementById("import-backup-mode");
+        var enrichEl = document.getElementById("import-backup-enrich");
+        var mode = modeEl ? modeEl.value : "merge";
+        var enrich = enrichEl ? Boolean(enrichEl.checked) : true;
+
+        window.executeImportRecruitmentRpc({
+          mode: mode,
+          enrichFromArchive: enrich,
+          pendaftarList: window.pendingImportBackupPayload.pendaftarList,
+          penilaianList: window.pendingImportBackupPayload.penilaianList
+        }, "Mengimpor file backup & memulihkan penilaian wawancara...");
+      };
+
+      window.handleQuickRestorePresentationSeed = function () {
+        if (!window.confirm("Muat langsung seluruh arsip lengkap rekrutmen (38 Data Pendaftar + Berkas + 551 Penilaian Wawancara) ke dalam web untuk kebutuhan presentasi?")) {
+          return;
+        }
+        window.executeImportRecruitmentRpc({
+          mode: "replace",
+          useBuiltInSeed: true,
+          enrichFromArchive: true
+        }, "Memulihkan 38 Data Pendaftar & 551 Penilaian Wawancara untuk presentasi...");
       };
 
       window.refreshAfterPendaftarCleanup = function () {

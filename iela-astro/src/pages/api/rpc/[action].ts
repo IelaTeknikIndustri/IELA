@@ -881,6 +881,297 @@ export const POST: APIRoute = async ({ params, request }) => {
       }), { headers: { 'Content-Type': 'application/json' } });
     }
 
+    if (action === 'importRecruitmentBackup') {
+      const payload = args[0] || {};
+      const mode = String(payload.mode || 'merge').toLowerCase(); // 'merge' | 'replace'
+      const useBuiltInSeed = Boolean(payload.useBuiltInSeed);
+      const enrichFromArchive = payload.enrichFromArchive !== false;
+
+      const seedPendaftar: any[] = Array.isArray((dbSeedRaw as any).PENDAFTAR) ? (dbSeedRaw as any).PENDAFTAR : [];
+      const seedPenilaian: any[] = Array.isArray((dbSeedRaw as any).PENILAIAN_REKAP) ? (dbSeedRaw as any).PENILAIAN_REKAP : [];
+
+      const seedByPid: Record<string, any> = {};
+      const seedByNim: Record<string, any> = {};
+      seedPendaftar.forEach((sp: any) => {
+        const pid = String(sp.Pendaftar_ID || sp.pendaftar_id || '').trim();
+        const nim = String(sp.NIM || sp.nim || '').trim().replace(/\.0$/, '');
+        if (pid) seedByPid[pid] = sp;
+        if (nim) seedByNim[nim] = sp;
+      });
+
+      const rawPendaftar: any[] = useBuiltInSeed
+        ? seedPendaftar
+        : (Array.isArray(payload.pendaftarList) ? payload.pendaftarList : []);
+      const rawPenilaian: any[] = useBuiltInSeed
+        ? seedPenilaian
+        : (Array.isArray(payload.penilaianList) ? payload.penilaianList : []);
+
+      if (rawPendaftar.length === 0 && rawPenilaian.length === 0) {
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'Tidak ada data pendaftar atau penilaian yang valid di dalam file backup.'
+        }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      }
+
+      if (mode === 'replace') {
+        try {
+          await client.from('penilaian_rekap').delete().neq('penilaian_id', '__NONE__');
+          await client.from('seleksi_log').delete().neq('log_id', '__NONE__');
+          await client.from('pendaftar').delete().neq('pendaftar_id', '__NONE__');
+          await client.from('users_profile').delete().ilike('role', '%pendaftar%');
+          await client
+            .from('pengaturan')
+            .update({ value_text: '[]' })
+            .in('key_name', ['INTERVIEW_QUEUE_ORDER', 'INTERVIEW_QUEUE_DONE']);
+        } catch (e) {
+          console.error('Failed clearing old data in replace mode:', e);
+        }
+        localStore.PENDAFTAR = [];
+        localStore.PENILAIAN_REKAP = [];
+        localStore.SELEKSI_LOG = [];
+      }
+
+      const existingNimToPid: Record<string, string> = {};
+      const existingUserByNim: Record<string, string> = {};
+      try {
+        const [{ data: curPendaftar }, { data: curUsers }] = await Promise.all([
+          client.from('pendaftar').select('pendaftar_id, nim').limit(2000),
+          client.from('users_profile').select('user_id, username_nim').limit(2000)
+        ]);
+        (curPendaftar || []).forEach((r: any) => {
+          const n = String(r.nim || '').trim().replace(/\.0$/, '');
+          if (n && r.pendaftar_id) existingNimToPid[n] = String(r.pendaftar_id).trim();
+        });
+        (curUsers || []).forEach((u: any) => {
+          const n = String(u.username_nim || '').trim().replace(/\.0$/, '');
+          if (n && u.user_id) existingUserByNim[n] = String(u.user_id).trim();
+        });
+      } catch (e) {}
+
+      const cleanVal = (v: any, fallback = '') => {
+        if (v === undefined || v === null) return fallback;
+        const s = String(v).trim();
+        return (s === '' || s === '-') ? (fallback || s) : s;
+      };
+      const cleanPhone = (v: any) => {
+        let s = String(v ?? '').trim().replace(/\.0$/, '');
+        if (/^8\d{7,13}$/.test(s)) s = '0' + s;
+        return s;
+      };
+
+      const pendaftarRows: any[] = [];
+      const newUsersRows: any[] = [];
+      const stalePidsToDelete: string[] = [];
+      const nimToFinalPid: Record<string, string> = {};
+      const namaLowerToFinalPid: Record<string, string> = {};
+      const defaultPassHash = hashPassword('das12345');
+
+      rawPendaftar.forEach((item: any, idx: number) => {
+        const nim = String(item.NIM ?? item.nim ?? item.NPM ?? item.npm ?? '').trim().replace(/\.0$/, '');
+        const nama = String(item.Nama ?? item.nama ?? item.Nama_Lengkap ?? item.nama_lengkap ?? '').trim();
+        if (!nim && !nama) return;
+
+        const seedRef = enrichFromArchive ? (seedByPid[String(item.Pendaftar_ID || item.pendaftar_id || '').trim()] || seedByNim[nim] || {}) : {};
+        let pId = String(item.Pendaftar_ID || item.pendaftar_id || '').trim();
+        if (!pId || pId === '-') {
+          pId = existingNimToPid[nim] || String(seedRef.Pendaftar_ID || '').trim() || `PDF-${Math.floor(1000 + Math.random() * 8999)}-${idx}`;
+        }
+
+        if (nim && existingNimToPid[nim] && existingNimToPid[nim] !== pId) {
+          stalePidsToDelete.push(existingNimToPid[nim]);
+        }
+
+        if (nim) nimToFinalPid[nim] = pId;
+        if (nama) namaLowerToFinalPid[nama.toLowerCase()] = pId;
+
+        if (nim && !existingUserByNim[nim]) {
+          const uId = `USR-IMP-${nim.slice(-4)}-${idx + 1}`;
+          existingUserByNim[nim] = uId;
+          newUsersRows.push({
+            user_id: uId,
+            username_nim: nim,
+            nama_lengkap: nama || nim,
+            role: 'Pendaftar',
+            status_aktif: true,
+            password_hash: defaultPassHash
+          });
+        }
+
+        const semClean = String(item.Semester ?? item.semester ?? seedRef.Semester ?? '3').trim().replace(/\.0$/, '') || '3';
+        const ipkNum = parseFloat(String(item.IPK ?? item.ipk ?? seedRef.IPK ?? '0').replace(',', '.')) || 0;
+        const phoneStr = cleanPhone(cleanVal(item.No_HP ?? item.no_hp, seedRef.No_HP || ''));
+
+        pendaftarRows.push({
+          pendaftar_id: pId,
+          nim: nim || `IMP-${idx + 1}`,
+          nama: nama || '-',
+          nama_panggilan: cleanVal(item.Nama_Panggilan ?? item.nama_panggilan, seedRef.Nama_Panggilan || ''),
+          jenis_kelamin: cleanVal(item.Jenis_Kelamin ?? item.jenis_kelamin, seedRef.Jenis_Kelamin || ''),
+          ttl: cleanVal(item.TTL ?? item.ttl, seedRef.TTL || ''),
+          alamat_asal: cleanVal(item.Alamat_Asal ?? item.alamat_asal, seedRef.Alamat_Asal || ''),
+          alamat_sekarang: cleanVal(item.Alamat_Sekarang ?? item.alamat_sekarang, seedRef.Alamat_Sekarang || ''),
+          no_hp: phoneStr,
+          hobby: cleanVal(item.Hobby ?? item.hobby, seedRef.Hobby || ''),
+          cita_cita: cleanVal(item.Cita_Cita ?? item.cita_cita, seedRef.Cita_Cita || ''),
+          motto_hidup: cleanVal(item.Motto_Hidup ?? item.motto_hidup, seedRef.Motto_Hidup || ''),
+          semester: semClean,
+          prodi: cleanVal(item.Prodi ?? item.prodi, seedRef.Prodi || 'Teknik Industri'),
+          ipk: ipkNum,
+          bidang_pilihan_1: cleanVal(item.Bidang_Pilihan_1 ?? item.bidang_pilihan_1, seedRef.Bidang_Pilihan_1 || ''),
+          bidang_pilihan_2: cleanVal(item.Bidang_Pilihan_2 ?? item.bidang_pilihan_2, seedRef.Bidang_Pilihan_2 || ''),
+          keterampilan: cleanVal(item.Keterampilan ?? item.keterampilan, seedRef.Keterampilan || ''),
+          motivasi: cleanVal(item.Motivasi ?? item.motivasi, seedRef.Motivasi || ''),
+          target_iela: cleanVal(item.Target_IELA ?? item.target_iela, seedRef.Target_IELA || ''),
+          riwayat_organisasi: cleanVal(item.Riwayat_Organisasi ?? item.riwayat_organisasi, seedRef.Riwayat_Organisasi || ''),
+          pelatihan_diikuti: cleanVal(item.Pelatihan_Diikuti ?? item.pelatihan_diikuti, seedRef.Pelatihan_Diikuti || ''),
+          buku_diresume: cleanVal(item.Buku_Diresume ?? item.buku_diresume, seedRef.Buku_Diresume || ''),
+          url_foto: cleanVal(item.URL_Foto ?? item.url_foto, seedRef.URL_Foto || ''),
+          url_khs: cleanVal(item.URL_KHS ?? item.url_khs, seedRef.URL_KHS || ''),
+          url_cv: cleanVal(item.URL_CV ?? item.url_cv, seedRef.URL_CV || ''),
+          url_sertifikat: cleanVal(item.URL_Sertifikat ?? item.url_sertifikat, seedRef.URL_Sertifikat || ''),
+          url_resume: cleanVal(item.URL_Resume ?? item.url_resume, seedRef.URL_Resume || ''),
+          url_jurnal_referensi: cleanVal(item.URL_Jurnal_Referensi ?? item.url_jurnal_referensi, seedRef.URL_Jurnal_Referensi || ''),
+          status_pendaftaran: cleanVal(item.Status_Pendaftaran ?? item.status_pendaftaran, seedRef.Status_Pendaftaran || 'Submitted'),
+          qr_code_id: cleanVal(item.QR_Code_ID ?? item.qr_code_id, seedRef.QR_Code_ID || (nim ? `QR-IELA-${nim}` : ''))
+        });
+      });
+
+      // Deduplicate pendaftarRows by pendaftar_id
+      const uniquePendaftarMap: Record<string, any> = {};
+      pendaftarRows.forEach((r) => { uniquePendaftarMap[r.pendaftar_id] = r; });
+      const finalPendaftarRows = Object.values(uniquePendaftarMap);
+      const validPidSet = new Set(finalPendaftarRows.map((r: any) => r.pendaftar_id));
+
+      // Resolve evaluations source (either from uploaded file sheet OR matched archive evaluations)
+      let sourceEvals: any[] = rawPenilaian;
+      if (sourceEvals.length === 0 && enrichFromArchive && validPidSet.size > 0) {
+        sourceEvals = seedPenilaian.filter((ev: any) => {
+          const evPid = String(ev.Pendaftar_ID || ev.pendaftar_id || '').trim();
+          const evNama = String(ev.Nama_Pendaftar || ev.nama_pendaftar || '').trim().toLowerCase();
+          return validPidSet.has(evPid) || (evNama && Boolean(namaLowerToFinalPid[evNama]));
+        });
+      }
+
+      const penilaianMap: Record<string, any> = {};
+      sourceEvals.forEach((ev: any, idx: number) => {
+        let pId = String(ev.Pendaftar_ID || ev.pendaftar_id || '').trim();
+        const evNim = String(ev.NPM || ev.NIM || ev.nim || '').trim().replace(/\.0$/, '');
+        const evNama = String(ev.Nama_Pendaftar || ev.Nama_Kandidat || ev.nama_pendaftar || '').trim();
+        if ((!pId || !validPidSet.has(pId)) && evNim && nimToFinalPid[evNim]) {
+          pId = nimToFinalPid[evNim];
+        }
+        if ((!pId || !validPidSet.has(pId)) && evNama && namaLowerToFinalPid[evNama.toLowerCase()]) {
+          pId = namaLowerToFinalPid[evNama.toLowerCase()];
+        }
+        if (!pId) return;
+
+        const uPenilai = String(ev.User_ID_Penilai || ev.user_id_penilai || 'USR-001').trim();
+        let evId = String(ev.Penilaian_ID || ev.penilaian_id || '').trim();
+        if (!evId || evId === '-') {
+          evId = `EVL-${pId}-${uPenilai}-${idx + 1}`;
+        }
+
+        const sk1 = parseFloat(String(ev.Skor_Pengetahuan ?? ev.skor_pengetahuan ?? 0).replace(',', '.')) || 0;
+        const sk2 = parseFloat(String(ev.Skor_Keterampilan ?? ev.skor_keterampilan ?? 0).replace(',', '.')) || 0;
+        const sk3 = parseFloat(String(ev.Skor_Kedisiplinan ?? ev.skor_kedisiplinan ?? 0).replace(',', '.')) || 0;
+        const sk4 = parseFloat(String(ev.Skor_Attitude ?? ev.skor_attitude ?? 0).replace(',', '.')) || 0;
+        let bobot = parseFloat(String(ev.Nilai_Bobot_Total ?? ev.nilai_bobot_total ?? 0).replace(',', '.'));
+        if (!bobot && (sk1 || sk2 || sk3 || sk4)) {
+          bobot = Number(((sk1 * 25 + sk2 * 35 + sk3 * 20 + sk4 * 20) / 100).toFixed(2));
+        }
+
+        const rawTgl = String(ev.Tanggal_Penilaian ?? ev.tanggal_penilaian ?? '').trim();
+        let tgl = new Date().toISOString();
+        if (rawTgl && rawTgl !== '-') {
+          const asNum = Number(rawTgl);
+          if (!isNaN(asNum) && asNum > 25000 && asNum < 80000) {
+            tgl = new Date(Math.round((asNum - 25569) * 86400 * 1000)).toISOString();
+          } else {
+            const parsedMs = Date.parse(rawTgl);
+            if (!isNaN(parsedMs)) tgl = new Date(parsedMs).toISOString();
+          }
+        }
+
+        penilaianMap[evId] = {
+          penilaian_id: evId,
+          pendaftar_id: pId,
+          user_id_penilai: uPenilai,
+          skor_pengetahuan: sk1,
+          skor_keterampilan: sk2,
+          skor_kedisiplinan: sk3,
+          skor_attitude: sk4,
+          nilai_bobot_total: bobot || 0,
+          catatan_evaluasi: String(ev.Catatan_Evaluasi ?? ev.catatan_evaluasi ?? '-').trim() || '-',
+          tanggal_penilaian: tgl,
+          nama_pendaftar: evNama || (uniquePendaftarMap[pId]?.nama || ''),
+          nama_penilai: String(ev.Nama_Penilai ?? ev.Nama_Penguji ?? ev.nama_penilai ?? '').trim()
+        };
+      });
+      const finalPenilaianRows = Object.values(penilaianMap);
+
+      try {
+        if (stalePidsToDelete.length > 0) {
+          await client.from('pendaftar').delete().in('pendaftar_id', stalePidsToDelete);
+        }
+        for (let i = 0; i < newUsersRows.length; i += 100) {
+          await client.from('users_profile').upsert(newUsersRows.slice(i, i + 100), { onConflict: 'username_nim' });
+        }
+        for (let i = 0; i < finalPendaftarRows.length; i += 100) {
+          const { error: pErr } = await client.from('pendaftar').upsert(finalPendaftarRows.slice(i, i + 100), { onConflict: 'pendaftar_id' });
+          if (pErr) {
+            console.error('Batch upsert pendaftar error:', pErr);
+            return new Response(JSON.stringify({ success: false, message: `Gagal menyimpan data pendaftar: ${pErr.message}` }), {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
+        }
+        for (let i = 0; i < finalPenilaianRows.length; i += 200) {
+          const { error: eErr } = await client.from('penilaian_rekap').upsert(finalPenilaianRows.slice(i, i + 200), { onConflict: 'penilaian_id' });
+          if (eErr) {
+            console.error('Batch upsert penilaian_rekap error:', eErr);
+          }
+        }
+      } catch (e: any) {
+        console.error('importRecruitmentBackup error:', e);
+        return new Response(JSON.stringify({ success: false, message: `Gagal mengimpor backup: ${e.message || e}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Sync in-memory fallback store
+      localStore.PENDAFTAR = finalPendaftarRows.map((p: any) => ({
+        ...p,
+        Pendaftar_ID: p.pendaftar_id,
+        NIM: p.nim,
+        Nama: p.nama,
+        Status_Pendaftaran: p.status_pendaftaran
+      }));
+      localStore.PENILAIAN_REKAP = finalPenilaianRows.map((ev: any) => ({
+        ...ev,
+        Penilaian_ID: ev.penilaian_id,
+        Pendaftar_ID: ev.pendaftar_id,
+        User_ID_Penilai: ev.user_id_penilai,
+        Skor_Pengetahuan: ev.skor_pengetahuan,
+        Skor_Keterampilan: ev.skor_keterampilan,
+        Skor_Kedisiplinan: ev.skor_kedisiplinan,
+        Skor_Attitude: ev.skor_attitude,
+        Nilai_Bobot_Total: ev.nilai_bobot_total,
+        Catatan_Evaluasi: ev.catatan_evaluasi,
+        Tanggal_Penilaian: ev.tanggal_penilaian,
+        Nama_Pendaftar: ev.nama_pendaftar,
+        Nama_Penilai: ev.nama_penilai
+      }));
+
+      return new Response(JSON.stringify({
+        success: true,
+        importedPendaftarCount: finalPendaftarRows.length,
+        importedPenilaianCount: finalPenilaianRows.length,
+        message: `Berhasil mengimpor ${finalPendaftarRows.length} Data Pendaftar & ${finalPenilaianRows.length} Penilaian Wawancara ke sistem!`
+      }), { headers: { 'Content-Type': 'application/json' } });
+    }
+
     // ==========================================
     // 5. USER & ASLAB MANAGEMENT
     // ==========================================
