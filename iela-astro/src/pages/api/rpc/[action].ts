@@ -61,7 +61,7 @@ export const POST: APIRoute = async ({ params, request }) => {
             email: u.email || '',
             Role: u.role,
             role: u.role,
-            Status_Aktif: (u.status_aktif === true || u.status_aktif === 'Aktif') ? 'Aktif' : (u.status_aktif === false || u.status_aktif === 'Non-Aktif' ? 'Non-Aktif' : 'Aktif'),
+            Status_Aktif: (u.status_aktif !== false && u.status_aktif !== 'Non-Aktif' && String(u.status_aktif).toLowerCase() !== 'false'),
             status_aktif: u.status_aktif,
             Bidang_Divisi: u.bidang_divisi || '',
             bidang_divisi: u.bidang_divisi || '',
@@ -239,22 +239,61 @@ export const POST: APIRoute = async ({ params, request }) => {
       const usernameRaw = String(args[0] || '').trim();
       const password = String(args[1] || '').trim();
       const normalizedUsername = usernameRaw.replace(/\.0$/, '');
+      const normalizedLower = normalizedUsername.toLowerCase();
 
-      // A. Check Supabase users_profile
+      if (!usernameRaw || !password) {
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'Username/NIM dan Password wajib diisi!'
+        }), { headers: { 'Content-Type': 'application/json' } });
+      }
+
+      let supabaseConnected = false;
+
+      // A. Check Supabase users_profile (strict per-account password_hash check)
       try {
-        const { data: dbUsers } = await client
+        const orClauses = Array.from(new Set([
+          `username_nim.eq.${normalizedUsername}`,
+          `username_nim.eq.${usernameRaw}`,
+          `username_nim.eq.${normalizedUsername}.0`,
+          `username_nim.eq.${normalizedLower}`
+        ])).join(',');
+
+        const { data: dbUsers, error: dbUsersErr } = await client
           .from('users_profile')
           .select('*')
-          .or(`username_nim.eq.${normalizedUsername},username_nim.eq.${usernameRaw},username_nim.eq.${normalizedUsername}.0`);
+          .or(orClauses);
+
+        if (!dbUsersErr) {
+          supabaseConnected = true;
+        }
 
         if (dbUsers && dbUsers.length > 0) {
           const u = dbUsers[0];
+          const isPrimaryAdmin = String(u.username_nim || '').trim().toLowerCase() === 'admin';
+          const isUserActive = isPrimaryAdmin || (
+            u.status_aktif !== false &&
+            String(u.status_aktif || '').toLowerCase() !== 'false' &&
+            String(u.status_aktif || '').toLowerCase() !== 'non-aktif'
+          );
+
+          if (!isUserActive) {
+            return new Response(JSON.stringify({
+              success: false,
+              message: 'Akun Anda sedang berstatus Non-Aktif. Silakan hubungi Administrator.'
+            }), { headers: { 'Content-Type': 'application/json' } });
+          }
+
+          const storedPass = String(u.password_hash || '').trim();
           const incomingHash = hashPassword(password);
-          const isMatch =
-            (u.password_hash && u.password_hash === incomingHash) ||
-            (u.password_hash && u.password_hash === password) ||
-            password === 'admin123' ||
-            password === 'das12345';
+          let isMatch = false;
+
+          if (storedPass) {
+            isMatch = (storedPass === incomingHash) || (storedPass === password);
+          } else {
+            // Legacy row without password_hash: only accept role-appropriate initial password
+            isMatch = isPrimaryAdmin ? (password === 'admin123') : (password === 'das12345');
+          }
 
           if (isMatch) {
             return new Response(JSON.stringify({
@@ -268,12 +307,17 @@ export const POST: APIRoute = async ({ params, request }) => {
               }
             }), { headers: { 'Content-Type': 'application/json' } });
           }
+
+          return new Response(JSON.stringify({
+            success: false,
+            message: 'Username/NIM atau Password salah!'
+          }), { headers: { 'Content-Type': 'application/json' } });
         }
       } catch (e) {
         console.error('Supabase login check error:', e);
       }
 
-      // B. Check Pendaftar by NIM
+      // B. Check Pendaftar by NIM (only if no users_profile row existed for this NIM)
       try {
         const { data: pendaftarList } = await client
           .from('pendaftar')
@@ -282,7 +326,7 @@ export const POST: APIRoute = async ({ params, request }) => {
 
         if (pendaftarList && pendaftarList.length > 0) {
           const p = pendaftarList[0];
-          if (password === 'das12345' || password === 'admin123') {
+          if (password === 'das12345') {
             return new Response(JSON.stringify({
               success: true,
               user: {
@@ -294,34 +338,41 @@ export const POST: APIRoute = async ({ params, request }) => {
               }
             }), { headers: { 'Content-Type': 'application/json' } });
           }
+
+          return new Response(JSON.stringify({
+            success: false,
+            message: 'Username/NIM atau Password salah!'
+          }), { headers: { 'Content-Type': 'application/json' } });
         }
       } catch (e) {}
 
-      // C. Offline fallback
-      const foundUser = (localStore.USERS || []).find((u: any) => {
-        const uNim = String(u.Username_NIM || u.username_nim || '').trim().replace(/\.0$/, '');
-        return uNim === normalizedUsername;
-      });
+      // C. Offline fallback (only when Supabase could not be reached)
+      if (!supabaseConnected) {
+        const foundUser = (localStore.USERS || []).find((u: any) => {
+          const uNim = String(u.Username_NIM || u.username_nim || '').trim().replace(/\.0$/, '');
+          return uNim.toLowerCase() === normalizedLower;
+        });
 
-      if (foundUser) {
-        const incomingHash = hashPassword(password);
-        const isMatch =
-          foundUser.Password === incomingHash ||
-          foundUser.Password === password ||
-          password === 'admin123' ||
-          password === 'das12345';
+        if (foundUser) {
+          const isPrimaryAdmin = String(foundUser.Username_NIM || foundUser.username_nim || '').trim().toLowerCase() === 'admin';
+          const storedPass = String(foundUser.Password || foundUser.password_hash || '').trim();
+          const incomingHash = hashPassword(password);
+          const isMatch = storedPass
+            ? (storedPass === incomingHash || storedPass === password)
+            : (isPrimaryAdmin ? password === 'admin123' : password === 'das12345');
 
-        if (isMatch) {
-          return new Response(JSON.stringify({
-            success: true,
-            user: {
-              userId: foundUser.User_ID || foundUser.user_id,
-              username: foundUser.Username_NIM || foundUser.username_nim,
-              nama: foundUser.Nama_Lengkap || foundUser.nama_lengkap,
-              role: foundUser.Role || foundUser.role,
-              jabatanBidang: foundUser.Jabatan_Bidang || foundUser.jabatan_bidang || ''
-            }
-          }), { headers: { 'Content-Type': 'application/json' } });
+          if (isMatch) {
+            return new Response(JSON.stringify({
+              success: true,
+              user: {
+                userId: foundUser.User_ID || foundUser.user_id,
+                username: foundUser.Username_NIM || foundUser.username_nim,
+                nama: foundUser.Nama_Lengkap || foundUser.nama_lengkap,
+                role: foundUser.Role || foundUser.role,
+                jabatanBidang: foundUser.Jabatan_Bidang || foundUser.jabatan_bidang || ''
+              }
+            }), { headers: { 'Content-Type': 'application/json' } });
+          }
         }
       }
 
@@ -336,12 +387,54 @@ export const POST: APIRoute = async ({ params, request }) => {
       const oldPass = String(args[1] || '').trim();
       const newPass = String(args[2] || '').trim();
 
-      const newHash = hashPassword(newPass);
-      try {
-        await client.from('users_profile').update({ password_hash: newHash }).eq('user_id', userId);
-      } catch (e) {}
+      if (!userId || !oldPass || !newPass) {
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'Password lama dan password baru wajib diisi!'
+        }), { headers: { 'Content-Type': 'application/json' } });
+      }
 
-      const u = (localStore.USERS || []).find((x: any) => String(x.User_ID) === userId);
+      const oldHash = hashPassword(oldPass);
+      const newHash = hashPassword(newPass);
+
+      try {
+        const { data: existingUser, error: fetchErr } = await client
+          .from('users_profile')
+          .select('user_id, username_nim, password_hash')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (!fetchErr && existingUser) {
+          const isPrimaryAdmin = String(existingUser.username_nim || '').trim().toLowerCase() === 'admin';
+          const storedPass = String(existingUser.password_hash || '').trim();
+          const oldMatches = storedPass
+            ? (storedPass === oldHash || storedPass === oldPass)
+            : (isPrimaryAdmin ? oldPass === 'admin123' : oldPass === 'das12345');
+
+          if (!oldMatches) {
+            return new Response(JSON.stringify({
+              success: false,
+              message: 'Password lama yang Anda masukkan salah!'
+            }), { headers: { 'Content-Type': 'application/json' } });
+          }
+
+          const { error: updateErr } = await client
+            .from('users_profile')
+            .update({ password_hash: newHash })
+            .eq('user_id', userId);
+
+          if (updateErr) {
+            return new Response(JSON.stringify({
+              success: false,
+              message: `Gagal memperbarui password: ${updateErr.message}`
+            }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+          }
+        }
+      } catch (e) {
+        console.error('Supabase changePassword error:', e);
+      }
+
+      const u = (localStore.USERS || []).find((x: any) => String(x.User_ID || x.user_id) === userId);
       if (u) u.Password = newHash;
 
       return new Response(JSON.stringify({
@@ -868,10 +961,14 @@ export const POST: APIRoute = async ({ params, request }) => {
         Bidang_Divisi: savedDiv,
         Jabatan_Divisi: savedJab,
         Jabatan_Bidang: savedJabBid,
-        Status_Aktif: savedRow.status_aktif ? 'Aktif' : 'Non-Aktif'
+        Status_Aktif: Boolean(savedRow.status_aktif !== false && savedRow.status_aktif !== 'Non-Aktif')
       };
-      if (idxU !== -1) localStore.USERS[idxU] = userItem;
-      else (localStore.USERS = localStore.USERS || []).push(userItem);
+      if (idxU !== -1) {
+        const prevPass = localStore.USERS[idxU].Password;
+        localStore.USERS[idxU] = userRow.password_hash ? { ...userItem, Password: userRow.password_hash } : { ...userItem, Password: prevPass };
+      } else {
+        (localStore.USERS = localStore.USERS || []).push(userRow.password_hash ? { ...userItem, Password: userRow.password_hash } : userItem);
+      }
 
       return new Response(JSON.stringify({
         success: true,
