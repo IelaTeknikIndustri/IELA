@@ -766,7 +766,16 @@ import '../styles/global.css';
             onclick="window.switchProfilSubTab('sublabs')"
             class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white whitespace-nowrap transition cursor-pointer"
           >
-            <i class="fa-solid fa-flask mr-1.5"></i> 5 Sub-Laboratorium
+            <i class="fa-solid fa-flask mr-1.5"></i> <span data-cms="PROFIL_PILL_SUBLABS">5 Sub-Laboratorium</span>
+          </button>
+          <button
+            type="button"
+            id="profil-pill-dosen"
+            data-cms-show="SHOW_DAFTAR_DOSEN"
+            onclick="window.switchProfilSubTab('dosen')"
+            class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white whitespace-nowrap transition cursor-pointer"
+          >
+            <i class="fa-solid fa-chalkboard-user mr-1.5"></i> <span data-cms="DOSEN_TAB_LABEL">Dosen Teknik Industri</span>
           </button>
           <button
             type="button"
@@ -774,7 +783,7 @@ import '../styles/global.css';
             onclick="window.switchProfilSubTab('aslab')"
             class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white whitespace-nowrap transition cursor-pointer"
           >
-            <i class="fa-solid fa-users mr-1.5"></i> Direktori 29 Asisten Resmi
+            <i class="fa-solid fa-users mr-1.5"></i> <span data-cms="ASLAB_TAB_LABEL">Direktori Asisten Resmi</span>
           </button>
           <button
             type="button"
@@ -782,7 +791,7 @@ import '../styles/global.css';
             onclick="window.switchProfilSubTab('visimisi')"
             class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white whitespace-nowrap transition cursor-pointer"
           >
-            <i class="fa-solid fa-bullseye mr-1.5"></i> Visi, Misi & Sasaran Mutu
+            <i class="fa-solid fa-bullseye mr-1.5"></i> Visi, Misi &amp; Sasaran Mutu
           </button>
           <button
             type="button"
@@ -790,7 +799,7 @@ import '../styles/global.css';
             onclick="window.switchProfilSubTab('fasilitas')"
             class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white whitespace-nowrap transition cursor-pointer"
           >
-            <i class="fa-solid fa-gear mr-1.5"></i> Fasilitas & Peralatan Mesin
+            <i class="fa-solid fa-gear mr-1.5"></i> Fasilitas &amp; Peralatan Mesin
           </button>
           <button
             type="button"
@@ -810,12 +819,41 @@ import '../styles/global.css';
           ></div>
         </div>
 
+        <!-- PROFIL SUB-VIEW 1B: DAFTAR DOSEN TEKNIK INDUSTRI -->
+        <div id="profil-sub-dosen" class="profil-sub-content hidden space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-800">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 block" data-cms="DOSEN_SECTION_EYEBROW">Struktural Akademik &amp; Dosen Pengampu</span>
+              <h3 class="text-base sm:text-lg font-extrabold text-white mt-0.5" data-cms="DOSEN_SECTION_TITLE">Daftar Dosen Program Studi Teknik Industri</h3>
+              <p class="text-xs text-slate-400 mt-0.5" data-cms="DOSEN_SECTION_SUBTITLE">Jajaran pimpinan laboratorium dan dosen pengampu mata kuliah praktikum Teknik Industri UNIROW</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+              <input
+                type="text"
+                id="dosen-search-input"
+                oninput="window.renderDosenDirectory()"
+                placeholder="Cari nama dosen / NIDN / mata kuliah..."
+                class="bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white w-full sm:w-64 focus:border-indigo-500 focus:outline-none"
+              />
+              <button
+                type="button"
+                onclick="window.openDosenCmsEditor()"
+                class="admin-only-btn hidden px-3.5 py-2 rounded-xl border border-indigo-500/30 bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 text-xs font-bold transition cursor-pointer items-center gap-1.5 shrink-0"
+                style="display: none"
+              >
+                <i class="fa-solid fa-pen-to-square"></i> Edit Daftar Dosen
+              </button>
+            </div>
+          </div>
+          <div id="profil-dosen-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
         <!-- PROFIL SUB-VIEW 2: ASISTEN LAB RESMI -->
         <div id="profil-sub-aslab" class="profil-sub-content hidden space-y-6">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
             <div>
-              <h3 class="text-base font-bold text-white">Tim Asisten Laboratorium IELA</h3>
-              <p class="text-xs text-slate-400">29 Pengajar Praktikum & Pembimbing Resmi Mahasiswa</p>
+              <h3 class="text-base font-bold text-white" data-cms="ASLAB_DIR_TITLE">Tim Asisten Laboratorium IELA</h3>
+              <p class="text-xs text-slate-400" data-cms="ASLAB_DIR_SUBTITLE">Pengajar Praktikum &amp; Pembimbing Resmi Mahasiswa Periode 2027/2028</p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
               <select
@@ -847,35 +885,35 @@ import '../styles/global.css';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="glass-card p-8 rounded-3xl border border-indigo-500/30 space-y-4">
               <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Visi Strategis</span>
-              <h3 class="text-2xl font-black text-white">Visi IELA 2030</h3>
-              <p class="text-slate-300 text-sm leading-relaxed">
+              <h3 class="text-2xl font-black text-white" data-cms="VISI_TITLE">Visi IELA 2030</h3>
+              <p class="text-slate-300 text-sm leading-relaxed" data-cms="VISI_TEXT">
                 Menjadi sentra laboratorium teknik industri terkemuka di tingkat regional dan nasional yang mengintegrasikan penguasaan teknologi pemesinan presisi, rekayasa ergonomi terapan, dan komputasi industri cerdas.
               </p>
             </div>
             <div class="glass-card p-8 rounded-3xl border border-cyan-500/30 space-y-4">
               <span class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Misi Tridharma</span>
-              <h3 class="text-2xl font-black text-white">Tiga Pilar Misi</h3>
+              <h3 class="text-2xl font-black text-white" data-cms="MISI_TITLE">Tiga Pilar Misi</h3>
               <div class="space-y-3 text-slate-300 text-xs sm:text-sm">
                 <div class="flex items-start gap-2.5">
                   <span class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
-                  <p>Meningkatkan keterampilan vokasional dan analisis rekayasa mahasiswa melalui praktikum modern.</p>
+                  <p data-cms="MISI_1">Meningkatkan keterampilan vokasional dan analisis rekayasa mahasiswa melalui praktikum modern.</p>
                 </div>
                 <div class="flex items-start gap-2.5">
                   <span class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
-                  <p>Menghasilkan publikasi ilmiah dan prototipe inovatif terapan hasil riset terpadu.</p>
+                  <p data-cms="MISI_2">Menghasilkan publikasi ilmiah dan prototipe inovatif terapan hasil riset terpadu.</p>
                 </div>
                 <div class="flex items-start gap-2.5">
                   <span class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
-                  <p>Mengabdi kepada industri kecil dan menengah (IKM) melalui konsultasi ergonomi dan otomasi.</p>
+                  <p data-cms="MISI_3">Mengabdi kepada industri kecil dan menengah (IKM) melalui konsultasi ergonomi dan otomasi.</p>
                 </div>
               </div>
             </div>
           </div>
           <div class="glass-card p-8 rounded-3xl border border-slate-800 space-y-4">
             <h3 class="text-xl font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-award text-amber-400"></i> Standar Mutu Praktikum & Keselamatan Kerja (K3)
+              <i class="fa-solid fa-award text-amber-400"></i> <span data-cms="STANDAR_K3_TITLE">Standar Mutu Praktikum &amp; Keselamatan Kerja (K3)</span>
             </h3>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed" data-cms="STANDAR_K3_TEXT">
               Seluruh aktivitas praktikum di Laboratorium IELA berpedoman ketat pada standar K3 (Keselamatan dan Kesehatan Kerja). Mahasiswa diwajibkan mengenakan Alat Pelindung Diri (APD) lengkap saat mengoperasikan mesin bubut, CNC, maupun perkakas elektrik lainnya.
             </p>
           </div>
@@ -885,40 +923,40 @@ import '../styles/global.css';
         <div id="profil-sub-fasilitas" class="profil-sub-content hidden space-y-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden space-y-3 p-5">
-              <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
-              <span class="text-[10px] uppercase font-bold text-amber-400">Manufaktur</span>
-              <h4 class="font-bold text-white text-base">Mesin Bubut Konvensional</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Digunakan untuk praktikum turning, facing, pembuatan ulir, knurling, dan toleransi suaian logam.</p>
+              <img data-cms-src="FAS_1_IMG" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
+              <span class="text-[10px] uppercase font-bold text-amber-400" data-cms="FAS_1_KAT">Manufaktur</span>
+              <h4 class="font-bold text-white text-base" data-cms="FAS_1_NAMA">Mesin Bubut Konvensional</h4>
+              <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_1_DESC">Digunakan untuk praktikum turning, facing, pembuatan ulir, knurling, dan toleransi suaian logam.</p>
             </div>
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden space-y-3 p-5">
-              <img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
-              <span class="text-[10px] uppercase font-bold text-cyan-400">CNC & CAD/CAM</span>
-              <h4 class="font-bold text-white text-base">Mesin CNC Milling & Turning</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Pemrograman otomatis G-Code dan M-Code untuk pembuatan komponen presisi tingkat tinggi.</p>
+              <img data-cms-src="FAS_2_IMG" src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
+              <span class="text-[10px] uppercase font-bold text-cyan-400" data-cms="FAS_2_KAT">CNC &amp; CAD/CAM</span>
+              <h4 class="font-bold text-white text-base" data-cms="FAS_2_NAMA">Mesin CNC Milling &amp; Turning</h4>
+              <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_2_DESC">Pemrograman otomatis G-Code dan M-Code untuk pembuatan komponen presisi tingkat tinggi.</p>
             </div>
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden space-y-3 p-5">
-              <img src="https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'ergonomi')">
-              <span class="text-[10px] uppercase font-bold text-indigo-400">Ergonomi & PSK</span>
-              <h4 class="font-bold text-white text-base">Kursi Antropometri & Lux Meter</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Peralatan ukur 36 dimensi tubuh manusia, sound level meter, dan lux meter untuk analisis lingkungan kerja.</p>
+              <img data-cms-src="FAS_3_IMG" src="https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'ergonomi')">
+              <span class="text-[10px] uppercase font-bold text-indigo-400" data-cms="FAS_3_KAT">Ergonomi &amp; PSK</span>
+              <h4 class="font-bold text-white text-base" data-cms="FAS_3_NAMA">Kursi Antropometri &amp; Lux Meter</h4>
+              <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_3_DESC">Peralatan ukur 36 dimensi tubuh manusia, sound level meter, dan lux meter untuk analisis lingkungan kerja.</p>
             </div>
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden space-y-3 p-5">
-              <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'algoritma')">
-              <span class="text-[10px] uppercase font-bold text-emerald-400">Komputasi & AI</span>
-              <h4 class="font-bold text-white text-base">Laboratorium Komputer & Server</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Jaringan PC performa tinggi untuk simulasi Arena, MATLAB, Python Data Science, dan Minitab.</p>
+              <img data-cms-src="FAS_4_IMG" src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'algoritma')">
+              <span class="text-[10px] uppercase font-bold text-emerald-400" data-cms="FAS_4_KAT">Komputasi &amp; AI</span>
+              <h4 class="font-bold text-white text-base" data-cms="FAS_4_NAMA">Laboratorium Komputer &amp; Server</h4>
+              <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_4_DESC">Jaringan PC performa tinggi untuk simulasi Arena, MATLAB, Python Data Science, dan Minitab.</p>
             </div>
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden space-y-3 p-5">
-              <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'fisika')">
-              <span class="text-[10px] uppercase font-bold text-rose-400">Fisika Dasar</span>
-              <h4 class="font-bold text-white text-base">Aparatus Mekanika & Osiloskop</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Perangkat pengujian gerak, viskositas fluida, kalorimetri, dan osiloskop digital sinyal listrik.</p>
+              <img data-cms-src="FAS_5_IMG" src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'fisika')">
+              <span class="text-[10px] uppercase font-bold text-rose-400" data-cms="FAS_5_KAT">Fisika Dasar</span>
+              <h4 class="font-bold text-white text-base" data-cms="FAS_5_NAMA">Aparatus Mekanika &amp; Osiloskop</h4>
+              <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_5_DESC">Perangkat pengujian gerak, viskositas fluida, kalorimetri, dan osiloskop digital sinyal listrik.</p>
             </div>
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden space-y-3 p-5">
-              <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
-              <span class="text-[10px] uppercase font-bold text-purple-400">3D Printing</span>
-              <h4 class="font-bold text-white text-base">3D Printer FDM High Precision</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Pencetak 3 dimensi untuk pembuatan prototipe cepat suku cadang dan model perancangan produk industri.</p>
+              <img data-cms-src="FAS_6_IMG" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
+              <span class="text-[10px] uppercase font-bold text-purple-400" data-cms="FAS_6_KAT">3D Printing</span>
+              <h4 class="font-bold text-white text-base" data-cms="FAS_6_NAMA">3D Printer FDM High Precision</h4>
+              <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_6_DESC">Pencetak 3 dimensi untuk pembuatan prototipe cepat suku cadang dan model perancangan produk industri.</p>
             </div>
           </div>
         </div>
@@ -1104,27 +1142,80 @@ import '../styles/global.css';
           </div>
         </div>
 
+        <!-- Timeline & Tahapan Seleksi Card -->
+        <div
+          data-cms-show="SHOW_RECRUIT_TIMELINE"
+          class="reveal glass-card p-6 sm:p-8 rounded-3xl border border-slate-800/80 space-y-5"
+        >
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-calendar-days text-indigo-400"></i>
+              <span data-cms="TIMELINE_SECTION_TITLE">Timeline &amp; Tahapan Seleksi Asisten</span>
+            </h3>
+            <span class="text-[11px] text-slate-400" data-cms="TIMELINE_SECTION_NOTE">Jadwal dapat disesuaikan oleh panitia seleksi tiap periode</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Tahap 01</span>
+                <i class="fa-solid fa-file-arrow-up text-indigo-400 text-xs"></i>
+              </div>
+              <h4 class="text-xs font-bold text-white pt-1" data-cms="TIMELINE_1_TITLE">Pendaftaran &amp; Unggah Berkas</h4>
+              <p class="text-[11px] font-mono text-emerald-400 font-semibold" data-cms="TIMELINE_1_DATE">1 – 14 September 2027</p>
+              <p class="text-[11px] text-slate-400 leading-relaxed" data-cms="TIMELINE_1_DESC">Registrasi akun NPM dan unggah 6 dokumen persyaratan di portal.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Tahap 02</span>
+                <i class="fa-solid fa-file-circle-check text-cyan-400 text-xs"></i>
+              </div>
+              <h4 class="text-xs font-bold text-white pt-1" data-cms="TIMELINE_2_TITLE">Seleksi Administrasi Berkas</h4>
+              <p class="text-[11px] font-mono text-cyan-400 font-semibold" data-cms="TIMELINE_2_DATE">15 – 17 September 2027</p>
+              <p class="text-[11px] text-slate-400 leading-relaxed" data-cms="TIMELINE_2_DESC">Verifikasi kelengkapan KHS, CV, resume jurnal, dan standar IPK.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">Tahap 03</span>
+                <i class="fa-solid fa-comments text-amber-400 text-xs"></i>
+              </div>
+              <h4 class="text-xs font-bold text-white pt-1" data-cms="TIMELINE_3_TITLE">Tes Wawancara &amp; Praktik</h4>
+              <p class="text-[11px] font-mono text-amber-400 font-semibold" data-cms="TIMELINE_3_DATE">20 – 22 September 2027</p>
+              <p class="text-[11px] text-slate-400 leading-relaxed" data-cms="TIMELINE_3_DESC">Uji kompetensi pengetahuan, keterampilan sub-lab, kedisiplinan, dan attitude.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Tahap 04</span>
+                <i class="fa-solid fa-trophy text-emerald-400 text-xs"></i>
+              </div>
+              <h4 class="text-xs font-bold text-white pt-1" data-cms="TIMELINE_4_TITLE">Pengumuman Kelulusan</h4>
+              <p class="text-[11px] font-mono text-emerald-400 font-semibold" data-cms="TIMELINE_4_DATE">25 September 2027</p>
+              <p class="text-[11px] text-slate-400 leading-relaxed" data-cms="TIMELINE_4_DESC">Penetapan asisten baru secara resmi di halaman Pengumuman &amp; email.</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Ketentuan & Persyaratan Umum Card -->
         <div class="reveal glass-card p-6 sm:p-8 rounded-3xl border border-slate-800/80 space-y-4">
           <h3 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-clipboard-check text-indigo-400"></i> Ketentuan & Persyaratan Umum
+            <i class="fa-solid fa-clipboard-check text-indigo-400"></i>
+            <span data-cms="SYARAT_TITLE">Ketentuan &amp; Persyaratan Umum</span>
           </h3>
           <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-300">
             <li class="flex items-start gap-2 bg-slate-900/50 p-3 rounded-xl border border-slate-800/60">
               <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
-              <span>Mahasiswa aktif Teknik Industri UNIROW (Semester 3 ke atas).</span>
+              <span data-cms="SYARAT_1">Mahasiswa aktif Teknik Industri UNIROW (Semester 3 ke atas).</span>
             </li>
             <li class="flex items-start gap-2 bg-slate-900/50 p-3 rounded-xl border border-slate-800/60">
               <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
-              <span>Memiliki integritas tinggi, disiplin, dan komitmen terhadap kegiatan laboratorium.</span>
+              <span data-cms="SYARAT_2">Memiliki integritas tinggi, disiplin, dan komitmen terhadap kegiatan laboratorium.</span>
             </li>
             <li class="flex items-start gap-2 bg-slate-900/50 p-3 rounded-xl border border-slate-800/60">
               <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
-              <span>IPK minimal memenuhi standar seleksi calon asisten.</span>
+              <span data-cms="SYARAT_3">IPK minimal memenuhi standar seleksi calon asisten (3.00).</span>
             </li>
             <li class="flex items-start gap-2 bg-slate-900/50 p-3 rounded-xl border border-slate-800/60">
               <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
-              <span>Bersedia mematuhi tata tertib asisten dan peraturan laboratorium IELA.</span>
+              <span data-cms="SYARAT_4">Bersedia mematuhi tata tertib asisten dan peraturan laboratorium IELA.</span>
             </li>
           </ul>
         </div>
@@ -1728,104 +1819,257 @@ import '../styles/global.css';
         </div>
       </section>
       <!-- DASHBOARD KOORDINATOR / ADMIN -->
-      <section id="dashboard-admin" class="tab-content hidden space-y-8">
-        <div
-          class="border-b border-slate-800 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-        >
-          <div>
-            <h2 class="text-3xl font-black text-white">
-              Dashboard Koordinator Lab
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">
-              Pusat kendali pendaftar, wawancara, konten, dan sistem IELA <span data-periode-tpl>2027/2028</span>
-            </p>
-          </div>
-          <div class="flex flex-wrap gap-2" id="admin-subtabs-nav">
-            <button
-              type="button"
-              onclick="window.switchAdminSubTab('master')"
-              id="adm-btn-master"
-              class="px-4 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white cursor-pointer"
-            >
-              Data Pendaftar
-            </button>
-            <button
-              type="button"
-              onclick="window.switchAdminSubTab('wawancara')"
-              id="adm-btn-wawancara"
-              class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer flex items-center gap-1.5"
-            >
-              <i class="fa-solid fa-list-check text-indigo-400"></i>
-              Antrean Wawancara
-              <span
-                id="badge-wawancara-count"
-                class="px-2 py-0.5 text-[10px] rounded-full bg-indigo-500/30 text-indigo-300 font-bold ml-1"
-                >0</span
+      <section id="dashboard-admin" class="tab-content hidden space-y-6">
+        <div class="border-b border-slate-800 pb-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-widest text-indigo-400">
+                Panel Koordinator &amp; Administrator
+              </p>
+              <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight mt-0.5">
+                Ruang Kerja Admin IELA
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-400 mt-1">
+                Kendali rekrutmen, antrean wawancara, konten situs, akun, dan sistem periode <span data-periode-tpl>2027/2028</span>
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onclick="window.switchAdminSubTab('pengaturan')"
+                id="admin-header-reg-badge"
+                title="Klik untuk ubah status pendaftaran"
+                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-semibold hover:bg-emerald-500/15 transition cursor-pointer"
               >
-            </button>
-            <button
-              type="button"
-              onclick="window.switchAdminSubTab('rekap')"
-              id="adm-btn-rekap"
-              class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 cursor-pointer"
-            >
-              Rekap Nilai
-            </button>
-            <button
-              type="button"
-              onclick="window.switchAdminSubTab('konten')"
-              id="adm-btn-konten"
-              class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 cursor-pointer"
-            >
-              Kelola Konten
-            </button>
-            <button
-              type="button"
-              onclick="window.switchAdminSubTab('pengumuman')"
-              id="adm-btn-pengumuman"
-              class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 cursor-pointer"
-            >
-              Pengumuman
-            </button>
-            <button
-              type="button"
-              onclick="window.switchAdminSubTab('user')"
-              id="adm-btn-user"
-              class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 cursor-pointer"
-            >
-              Manajemen User
-            </button>
-            <button
-              type="button"
-              onclick="window.switchAdminSubTab('pengaturan')"
-              id="adm-btn-pengaturan"
-              class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 cursor-pointer"
-            >
-              Pengaturan
-            </button>
-            <button
-              type="button"
-              onclick="window.switchAdminSubTab('tampilan')"
-              id="adm-btn-tampilan"
-              class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer flex items-center gap-1.5"
-            >
-              <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i> Tampilan Web
-            </button>
+                <span id="admin-header-reg-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span id="admin-header-reg-text">Pendaftaran: BUKA</span>
+              </button>
+              <button
+                type="button"
+                onclick="window.switchTab('home')"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/70 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold transition cursor-pointer"
+              >
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                <span>Lihat Beranda Publik</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Segmented Navigation Bar: 4 Proportional Groups on 1 Desktop Row -->
+          <div class="flex flex-wrap items-center gap-1.5 pt-1" id="admin-subtabs-nav">
+            <div class="flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-900/50 p-1">
+              <span class="px-1.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-r border-slate-800/90">Ringkasan</span>
+              <button type="button" onclick="window.switchAdminSubTab('overview')" id="adm-btn-overview" aria-pressed="true" class="admin-subtab-btn px-2 py-1.5 text-[11px] font-bold rounded-lg bg-indigo-600 text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">Ikhtisar Kerja</button>
+            </div>
+
+            <div class="flex flex-wrap sm:flex-nowrap items-center gap-1 rounded-xl border border-slate-800 bg-slate-900/50 p-1">
+              <span class="px-1.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-r border-slate-800/90">Rekrutmen</span>
+              <button type="button" onclick="window.switchAdminSubTab('master')" id="adm-btn-master" aria-pressed="false" class="admin-subtab-btn px-2 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800/80 text-slate-300 hover:text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">Data Pendaftar</button>
+              <button type="button" onclick="window.switchAdminSubTab('wawancara')" id="adm-btn-wawancara" aria-pressed="false" class="admin-subtab-btn px-2 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800/80 text-slate-300 hover:text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">Antrean Wawancara <span id="badge-wawancara-count" class="px-1.5 py-0.2 text-[10px] rounded-full bg-slate-700 text-slate-200 font-bold tabular-nums">0</span></button>
+              <button type="button" onclick="window.switchAdminSubTab('rekap')" id="adm-btn-rekap" aria-pressed="false" class="admin-subtab-btn px-2 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800/80 text-slate-300 hover:text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">Rekap Nilai</button>
+              <button type="button" onclick="window.switchAdminSubTab('pengumuman')" id="adm-btn-pengumuman" aria-pressed="false" class="admin-subtab-btn px-2 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800/80 text-slate-300 hover:text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">Pengumuman</button>
+            </div>
+
+            <div class="flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-900/50 p-1">
+              <span class="px-1.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-r border-slate-800/90">Konten</span>
+              <button type="button" onclick="window.switchAdminSubTab('konten')" id="adm-btn-konten" aria-pressed="false" class="admin-subtab-btn px-2 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800/80 text-slate-300 hover:text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">Konten &amp; Riset</button>
+              <button type="button" onclick="window.switchAdminSubTab('tampilan')" id="adm-btn-tampilan" aria-pressed="false" class="admin-subtab-btn px-2 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800/80 text-slate-300 hover:text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">Tampilan Web</button>
+            </div>
+
+            <div class="flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-900/50 p-1">
+              <span class="px-1.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-r border-slate-800/90">Sistem</span>
+              <button type="button" onclick="window.switchAdminSubTab('user')" id="adm-btn-user" aria-pressed="false" class="admin-subtab-btn px-2 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800/80 text-slate-300 hover:text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">Akun Portal</button>
+              <button type="button" onclick="window.switchAdminSubTab('pengaturan')" id="adm-btn-pengaturan" aria-pressed="false" class="admin-subtab-btn px-2 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800/80 text-slate-300 hover:text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap">Pengaturan</button>
+            </div>
           </div>
         </div>
-        <div id="admin-sub-master" class="admin-sub-content space-y-6">
-          <div
-            class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"
-          >
+
+        <div id="admin-sub-overview" class="admin-sub-content space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <h3 class="text-lg font-bold text-white">Ringkasan Rekrutmen &amp; Operasional Lab</h3>
+              <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Rekapitulasi status kandidat secara utuh dan distribusi peminat per sub-laboratorium.</p>
+            </div>
+            <p class="text-xs font-medium text-slate-400">
+              Periode Seleksi <span data-periode-tpl class="text-slate-200 font-semibold">2027/2028</span>
+            </p>
+          </div>
+
+          <!-- 5-Column Arithmetic-Closing KPI Strip -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-x divide-y lg:divide-y-0 divide-slate-800 border border-slate-800 rounded-xl bg-slate-900/35 overflow-hidden">
+            <div class="p-4 sm:p-5">
+              <p class="text-xs font-medium text-slate-400">Total Pendaftar</p>
+              <p id="admin-overview-total" class="mt-1.5 text-2xl sm:text-3xl font-bold text-white tabular-nums">0</p>
+              <p class="mt-1 text-[11px] text-slate-500">Seluruh berkas masuk</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <p class="text-xs font-medium text-slate-400">Menunggu Ditinjau</p>
+              <p id="admin-overview-submitted" class="mt-1.5 text-2xl sm:text-3xl font-bold text-indigo-400 tabular-nums">0</p>
+              <p class="mt-1 text-[11px] text-slate-500">Status Submitted / Baru</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <p class="text-xs font-medium text-slate-400">Lolos Berkas</p>
+              <p id="admin-overview-docs" class="mt-1.5 text-2xl sm:text-3xl font-bold text-cyan-400 tabular-nums">0</p>
+              <p class="mt-1 text-[11px] text-slate-500">Siap tahap wawancara</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <p class="text-xs font-medium text-slate-400">Lolos Seleksi IELA</p>
+              <p id="admin-overview-final" class="mt-1.5 text-2xl sm:text-3xl font-bold text-emerald-400 tabular-nums">0</p>
+              <p class="mt-1 text-[11px] text-slate-500">Diterima asisten lab</p>
+            </div>
+            <div class="p-4 sm:p-5 col-span-2 sm:col-span-1">
+              <p class="text-xs font-medium text-slate-400">Tidak Lolos / Draft</p>
+              <p id="admin-overview-rejected" class="mt-1.5 text-2xl sm:text-3xl font-bold text-slate-300 tabular-nums">0</p>
+              <p class="mt-1 text-[11px] text-slate-500">Gugur seleksi / belum final</p>
+            </div>
+          </div>
+
+          <!-- Two-Column Detail Grid: Sub-Lab Distribution + System Status & Quick Actions -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Left 7 Cols: Distribusi Pendaftar per Sub-Laboratorium -->
+            <div class="lg:col-span-7 rounded-xl border border-slate-800 bg-slate-900/35 overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between gap-2">
+                <div>
+                  <h4 class="text-sm font-bold text-white">Sebaran Peminat &amp; Kelulusan per Sub-Laboratorium</h4>
+                  <p class="text-xs text-slate-400 mt-0.5">Berdasarkan Pilihan 1 kandidat pada formulir pendaftaran</p>
+                </div>
+                <button
+                  type="button"
+                  onclick="window.switchAdminSubTab('master')"
+                  class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition cursor-pointer shrink-0"
+                >
+                  Buka Tabel &rarr;
+                </button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 bg-slate-900/50">
+                      <th class="py-2.5 px-4 font-semibold">Divisi Praktikum / Sub-Lab</th>
+                      <th class="py-2.5 px-3 font-semibold text-right">Peminat</th>
+                      <th class="py-2.5 px-3 font-semibold text-right">Diterima</th>
+                      <th class="py-2.5 px-4 font-semibold w-36">Proporsi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-overview-divisi-tbody" class="divide-y divide-slate-800/70 text-slate-300">
+                    <tr>
+                      <td colspan="4" class="py-6 text-center text-slate-500">Memuat distribusi divisi...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right 5 Cols: Ringkasan Basis Data & Langkah Berikutnya -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="rounded-xl border border-slate-800 bg-slate-900/35 p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <h4 class="text-sm font-bold text-white">Status Data Portal</h4>
+                  <span class="text-[11px] text-slate-400">Sinkronisasi Cloud</span>
+                </div>
+                <div class="grid grid-cols-3 gap-3 text-center divide-x divide-slate-800">
+                  <div class="px-2">
+                    <p class="text-[11px] text-slate-400">Akun Portal</p>
+                    <p id="admin-overview-users" class="mt-1 text-xl font-bold text-white tabular-nums">0</p>
+                  </div>
+                  <div class="px-2">
+                    <p class="text-[11px] text-slate-400">Nilai Penguji</p>
+                    <p id="admin-overview-evals" class="mt-1 text-xl font-bold text-white tabular-nums">0</p>
+                  </div>
+                  <div class="px-2">
+                    <p class="text-[11px] text-slate-400">Publikasi Riset</p>
+                    <p id="admin-overview-pubs" class="mt-1 text-xl font-bold text-white tabular-nums">0</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-xl border border-slate-800 bg-slate-900/35 p-5 space-y-3">
+                <h4 class="text-sm font-bold text-white">Pintasan Kerja Admin</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onclick="window.switchAdminSubTab('master')"
+                    class="p-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-left transition cursor-pointer"
+                  >
+                    <p class="text-xs font-bold">Tinjau Data Pendaftar</p>
+                    <p class="text-[11px] text-indigo-100/80 mt-0.5">Verifikasi berkas &amp; status</p>
+                  </button>
+                  <button
+                    type="button"
+                    onclick="window.switchAdminSubTab('wawancara')"
+                    class="p-3 rounded-lg border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200 text-left transition cursor-pointer"
+                  >
+                    <p class="text-xs font-bold">Antrean Wawancara</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Checklist kehadiran peserta</p>
+                  </button>
+                  <button
+                    type="button"
+                    onclick="window.switchAdminSubTab('rekap')"
+                    class="p-3 rounded-lg border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200 text-left transition cursor-pointer"
+                  >
+                    <p class="text-xs font-bold">Rekapitulasi Nilai</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Ranking &amp; skor wawancara</p>
+                  </button>
+                  <button
+                    type="button"
+                    onclick="window.switchAdminSubTab('user')"
+                    class="p-3 rounded-lg border border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200 text-left transition cursor-pointer"
+                  >
+                    <p class="text-xs font-bold">Kelola Akun Portal</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Tambah/edit asisten &amp; role</p>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="admin-sub-master" class="admin-sub-content hidden space-y-5">
+          <!-- Header & Pembersihan Data Antar-Periode -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/50 border border-slate-800/90 rounded-2xl p-4">
             <div>
               <h3 class="text-lg font-bold text-white flex items-center gap-2">
                 <span>Data Peserta Pendaftar IELA <span data-periode-tpl>2027/2028</span></span>
               </h3>
-              <p id="admin-total-count" class="text-xs text-slate-400">
+              <p id="admin-total-count" class="text-xs text-slate-400 mt-0.5">
                 Total: 0 Peserta
               </p>
             </div>
-            <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onclick="window.exportPendaftarCsv()"
+                title="Unduh arsip data seluruh pendaftar ke file CSV (Excel)"
+                class="px-3 py-2 rounded-xl border border-slate-700 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                <span>Export CSV</span>
+              </button>
+              <button
+                type="button"
+                onclick="window.handleCleanupRejectedPendaftar()"
+                title="Hapus seluruh pendaftar berstatus Tidak Lolos & Draft beserta akun login Pendaftar mereka agar NPM bisa mendaftar lagi di periode depan"
+                class="px-3 py-2 rounded-xl border border-amber-500/35 bg-amber-500/15 hover:bg-amber-500/25 text-amber-200 text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-broom text-amber-400"></i>
+                <span>Bersihkan Tidak Lolos &amp; Draft</span>
+                <span id="btn-cleanup-rejected-count" class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500/25 text-amber-200 font-mono">0</span>
+              </button>
+              <button
+                type="button"
+                onclick="window.handleResetRecruitmentPeriod()"
+                title="Otomatis mengunduh backup CSV lalu mengosongkan seluruh data pendaftar, antrean wawancara, dan rekap nilai untuk memulai rekrutmen periode baru"
+                class="px-3 py-2 rounded-xl border border-rose-500/35 bg-rose-500/15 hover:bg-rose-500/25 text-rose-200 text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-rotate-right text-rose-400"></i>
+                <span>Reset Periode Baru</span>
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3"
+          >
+            <div class="flex flex-wrap items-center gap-2.5 w-full">
               <!-- Filter Status Pills: Semua, Submitted, Draft, Lolos Berkas, Lolos IELA, Tidak Lolos -->
               <div class="inline-flex items-center p-1 bg-slate-900/90 border border-slate-800 rounded-xl text-xs shadow-inner overflow-x-auto max-w-full">
                 <button
@@ -2415,12 +2659,12 @@ import '../styles/global.css';
             <div>
               <div class="flex flex-wrap items-center gap-2.5">
                 <h3 class="text-xl font-black text-white">
-                  Manajemen Pengguna &amp; Anggota Laboratorium
+                  Akun Pengguna Portal
                 </h3>
                 <span id="user-mgmt-count-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-mono">0 User</span>
               </div>
               <p class="text-xs text-slate-400 mt-1">
-                Ubah <strong class="text-slate-200">Role</strong> dan <strong class="text-slate-200">Jabatan / Bidang</strong> langsung dari daftar pilihan atau ketik sendiri &mdash; pilihan baru otomatis tersimpan untuk pemakaian berikutnya.
+                Kelola akun untuk masuk ke portal. Data pendaftaran dan hasil seleksi dikelola terpisah di menu <strong class="text-slate-200">Rekrutmen &rarr; Data Pendaftar</strong>.
               </p>
             </div>
             <button
@@ -2558,28 +2802,66 @@ import '../styles/global.css';
               </div>
             </div>
 
-            <!-- Card 2: Link Komunikasi & Aksi Simpan -->
+            <!-- Card 2: Standar Seleksi, Bobot Wawancara & Link WhatsApp -->
             <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-5 flex flex-col justify-between">
               <div class="space-y-4">
                 <div class="flex items-center gap-3 border-b border-slate-800/80 pb-3">
                   <div class="w-10 h-10 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                    <i class="fa-brands fa-whatsapp"></i>
+                    <i class="fa-solid fa-sliders"></i>
                   </div>
                   <div>
-                    <h4 class="text-sm font-bold text-white">Grup WhatsApp Resmi</h4>
-                    <p class="text-[11px] text-slate-400">Tautan undangan grup calon peserta seleksi</p>
+                    <h4 class="text-sm font-bold text-white">Komunikasi &amp; Parameter Seleksi</h4>
+                    <p class="text-[11px] text-slate-400">Tautan grup WhatsApp, standar IPK, dan bobot nilai wawancara</p>
                   </div>
                 </div>
 
-                <div>
-                  <label class="block text-xs font-bold text-slate-300 mb-1.5">Link Undangan WhatsApp*</label>
-                  <input
-                    type="text"
-                    id="setting-wa-link"
-                    value="https://chat.whatsapp.com/"
-                    class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-xs font-mono focus:border-emerald-500 focus:outline-none"
-                  />
-                  <p class="text-[10px] text-slate-500 mt-1">Grup ini dapat diakses oleh pendaftar yang telah menyelesaikan berkas atau lolos seleksi.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Link Undangan Grup WhatsApp*</label>
+                    <input
+                      type="text"
+                      id="setting-wa-link"
+                      value="https://chat.whatsapp.com/"
+                      class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-xs font-mono focus:border-emerald-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Standar Min. IPK</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="4"
+                      id="setting-min-ipk"
+                      value="3.00"
+                      class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-xs font-mono focus:border-indigo-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-200">Bobot Kriteria Wawancara (%)</span>
+                    <span class="text-[10px] font-mono text-emerald-400 font-semibold">Total harus 100%</span>
+                  </div>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div>
+                      <label class="block text-[10px] text-slate-400 mb-1">Pengetahuan</label>
+                      <input type="number" min="0" max="100" id="setting-bobot-pengetahuan" value="25" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-xs font-mono text-center focus:border-indigo-500 focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] text-slate-400 mb-1">Keterampilan</label>
+                      <input type="number" min="0" max="100" id="setting-bobot-keterampilan" value="35" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-xs font-mono text-center focus:border-indigo-500 focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] text-slate-400 mb-1">Kedisiplinan</label>
+                      <input type="number" min="0" max="100" id="setting-bobot-kedisiplinan" value="20" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-xs font-mono text-center focus:border-indigo-500 focus:outline-none" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] text-slate-400 mb-1">Attitude</label>
+                      <input type="number" min="0" max="100" id="setting-bobot-attitude" value="20" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-white text-xs font-mono text-center focus:border-indigo-500 focus:outline-none" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -2589,51 +2871,78 @@ import '../styles/global.css';
                   onclick="window.handleSavePengaturan()"
                   class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-lg shadow-emerald-600/30 hover:scale-[1.01] transition flex items-center justify-center gap-2"
                 >
-                  <i class="fa-solid fa-floppy-disk"></i> Simpan Semua Pengaturan
+                  <i class="fa-solid fa-floppy-disk"></i> Simpan Semua Pengaturan ke Database
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div id="admin-sub-tampilan" class="admin-sub-content hidden space-y-6">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800 pb-4">
+        <div id="admin-sub-tampilan" class="admin-sub-content hidden space-y-5">
+          <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b border-slate-800 pb-4">
             <div>
-              <h3 class="text-xl font-black text-white">Tampilan &amp; Teks Web</h3>
+              <h3 class="text-xl font-black text-white">Kustomisasi Tampilan &amp; Konten Multi-Periode</h3>
               <p class="text-xs text-slate-400 mt-1">
-                Ubah teks, tombol, dan bagian halaman publik tanpa membuka kode. Perubahan langsung tampil ke pengunjung.
+                Ubah identitas kepengurusan, sambutan Kalab, visi/misi, fasilitas mesin, timeline rekrutmen, hingga kontak footer tanpa menyentuh kode.
               </p>
-              <p id="cms-status-note" class="text-[11px] text-indigo-300 mt-2"></p>
+              <p id="cms-status-note" class="text-[11px] text-indigo-300 mt-1.5"></p>
             </div>
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onclick="window.toggleAllCmsGroups(true)"
+                class="bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold px-3 py-2 rounded-xl text-xs border border-slate-800 transition cursor-pointer flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-angles-down text-[10px]"></i> Buka Semua
+              </button>
+              <button
+                type="button"
+                onclick="window.toggleAllCmsGroups(false)"
+                class="bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold px-3 py-2 rounded-xl text-xs border border-slate-800 transition cursor-pointer flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-angles-up text-[10px]"></i> Tutup Semua
+              </button>
               <button
                 type="button"
                 onclick="window.switchTab('home')"
-                class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2.5 rounded-xl text-xs border border-slate-700 transition cursor-pointer flex items-center gap-2"
+                class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3.5 py-2 rounded-xl text-xs border border-slate-700 transition cursor-pointer flex items-center gap-1.5"
               >
-                <i class="fa-solid fa-eye"></i> Lihat Beranda
+                <i class="fa-solid fa-eye"></i> Lihat Web
               </button>
               <button
                 type="button"
                 onclick="window.handleSaveTampilan()"
-                class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-600/30 transition cursor-pointer flex items-center gap-2"
+                class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-lg shadow-emerald-600/30 transition cursor-pointer flex items-center gap-2"
               >
-                <i class="fa-solid fa-floppy-disk"></i> Simpan Tampilan
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>Simpan Tampilan</span>
+                <span id="cms-dirty-count" class="hidden px-1.5 py-0.5 text-[10px] rounded-full bg-white/20 text-white font-mono">0</span>
               </button>
             </div>
           </div>
-          <p class="text-[11px] text-slate-400 leading-relaxed">
-            Kolom teks yang sama dengan bawaan akan terus mengikuti bawaan (termasuk bawaan otomatis berdasarkan status pendaftaran).
-            Untuk mengosongkan sebuah teks, isi dengan tanda minus (-).
-          </p>
-          <div id="cms-admin-form" class="space-y-4"></div>
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-3.5">
+            <div class="relative flex-1">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+              <input
+                type="text"
+                id="cms-search-input"
+                oninput="window.filterCmsGroups(this.value)"
+                placeholder="Cari pengaturan teks, nama pejabat, fasilitas, syarat, atau sosial media..."
+                class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:border-indigo-500 focus:outline-none"
+              />
+            </div>
+            <p class="text-[11px] text-slate-400 shrink-0">
+              Tips: Gunakan <code class="text-indigo-300 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">-</code> untuk mengosongkan teks, atau klik <strong>Kembalikan bawaan</strong> per grup.
+            </p>
+          </div>
+          <div id="cms-admin-form" class="space-y-3.5"></div>
           <div class="sticky bottom-4 flex justify-end pointer-events-none">
             <button
               type="button"
               onclick="window.handleSaveTampilan()"
               class="pointer-events-auto bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-6 py-3 rounded-xl text-xs shadow-xl shadow-slate-950/60 transition cursor-pointer flex items-center gap-2"
             >
-              <i class="fa-solid fa-floppy-disk"></i> Simpan Tampilan
+              <i class="fa-solid fa-floppy-disk"></i> Simpan Tampilan ke Database
             </button>
           </div>
         </div>
@@ -2646,21 +2955,35 @@ import '../styles/global.css';
       style="display: none"
     >
       <div
-        class="glass-card max-w-md w-full p-6 sm:p-8 rounded-3xl border border-indigo-500/30 relative space-y-6 shadow-2xl"
+        class="glass-card max-w-md w-full p-6 sm:p-8 rounded-2xl border border-slate-800 relative space-y-5 shadow-2xl"
       >
         <button
           type="button"
           onclick="window.closeModal('modal-login')"
-          class="absolute top-5 right-5 text-slate-400 hover:text-white cursor-pointer"
+          aria-label="Tutup modal login"
+          class="absolute top-4 right-4 w-8 h-8 rounded-lg border border-slate-800 bg-slate-900/70 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer"
         >
-          <i class="fa-solid fa-xmark text-xl"></i>
+          <i class="fa-solid fa-xmark text-sm"></i>
         </button>
-        <div class="text-center space-y-2">
-          <h3 class="text-2xl font-black text-white">Login Portal IELA</h3>
-          <p class="text-xs text-slate-400">
-            Masuk menggunakan NPM atau Username Anda
-          </p>
+
+        <div class="flex items-center gap-3.5 pr-8">
+          <img
+            src="/assets/iela-logo.webp"
+            alt="Logo IELA UNIROW"
+            class="w-11 h-11 rounded-full object-contain shrink-0 drop-shadow-[0_0_8px_rgba(56,189,248,0.3)]"
+            onerror="this.onerror=null;this.src='/assets/iela-logo.png';"
+          />
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-400">
+              Admin &bull; Asisten &bull; Pendaftar
+            </p>
+            <h3 class="text-xl font-black text-white leading-tight">Login Portal IELA</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Masuk menggunakan NPM atau Username Anda
+            </p>
+          </div>
         </div>
+
         <form
           autocomplete="on"
           onsubmit="
@@ -2668,10 +2991,10 @@ import '../styles/global.css';
             window.handleLoginSubmit(event);
             return false;
           "
-          class="space-y-4"
+          class="space-y-4 pt-1"
         >
           <div>
-            <label class="block text-xs font-bold text-slate-300 mb-1"
+            <label for="login-username" class="block text-xs font-bold text-slate-300 mb-1.5"
               >NPM / Username*</label
             ><input
               type="text"
@@ -2681,12 +3004,12 @@ import '../styles/global.css';
               autocapitalize="off"
               spellcheck="false"
               required
-              placeholder="Masukkan NPM / username"
-              class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-xs"
+              placeholder="Masukkan NPM atau username"
+              class="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-3 text-white text-xs outline-none transition"
             />
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-300 mb-1"
+            <label for="login-password" class="block text-xs font-bold text-slate-300 mb-1.5"
               >Password*</label
             >
             <div class="relative">
@@ -2697,7 +3020,7 @@ import '../styles/global.css';
                 autocomplete="current-password"
                 required
                 placeholder="••••••••"
-                class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-4 pr-12 py-3 text-white text-xs"
+                class="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-xl pl-4 pr-12 py-3 text-white text-xs outline-none transition"
               />
               <button
                 type="button"
@@ -2726,11 +3049,22 @@ import '../styles/global.css';
           <button
             type="submit"
             id="btn-login-submit"
-            class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition cursor-pointer shadow-lg shadow-indigo-600/30 text-xs"
+            class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition cursor-pointer shadow-lg shadow-indigo-600/20 text-xs"
           >
             Masuk Portal
           </button>
         </form>
+
+        <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          <span>Calon asisten belum punya akun?</span>
+          <button
+            type="button"
+            onclick="window.closeModal('modal-login'); window.openModal('modal-register');"
+            class="text-indigo-400 hover:text-indigo-300 font-bold cursor-pointer transition"
+          >
+            Daftar Akun &rarr;
+          </button>
+        </div>
       </div>
     </div>
     <!-- MODAL 8: GANTI PASSWORD -->
@@ -4327,7 +4661,7 @@ import '../styles/global.css';
             <ul class="space-y-2 text-slate-400 text-[11px]">
               <li><a href="javascript:void(0)" onclick="window.switchTab('recruitment')" class="hover:text-white transition" data-cms="FOOTER_LINK_RECRUIT">Penerimaan Asisten Lab 2027/2028</a></li>
               <li><a href="javascript:void(0)" onclick="window.switchTab('pengumuman')" class="hover:text-white transition">Pengumuman Kelulusan Seleksi</a></li>
-              <li><a href="javascript:void(0)" onclick="window.switchTab('profil'); setTimeout(function(){ var el = document.getElementById('aslab-grid-container'); if(el) el.scrollIntoView({behavior:'smooth'}); }, 100);" class="hover:text-white transition">Direktori 29 Asisten Laboratorium</a></li>
+              <li><a href="javascript:void(0)" onclick="window.switchTab('profil'); setTimeout(function(){ var el = document.getElementById('aslab-grid-container'); if(el) el.scrollIntoView({behavior:'smooth'}); }, 100);" class="hover:text-white transition" data-cms="FOOTER_LINK_ASLAB">Direktori Asisten Laboratorium</a></li>
               <li><a href="javascript:void(0)" onclick="window.switchTab('berita')" class="hover:text-white transition">Panduan Keselamatan &amp; SOP K3</a></li>
               <li><a href="https://unirow.ac.id" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">Website Resmi UNIROW Tuban</a></li>
             </ul>
@@ -4405,7 +4739,7 @@ import '../styles/global.css';
       window.appState = {
         currentUser: null,
         activeTab: "home",
-        activeAdminSubTab: "master",
+        activeAdminSubTab: "overview",
         activePengujiSubTab: "wawancara",
         files: {
           foto: null,
@@ -4520,10 +4854,126 @@ import '../styles/global.css';
             button.classList.toggle("text-white", isActive);
             button.setAttribute("aria-current", isActive ? "page" : "false");
           });
+        if (tabName === "admin" && typeof window.renderAdminOverview === "function") {
+          window.renderAdminOverview();
+        }
         window.scrollTo(0, 0);
         setTimeout(function () {
           if (typeof window.initScrollReveal === "function") window.initScrollReveal();
         }, 60);
+      };
+      window.renderAdminOverview = function () {
+        var pendaftar = window.appState.data.pendaftar || [];
+        var users = window.appState.data.users || [];
+        var evals = window.appState.data.penilaianRekap || [];
+        var pubs = window.appState.data.publikasi || [];
+        var submitted = 0;
+        var docs = 0;
+        var selected = 0;
+        var rejectedOrDraft = 0;
+
+        var divisiGroups = [
+          { key: "fisika", label: "1. Fisika Dasar & Terapan", total: 0, lolos: 0 },
+          { key: "ergonomi", label: "2. Ergonomi & Perancangan Sistem Kerja", total: 0, lolos: 0 },
+          { key: "statistika", label: "3. Statistika & Pemodelan Sistem", total: 0, lolos: 0 },
+          { key: "manufaktur", label: "4. Manufaktur (Bubut, CNC & 3D Printing)", total: 0, lolos: 0 },
+          { key: "algoritma", label: "5. Komputasi & Algoritma Pemrograman", total: 0, lolos: 0 }
+        ];
+
+        pendaftar.forEach(function (x) {
+          var status = String(x.Status_Pendaftaran || "").toLowerCase().trim();
+          var isLolosFinal = status.includes("asisten") || status.includes("iela");
+          if (status === "draft" || status.includes("tidak")) {
+            rejectedOrDraft++;
+          } else if (status.includes("berkas")) {
+            docs++;
+          } else if (isLolosFinal) {
+            selected++;
+          } else {
+            submitted++;
+          }
+
+          var b1 = String(x.Bidang_Pilihan_1 || "").toLowerCase();
+          var matched = null;
+          if (b1.includes("fisika")) matched = divisiGroups[0];
+          else if (b1.includes("ergonomi")) matched = divisiGroups[1];
+          else if (b1.includes("statistika")) matched = divisiGroups[2];
+          else if (b1.includes("manufaktur") || b1.includes("bubut") || b1.includes("cnc") || b1.includes("3d")) matched = divisiGroups[3];
+          else if (b1.includes("algoritma") || b1.includes("pemrograman")) matched = divisiGroups[4];
+
+          if (matched) {
+            matched.total++;
+            if (isLolosFinal) matched.lolos++;
+          }
+        });
+
+        var values = {
+          "admin-overview-total": pendaftar.length,
+          "admin-overview-submitted": submitted,
+          "admin-overview-docs": docs,
+          "admin-overview-final": selected,
+          "admin-overview-rejected": rejectedOrDraft,
+          "admin-overview-users": users.length,
+          "admin-overview-evals": evals.length,
+          "admin-overview-pubs": pubs.length
+        };
+        Object.keys(values).forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.innerText = String(values[id]);
+        });
+
+        // Update header recruitment status pill
+        var regStatus = (window.getPengaturanVal ? window.getPengaturanVal("STATUS_PENDAFTARAN", "BUKA") : "BUKA").trim().toUpperCase();
+        var regBadge = document.getElementById("admin-header-reg-badge");
+        var regDot = document.getElementById("admin-header-reg-dot");
+        var regText = document.getElementById("admin-header-reg-text");
+        if (regBadge && regDot && regText) {
+          var isOpen = regStatus !== "TUTUP";
+          regText.innerText = "Pendaftaran: " + (isOpen ? "BUKA" : "DITUTUP");
+          regBadge.className = isOpen
+            ? "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-semibold hover:bg-emerald-500/15 transition cursor-pointer"
+            : "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs font-semibold hover:bg-rose-500/15 transition cursor-pointer";
+          regDot.className = isOpen ? "w-2 h-2 rounded-full bg-emerald-400" : "w-2 h-2 rounded-full bg-rose-400";
+        }
+
+        // Render Sub-Lab distribution table
+        var tbody = document.getElementById("admin-overview-divisi-tbody");
+        if (tbody) {
+          var maxTotal = Math.max.apply(null, divisiGroups.map(function (d) { return d.total; }).concat([1]));
+          var mappedTotal = divisiGroups.reduce(function (acc, d) { return acc + d.total; }, 0);
+          var unmappedCount = Math.max(0, pendaftar.length - mappedTotal);
+          var rowsHtml = divisiGroups.map(function (d) {
+            var pct = Math.round((d.total / maxTotal) * 100);
+            var lolosPct = d.total > 0 ? Math.round((d.lolos / d.total) * 100) : 0;
+            return (
+              '<tr class="hover:bg-slate-800/30 transition">' +
+                '<td class="py-2.5 px-4 font-medium text-slate-200">' + d.label + '</td>' +
+                '<td class="py-2.5 px-3 text-right font-semibold text-white tabular-nums">' + d.total + '</td>' +
+                '<td class="py-2.5 px-3 text-right font-semibold text-emerald-400 tabular-nums">' + d.lolos + '</td>' +
+                '<td class="py-2.5 px-4">' +
+                  '<div class="flex items-center gap-2">' +
+                    '<div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">' +
+                      '<div class="h-full bg-indigo-500 rounded-full" style="width:' + pct + '%"></div>' +
+                    '</div>' +
+                    '<span class="text-[11px] text-slate-400 tabular-nums w-9 text-right">' + lolosPct + '%</span>' +
+                  '</div>' +
+                '</td>' +
+              '</tr>'
+            );
+          }).join("");
+
+          if (unmappedCount > 0) {
+            rowsHtml += (
+              '<tr class="bg-slate-900/40 text-slate-400">' +
+                '<td class="py-2 px-4 italic text-[11px]">Draft / Belum memilih divisi</td>' +
+                '<td class="py-2 px-3 text-right font-semibold tabular-nums">' + unmappedCount + '</td>' +
+                '<td class="py-2 px-3 text-right tabular-nums">0</td>' +
+                '<td class="py-2 px-4 text-right text-[11px] text-slate-500">&mdash;</td>' +
+              '</tr>'
+            );
+          }
+          tbody.innerHTML = rowsHtml;
+        }
       };
       window.switchAdminSubTab = function (subTab) {
         window.appState.activeAdminSubTab = subTab;
@@ -4533,6 +4983,7 @@ import '../styles/global.css';
         const t = document.getElementById("admin-sub-" + subTab);
         if (t) t.classList.remove("hidden");
         [
+          "overview",
           "master",
           "wawancara",
           "rekap",
@@ -4542,12 +4993,17 @@ import '../styles/global.css';
           "pengaturan", "tampilan",
         ].forEach((k) => {
           const btn = document.getElementById("adm-btn-" + k);
-          if (btn)
-            btn.className =
-              k === subTab
-                ? "px-4 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white cursor-pointer"
-                : "px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer";
+          if (btn) {
+            btn.setAttribute("aria-pressed", k === subTab ? "true" : "false");
+            btn.className = k === subTab
+              ? "admin-subtab-btn px-2 py-1.5 text-[11px] font-bold rounded-lg bg-indigo-600 text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap"
+              : "admin-subtab-btn px-2 py-1.5 text-[11px] font-semibold rounded-lg bg-slate-800/80 text-slate-300 hover:text-white transition cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap";
+          }
         });
+
+        if (subTab === "overview") {
+          window.renderAdminOverview();
+        }
         
         if (subTab === "tampilan") {
         
@@ -4580,6 +5036,21 @@ import '../styles/global.css';
           const curPesan = window.getPengaturanVal ? window.getPengaturanVal("PESAN_PENDAFTARAN_DITUTUP", defaultPesan) : defaultPesan;
           if (document.getElementById("setting-pesan-tutup")) {
             document.getElementById("setting-pesan-tutup").value = curPesan;
+          }
+          if (document.getElementById("setting-min-ipk")) {
+            document.getElementById("setting-min-ipk").value = window.getPengaturanVal("MIN_IPK", "3.00");
+          }
+          if (document.getElementById("setting-bobot-pengetahuan")) {
+            document.getElementById("setting-bobot-pengetahuan").value = window.getPengaturanVal("BOBOT_PENGETAHUAN", "25");
+          }
+          if (document.getElementById("setting-bobot-keterampilan")) {
+            document.getElementById("setting-bobot-keterampilan").value = window.getPengaturanVal("BOBOT_KETERAMPILAN", "35");
+          }
+          if (document.getElementById("setting-bobot-kedisiplinan")) {
+            document.getElementById("setting-bobot-kedisiplinan").value = window.getPengaturanVal("BOBOT_KEDISIPLINAN", "20");
+          }
+          if (document.getElementById("setting-bobot-attitude")) {
+            document.getElementById("setting-bobot-attitude").value = window.getPengaturanVal("BOBOT_ATTITUDE", "20");
           }
         }
       };
@@ -4760,7 +5231,7 @@ import '../styles/global.css';
           logo: logoImg,
           iela: logoImg,
           manufaktur: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800",
-          ergonomi: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800",
+          ergonomi: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800",
           fisika: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800",
           statistika: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800",
           algoritma: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800",
@@ -4768,7 +5239,7 @@ import '../styles/global.css';
           kegiatan: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800",
           berita: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800",
           avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400",
-          default: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800"
+          default: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800"
         };
         var cat = String(category || "default").toLowerCase();
         for (var k in fallbacks) {
@@ -4784,6 +5255,9 @@ import '../styles/global.css';
         if (!url || typeof url !== "string") return "";
         url = url.trim();
         if (url === "#" || url === "-") return "";
+        if (url.indexOf("photo-1581092335397-9583fe92d232") !== -1) {
+          return "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800";
+        }
         var fileId = window.extractDriveFileId(url);
         if (fileId) {
           return "https://lh3.googleusercontent.com/d/" + fileId + "=w1000";
@@ -5219,101 +5693,184 @@ import '../styles/global.css';
          Jika def tidak ditulis, bawaannya diambil dari teks asli di HTML. */
       window.CMS_FIELDS = [
         {
-          id: "umum", icon: "fa-id-badge", title: "Identitas & Periode",
-          desc: "Nama situs dan periode aktif. Tulis 2027/2028 di teks mana pun agar otomatis diganti periode aktif.",
+          id: "umum", icon: "fa-id-badge", title: "1. Identitas Situs & Periode Kepengurusan",
+          desc: "Nama situs, periode aktif kepengurusan, dan teks hak cipta. Tulis {{PERIODE}} di teks mana pun agar otomatis mengikuti periode aktif.",
           items: [
-            { key: "ACTIVE_PERIODE", type: "text", label: "Periode aktif", def: "2027-2028", hint: "Ganti sekali di sini tiap pergantian periode. Semua teks yang memuat 2027/2028 ikut berubah." },
-            { key: "BRAND_NAME", type: "text", label: "Nama di navbar" },
-            { key: "BRAND_TAGLINE", type: "text", label: "Keterangan kecil di navbar" },
-            { key: "FOOTER_LINK_RECRUIT", type: "text", label: "Tautan rekrutmen di footer" },
-            { key: "FOOTER_COPYRIGHT", type: "area", label: "Teks hak cipta footer", wide: true }
+            { key: "ACTIVE_PERIODE", type: "text", label: "Periode Kepengurusan Aktif", def: "2027-2028", hint: "Ganti sekali di sini tiap pergantian kepengurusan. Semua teks berlabel periode otomatis ikut berubah." },
+            { key: "BRAND_NAME", type: "text", label: "Nama Utama di Navbar" },
+            { key: "BRAND_TAGLINE", type: "text", label: "Sub-keterangan di Navbar" },
+            { key: "FOOTER_LINK_RECRUIT", type: "text", label: "Tautan Rekrutmen di Footer" },
+            { key: "FOOTER_LINK_ASLAB", type: "text", label: "Tautan Direktori Asisten di Footer" },
+            { key: "FOOTER_COPYRIGHT", type: "area", label: "Teks Hak Cipta Footer", wide: true }
           ]
         },
         {
-          id: "hero", icon: "fa-star", title: "Beranda: Hero Utama",
-          desc: "Lencana, judul besar, deskripsi, dan dua tombol aksi di bagian paling atas beranda.",
+          id: "struktural", icon: "fa-chalkboard-user", title: "2. Daftar Dosen Teknik Industri (Tab Profil Lab)",
+          desc: "Kelola daftar dosen Teknik Industri (Nama & Gelar, NIDN/NUPTK di bawah nama, serta Jabatan / Dosen Pengampu).",
           items: [
-            { key: "HERO_BADGE_SHOW", type: "toggle", label: "Tampilkan lencana di atas judul", def: function (st) { return st === "TUTUP" ? "0" : "1"; }, hint: "Otomatis: tampil saat pendaftaran dibuka, tersembunyi saat ditutup." },
-            { key: "HERO_BADGE_TEXT", type: "text", label: "Teks lencana", wide: true },
+            { key: "SHOW_DAFTAR_DOSEN", type: "toggle", label: "Tampilkan tab Dosen Teknik Industri di halaman Profil Lab", def: "1" },
+            { key: "DOSEN_TAB_LABEL", type: "text", label: "Label Tombol Tab Dosen di Profil Lab", def: "Dosen Teknik Industri" },
+            { key: "DOSEN_SECTION_EYEBROW", type: "text", label: "Daftar Dosen: Label Kecil Atas", def: "Struktural Akademik & Dosen Pengampu" },
+            { key: "DOSEN_SECTION_TITLE", type: "text", label: "Daftar Dosen: Judul Seksi", def: "Daftar Dosen Program Studi Teknik Industri", wide: true },
+            { key: "DOSEN_SECTION_SUBTITLE", type: "text", label: "Daftar Dosen: Subjudul Keterangan", wide: true, def: "Jajaran pimpinan laboratorium dan dosen pengampu mata kuliah praktikum Teknik Industri UNIROW" }
+          ]
+        },
+        {
+          id: "hero", icon: "fa-star", title: "3. Beranda: Hero Utama & Tombol Aksi",
+          desc: "Lencana atas, judul utama, deskripsi singkat, dan dua tombol panggilan aksi (CTA) di beranda.",
+          items: [
+            { key: "HERO_BADGE_SHOW", type: "toggle", label: "Tampilkan lencana di atas judul", def: function (st) { return st === "TUTUP" ? "0" : "1"; }, hint: "Otomatis tampil saat pendaftaran dibuka, dan tersembunyi saat ditutup." },
+            { key: "HERO_BADGE_TEXT", type: "text", label: "Teks lencana atas", wide: true },
             { key: "HERO_TITLE_PRE", type: "text", label: "Judul: bagian awal" },
-            { key: "HERO_TITLE_ACCENT", type: "text", label: "Judul: bagian berwarna" },
+            { key: "HERO_TITLE_ACCENT", type: "text", label: "Judul: bagian berwarna (aksen)" },
             { key: "HERO_TITLE_POST", type: "text", label: "Judul: bagian akhir", hint: "Isi tanda minus (-) untuk mengosongkan bagian ini." },
-            { key: "HERO_SUBTITLE", type: "area", label: "Deskripsi di bawah judul", wide: true },
+            { key: "HERO_SUBTITLE", type: "area", label: "Deskripsi di bawah judul hero", wide: true },
             { key: "HERO_CTA1_SHOW", type: "toggle", label: "Tampilkan tombol utama", def: "1" },
-            { key: "HERO_CTA1_TEXT", type: "text", label: "Tombol utama: teks", def: function (st) { return st === "TUTUP" ? "Lihat Pengumuman Seleksi" : "Daftar Asisten Sekarang"; }, hint: "Otomatis berubah mengikuti status pendaftaran selama tidak diubah manual." },
-            { key: "HERO_CTA1_ACTION", type: "select", label: "Tombol utama: tujuan", def: function (st) { return st === "TUTUP" ? "pengumuman" : "recruitment"; } },
+            { key: "HERO_CTA1_TEXT", type: "text", label: "Tombol utama: teks", def: function (st) { return st === "TUTUP" ? "Lihat Pengumuman Seleksi" : "Daftar Asisten Sekarang"; }, hint: "Otomatis mengikuti status pendaftaran selama tidak diubah manual." },
+            { key: "HERO_CTA1_ACTION", type: "select", label: "Tombol utama: tujuan klik", def: function (st) { return st === "TUTUP" ? "pengumuman" : "recruitment"; } },
             { key: "HERO_CTA1_URL", type: "text", label: "Tombol utama: URL (jika tujuan tautan luar)", def: "", placeholder: "https://..." },
             { key: "HERO_CTA2_SHOW", type: "toggle", label: "Tampilkan tombol kedua", def: "1" },
             { key: "HERO_CTA2_TEXT", type: "text", label: "Tombol kedua: teks", def: "Pelajari Profil" },
-            { key: "HERO_CTA2_ACTION", type: "select", label: "Tombol kedua: tujuan", def: "profil" },
+            { key: "HERO_CTA2_ACTION", type: "select", label: "Tombol kedua: tujuan klik", def: "profil" },
             { key: "HERO_CTA2_URL", type: "text", label: "Tombol kedua: URL (jika tujuan tautan luar)", def: "", placeholder: "https://..." }
           ]
         },
         {
-          id: "stat", icon: "fa-chart-simple", title: "Beranda: Statistik, Visi & Misi",
-          desc: "Angka ringkas, visi, dan misi laboratorium.",
+          id: "stat", icon: "fa-chart-simple", title: "4. Statistik, Visi, Misi & Standar K3",
+          desc: "Angka capaian di beranda, rumusan Visi & Misi, serta maklumat Standar K3 Laboratorium.",
           items: [
-            { key: "SHOW_HOME_STATS", type: "toggle", label: "Tampilkan baris statistik", def: "1" },
-            { key: "STAT_1_VALUE", type: "text", label: "Statistik 1: angka" },
+            { key: "SHOW_HOME_STATS", type: "toggle", label: "Tampilkan baris statistik di beranda", def: "1" },
+            { key: "STAT_1_VALUE", type: "text", label: "Statistik 1: angka / judul" },
             { key: "STAT_1_LABEL", type: "text", label: "Statistik 1: keterangan" },
-            { key: "STAT_2_VALUE", type: "text", label: "Statistik 2: angka" },
+            { key: "STAT_2_VALUE", type: "text", label: "Statistik 2: angka / judul" },
             { key: "STAT_2_LABEL", type: "text", label: "Statistik 2: keterangan" },
-            { key: "STAT_3_VALUE", type: "text", label: "Statistik 3: angka" },
+            { key: "STAT_3_VALUE", type: "text", label: "Statistik 3: angka / judul" },
             { key: "STAT_3_LABEL", type: "text", label: "Statistik 3: keterangan" },
-            { key: "SHOW_HOME_VISIMISI", type: "toggle", label: "Tampilkan Visi & Misi", def: "1" },
-            { key: "VISI_TITLE", type: "text", label: "Judul visi" },
-            { key: "MISI_TITLE", type: "text", label: "Judul misi" },
-            { key: "VISI_TEXT", type: "area", label: "Isi visi", wide: true },
-            { key: "MISI_1", type: "area", label: "Misi 1", wide: true },
-            { key: "MISI_2", type: "area", label: "Misi 2", wide: true },
-            { key: "MISI_3", type: "area", label: "Misi 3", wide: true }
+            { key: "SHOW_HOME_VISIMISI", type: "toggle", label: "Tampilkan seksi Visi & Misi di beranda", def: "1" },
+            { key: "VISI_TITLE", type: "text", label: "Judul Visi" },
+            { key: "MISI_TITLE", type: "text", label: "Judul Misi" },
+            { key: "VISI_TEXT", type: "area", label: "Isi Visi Keilmuan & Praktikum", wide: true },
+            { key: "MISI_1", type: "area", label: "Poin Misi 1", wide: true },
+            { key: "MISI_2", type: "area", label: "Poin Misi 2", wide: true },
+            { key: "MISI_3", type: "area", label: "Poin Misi 3", wide: true },
+            { key: "STANDAR_K3_TITLE", type: "text", label: "Judul Standar Mutu & K3 (Halaman Profil)", wide: true },
+            { key: "STANDAR_K3_TEXT", type: "area", label: "Deskripsi Standar Mutu & K3 Laboratorium", wide: true }
           ]
         },
         {
-          id: "showcase", icon: "fa-table-cells-large", title: "Beranda: Seksi Sub-Lab, Galeri & Berita",
-          desc: "Judul dan tombol tiap seksi di beranda, serta menampilkan atau menyembunyikannya.",
+          id: "showcase", icon: "fa-table-cells-large", title: "5. Beranda: Seksi Sub-Lab, Galeri & Berita",
+          desc: "Judul, subjudul, dan visibilitas seksi pratinjau di halaman beranda.",
           items: [
-            { key: "SHOW_HOME_SUBLABS", type: "toggle", label: "Tampilkan seksi Sub-Laboratorium", def: "1" },
-            { key: "SUBLABS_EYEBROW", type: "text", label: "Sub-Lab: label kecil" },
-            { key: "SUBLABS_TITLE", type: "text", label: "Sub-Lab: judul" },
-            { key: "SUBLABS_LINK", type: "text", label: "Sub-Lab: teks tautan", wide: true },
-            { key: "SHOW_HOME_GALERI", type: "toggle", label: "Tampilkan seksi Galeri", def: "1" },
-            { key: "GALERI_EYEBROW", type: "text", label: "Galeri: label kecil" },
-            { key: "HOME_GALERI_TITLE", type: "text", label: "Galeri: judul" },
-            { key: "GALERI_LINK", type: "text", label: "Galeri: teks tautan", wide: true },
-            { key: "SHOW_HOME_BERITA", type: "toggle", label: "Tampilkan seksi Berita", def: "1" },
-            { key: "BERITA_EYEBROW", type: "text", label: "Berita: label kecil" },
-            { key: "HOME_BERITA_TITLE", type: "text", label: "Berita: judul" },
-            { key: "BERITA_LINK", type: "text", label: "Berita: teks tautan", wide: true }
+            { key: "SHOW_HOME_SUBLABS", type: "toggle", label: "Tampilkan seksi Sub-Laboratorium di beranda", def: "1" },
+            { key: "SUBLABS_EYEBROW", type: "text", label: "Sub-Lab: label kecil atas" },
+            { key: "SUBLABS_TITLE", type: "text", label: "Sub-Lab: judul seksi" },
+            { key: "SUBLABS_LINK", type: "text", label: "Sub-Lab: teks tautan tombol", wide: true },
+            { key: "SHOW_HOME_GALERI", type: "toggle", label: "Tampilkan seksi Galeri di beranda", def: "1" },
+            { key: "GALERI_EYEBROW", type: "text", label: "Galeri: label kecil atas" },
+            { key: "HOME_GALERI_TITLE", type: "text", label: "Galeri: judul seksi" },
+            { key: "GALERI_LINK", type: "text", label: "Galeri: teks tautan tombol", wide: true },
+            { key: "SHOW_HOME_BERITA", type: "toggle", label: "Tampilkan seksi Berita di beranda", def: "1" },
+            { key: "BERITA_EYEBROW", type: "text", label: "Berita: label kecil atas" },
+            { key: "HOME_BERITA_TITLE", type: "text", label: "Berita: judul seksi" },
+            { key: "BERITA_LINK", type: "text", label: "Berita: teks tautan tombol", wide: true }
           ]
         },
         {
-          id: "nav", icon: "fa-bars", title: "Menu Navigasi",
-          desc: "Sembunyikan menu yang tidak diperlukan (misalnya Recruitment di luar musim seleksi) atau ganti namanya.",
+          id: "rekrutmen_cms", icon: "fa-user-check", title: "6. Halaman Recruitment: Timeline & Persyaratan",
+          desc: "Atur jadwal 4 tahap seleksi, 4 butir persyaratan umum, dan pesan pembuka halaman Recruitment tiap kepengurusan.",
           items: [
-            { key: "NAV_SHOW_RECRUITMENT", type: "toggle", label: "Tampilkan menu Recruitment", def: "1" },
-            { key: "NAV_LABEL_RECRUITMENT", type: "text", label: "Nama menu Recruitment" },
-            { key: "NAV_SHOW_PENGUMUMAN", type: "toggle", label: "Tampilkan menu Pengumuman", def: "1" },
-            { key: "NAV_LABEL_PENGUMUMAN", type: "text", label: "Nama menu Pengumuman" }
+            { key: "RECRUIT_TITLE", type: "text", label: "Judul Halaman Recruitment" },
+            { key: "RECRUIT_SUBTITLE", type: "text", label: "Subjudul Halaman Recruitment" },
+            { key: "RECRUIT_OPEN_TITLE", type: "text", label: "Judul Kartu Saat Pendaftaran Dibuka", def: "Bergabunglah Bersama Tim Asisten IELA" },
+            { key: "RECRUIT_CLOSED_TITLE", type: "text", label: "Judul Kartu Saat Pendaftaran Ditutup", def: "Pendaftaran Calon Asisten Sedang Ditutup", hint: "Pesan penutupan dapat diatur di tab Pengaturan." },
+            { key: "RECRUIT_OPEN_DESC", type: "area", label: "Deskripsi Kartu Saat Pendaftaran Dibuka", wide: true, def: "Kembangkan kemampuan kepemimpinan, praktikum laboratorium, riset industri manufaktur, dan pengalaman organisasi akademik bersama Laboratorium IELA UNIROW." },
+            { key: "SHOW_RECRUIT_TIMELINE", type: "toggle", label: "Tampilkan Kartu Timeline & Tahapan Seleksi", def: "1" },
+            { key: "TIMELINE_SECTION_TITLE", type: "text", label: "Judul Seksi Timeline" },
+            { key: "TIMELINE_SECTION_NOTE", type: "text", label: "Catatan Kecil Seksi Timeline" },
+            { key: "TIMELINE_1_TITLE", type: "text", label: "Tahap 1: Nama Tahapan" },
+            { key: "TIMELINE_1_DATE", type: "text", label: "Tahap 1: Rentang Tanggal" },
+            { key: "TIMELINE_1_DESC", type: "text", label: "Tahap 1: Keterangan Singkat", wide: true },
+            { key: "TIMELINE_2_TITLE", type: "text", label: "Tahap 2: Nama Tahapan" },
+            { key: "TIMELINE_2_DATE", type: "text", label: "Tahap 2: Rentang Tanggal" },
+            { key: "TIMELINE_2_DESC", type: "text", label: "Tahap 2: Keterangan Singkat", wide: true },
+            { key: "TIMELINE_3_TITLE", type: "text", label: "Tahap 3: Nama Tahapan" },
+            { key: "TIMELINE_3_DATE", type: "text", label: "Tahap 3: Rentang Tanggal" },
+            { key: "TIMELINE_3_DESC", type: "text", label: "Tahap 3: Keterangan Singkat", wide: true },
+            { key: "TIMELINE_4_TITLE", type: "text", label: "Tahap 4: Nama Tahapan" },
+            { key: "TIMELINE_4_DATE", type: "text", label: "Tahap 4: Rentang Tanggal" },
+            { key: "TIMELINE_4_DESC", type: "text", label: "Tahap 4: Keterangan Singkat", wide: true },
+            { key: "SYARAT_TITLE", type: "text", label: "Judul Kartu Persyaratan Umum", wide: true },
+            { key: "SYARAT_1", type: "text", label: "Persyaratan 1", wide: true },
+            { key: "SYARAT_2", type: "text", label: "Persyaratan 2", wide: true },
+            { key: "SYARAT_3", type: "text", label: "Persyaratan 3", wide: true },
+            { key: "SYARAT_4", type: "text", label: "Persyaratan 4", wide: true }
           ]
         },
         {
-          id: "halaman", icon: "fa-file-lines", title: "Judul Halaman",
-          desc: "Judul dan subjudul tiap halaman, termasuk teks kartu Recruitment.",
+          id: "fasilitas_cms", icon: "fa-gears", title: "7. Halaman Profil: 6 Kartu Fasilitas & Mesin",
+          desc: "Kustomisasi nama alat/mesin, kategori divisi, deskripsi spesifikasi, dan tautan foto fasilitas laboratorium.",
           items: [
-            { key: "PROFIL_TITLE", type: "text", label: "Profil: judul" },
-            { key: "PROFIL_SUBTITLE", type: "text", label: "Profil: subjudul" },
-            { key: "GALERI_TITLE", type: "text", label: "Galeri: judul" },
-            { key: "GALERI_SUBTITLE", type: "text", label: "Galeri: subjudul" },
-            { key: "BERITA_TITLE", type: "text", label: "Berita: judul" },
-            { key: "BERITA_SUBTITLE", type: "text", label: "Berita: subjudul" },
-            { key: "RECRUIT_TITLE", type: "text", label: "Recruitment: judul" },
-            { key: "RECRUIT_SUBTITLE", type: "text", label: "Recruitment: subjudul" },
-            { key: "RECRUIT_OPEN_TITLE", type: "text", label: "Kartu saat pendaftaran dibuka: judul", def: "Bergabunglah Bersama Tim Asisten IELA" },
-            { key: "RECRUIT_CLOSED_TITLE", type: "text", label: "Kartu saat pendaftaran ditutup: judul", def: "Pendaftaran Calon Asisten Sedang Ditutup", hint: "Isi pesan penutupan ada di tab Pengaturan." },
-            { key: "RECRUIT_OPEN_DESC", type: "area", label: "Kartu saat pendaftaran dibuka: deskripsi", wide: true, def: "Kembangkan kemampuan kepemimpinan, praktikum laboratorium, riset industri manufaktur, dan pengalaman organisasi akademik bersama Laboratorium IELA UNIROW." },
-            { key: "PENGUMUMAN_TITLE", type: "text", label: "Pengumuman: judul" },
-            { key: "PENGUMUMAN_SUBTITLE", type: "text", label: "Pengumuman: subjudul" }
+            { key: "FAS_1_NAMA", type: "text", label: "Fasilitas 1: Nama Alat / Mesin" },
+            { key: "FAS_1_KAT", type: "text", label: "Fasilitas 1: Label Divisi" },
+            { key: "FAS_1_IMG", type: "text", label: "Fasilitas 1: URL Foto (opsional)", wide: true, placeholder: "https://..." },
+            { key: "FAS_1_DESC", type: "area", label: "Fasilitas 1: Deskripsi", wide: true },
+            { key: "FAS_2_NAMA", type: "text", label: "Fasilitas 2: Nama Alat / Mesin" },
+            { key: "FAS_2_KAT", type: "text", label: "Fasilitas 2: Label Divisi" },
+            { key: "FAS_2_IMG", type: "text", label: "Fasilitas 2: URL Foto (opsional)", wide: true, placeholder: "https://..." },
+            { key: "FAS_2_DESC", type: "area", label: "Fasilitas 2: Deskripsi", wide: true },
+            { key: "FAS_3_NAMA", type: "text", label: "Fasilitas 3: Nama Alat / Mesin" },
+            { key: "FAS_3_KAT", type: "text", label: "Fasilitas 3: Label Divisi" },
+            { key: "FAS_3_IMG", type: "text", label: "Fasilitas 3: URL Foto (opsional)", wide: true, placeholder: "https://..." },
+            { key: "FAS_3_DESC", type: "area", label: "Fasilitas 3: Deskripsi", wide: true },
+            { key: "FAS_4_NAMA", type: "text", label: "Fasilitas 4: Nama Alat / Mesin" },
+            { key: "FAS_4_KAT", type: "text", label: "Fasilitas 4: Label Divisi" },
+            { key: "FAS_4_IMG", type: "text", label: "Fasilitas 4: URL Foto (opsional)", wide: true, placeholder: "https://..." },
+            { key: "FAS_4_DESC", type: "area", label: "Fasilitas 4: Deskripsi", wide: true },
+            { key: "FAS_5_NAMA", type: "text", label: "Fasilitas 5: Nama Alat / Mesin" },
+            { key: "FAS_5_KAT", type: "text", label: "Fasilitas 5: Label Divisi" },
+            { key: "FAS_5_IMG", type: "text", label: "Fasilitas 5: URL Foto (opsional)", wide: true, placeholder: "https://..." },
+            { key: "FAS_5_DESC", type: "area", label: "Fasilitas 5: Deskripsi", wide: true },
+            { key: "FAS_6_NAMA", type: "text", label: "Fasilitas 6: Nama Alat / Mesin" },
+            { key: "FAS_6_KAT", type: "text", label: "Fasilitas 6: Label Divisi" },
+            { key: "FAS_6_IMG", type: "text", label: "Fasilitas 6: URL Foto (opsional)", wide: true, placeholder: "https://..." },
+            { key: "FAS_6_DESC", type: "area", label: "Fasilitas 6: Deskripsi", wide: true }
+          ]
+        },
+        {
+          id: "nav", icon: "fa-compass", title: "8. Menu Navigasi & Judul Halaman Publik",
+          desc: "Atur visibilitas menu navigasi atas serta judul/subjudul halaman Profil, Galeri, Berita, dan Pengumuman.",
+          items: [
+            { key: "NAV_SHOW_RECRUITMENT", type: "toggle", label: "Tampilkan menu Recruitment di Navbar", def: "1" },
+            { key: "NAV_LABEL_RECRUITMENT", type: "text", label: "Label Menu Recruitment" },
+            { key: "NAV_SHOW_PENGUMUMAN", type: "toggle", label: "Tampilkan menu Pengumuman di Navbar", def: "1" },
+            { key: "NAV_LABEL_PENGUMUMAN", type: "text", label: "Label Menu Pengumuman" },
+            { key: "PROFIL_TITLE", type: "text", label: "Halaman Profil: Judul Utama" },
+            { key: "PROFIL_SUBTITLE", type: "text", label: "Halaman Profil: Subjudul" },
+            { key: "PROFIL_PILL_SUBLABS", type: "text", label: "Tab Profil: Label Pill Sub-Lab" },
+            { key: "ASLAB_TAB_LABEL", type: "text", label: "Tab Profil: Label Pill Direktori Aslab" },
+            { key: "ASLAB_DIR_TITLE", type: "text", label: "Direktori Aslab: Judul Seksi" },
+            { key: "ASLAB_DIR_SUBTITLE", type: "text", label: "Direktori Aslab: Subjudul Seksi" },
+            { key: "GALERI_TITLE", type: "text", label: "Halaman Galeri: Judul Utama" },
+            { key: "GALERI_SUBTITLE", type: "text", label: "Halaman Galeri: Subjudul" },
+            { key: "BERITA_TITLE", type: "text", label: "Halaman Berita: Judul Utama" },
+            { key: "BERITA_SUBTITLE", type: "text", label: "Halaman Berita: Subjudul" },
+            { key: "PENGUMUMAN_TITLE", type: "text", label: "Halaman Pengumuman: Judul Utama" },
+            { key: "PENGUMUMAN_SUBTITLE", type: "text", label: "Halaman Pengumuman: Subjudul" }
+          ]
+        },
+        {
+          id: "kontak_footer", icon: "fa-address-book", title: "9. Kontak, Lokasi, Jam Operasional & Sosial Media",
+          desc: "Informasi alamat gedung, jam layanan, nomor WhatsApp Koordinator, email, dan akun medsos resmi di footer.",
+          items: [
+            { key: "INFO_LOKASI", type: "area", label: "Alamat Lengkap Laboratorium", wide: true, def: "Gedung Laboratorium Terpadu Lantai 2, Kampus Universitas PGRI Ronggolawe, Jl. Manunggal No. 61, Wire, Gedongombo, Semanding, Kabupaten Tuban, Jawa Timur 62381." },
+            { key: "INFO_JAM", type: "text", label: "Jam Operasional Pelayanan", wide: true, def: "Senin – Jumat: 08.00 – 16.00 WIB" },
+            { key: "INFO_EMAIL", type: "text", label: "Email Resmi Laboratorium", def: "iela.teknikindustri@unirow.ac.id" },
+            { key: "INFO_WA", type: "text", label: "Nomor WhatsApp Koordinator Aslab", def: "+62 859-3445-7912" },
+            { key: "INFO_IG", type: "text", label: "Instagram Resmi (Username / URL)", def: "@iela_unirow" },
+            { key: "INFO_TIKTOK", type: "text", label: "TikTok Resmi (Kosongkan jika tidak ada)", def: "" },
+            { key: "INFO_YOUTUBE", type: "text", label: "YouTube Resmi (Kosongkan jika tidak ada)", def: "" },
+            { key: "INFO_GITHUB", type: "text", label: "GitHub Lab (Kosongkan jika tidak ada)", def: "" },
+            { key: "INFO_FACEBOOK", type: "text", label: "Facebook Lab (Kosongkan jika tidak ada)", def: "" }
           ]
         }
       ];
@@ -5342,7 +5899,7 @@ import '../styles/global.css';
         return !/^(0|false|off|no|tidak|hide|sembunyi)$/i.test(String(v).trim());
       };
 
-      /* Bawaan teks diambil dari HTML asli, sekali saja, sebelum ada yang ditimpa. */
+      /* Bawaan teks & gambar diambil dari HTML asli, sekali saja, sebelum ada yang ditimpa. */
       window.cmsDomDefaults = {};
       window.cmsCaptureDefaults = function () {
         document.querySelectorAll("[data-cms]").forEach(function (el) {
@@ -5351,9 +5908,16 @@ import '../styles/global.css';
             window.cmsDomDefaults[k] = el.textContent.replace(/\s+/g, " ").trim();
           }
         });
+        document.querySelectorAll("[data-cms-src]").forEach(function (el) {
+          var k = el.getAttribute("data-cms-src");
+          if (!(k in window.cmsDomDefaults)) {
+            window.cmsDomDefaults[k] = el.getAttribute("src") || "";
+          }
+        });
       };
 
       window.cmsDefault = function (key) {
+        if (key === "DAFTAR_DOSEN_TI") return JSON.stringify(window.DEFAULT_DOSEN_TI || []);
         var f = window.cmsField(key);
         if (f && f.def !== undefined) {
           return typeof f.def === "function" ? f.def(window.cmsStatus()) : f.def;
@@ -5425,12 +5989,191 @@ import '../styles/global.css';
         }
       };
 
+      /* ---------- Daftar Dosen Teknik Industri (Profil Lab & CMS Tampilan Web) ---------- */
+      window.DEFAULT_DOSEN_TI = [
+        { nama: "Dosen Kepala Laboratorium, S.T., M.T.", nidn: "NUPTK. 9439777678230132", sebagai: "Kepala Laboratorium / Dosen Pengampu" },
+        { nama: "Dosen Pengampu Statistika, S.T., M.T.", nidn: "", sebagai: "Dosen Pengampu Statistika Industri" },
+        { nama: "Dosen Pengampu Ergonomi, S.T., M.T.", nidn: "", sebagai: "Dosen Pengampu Ergonomi & Perancangan Sistem Kerja" },
+        { nama: "Dosen Pengampu Manufaktur, S.T., M.T.", nidn: "", sebagai: "Dosen Pengampu Proses Manufaktur" },
+        { nama: "Dosen Pengampu Fisika Dasar, S.Si., M.Si.", nidn: "", sebagai: "Dosen Pengampu Fisika Dasar" },
+        { nama: "Dosen Pengampu Pemrograman, S.Kom., M.Kom.", nidn: "", sebagai: "Dosen Pengampu Algoritma & Pemrograman" }
+      ];
+
+      window.getDosenTiList = function () {
+        var raw = window.getPengaturanVal("DAFTAR_DOSEN_TI", "");
+        if (raw && String(raw).trim() !== "") {
+          try {
+            var parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              return parsed.map(function (d) {
+                return {
+                  nama: String(d.nama || "").trim(),
+                  nidn: String(d.nidn || "").trim(),
+                  sebagai: String(d.sebagai || "").trim()
+                };
+              });
+            }
+          } catch (e) {}
+        }
+        return window.DEFAULT_DOSEN_TI.map(function (d) {
+          return { nama: d.nama, nidn: d.nidn, sebagai: d.sebagai };
+        });
+      };
+
+      window.renderDosenDirectory = function () {
+        var grid = document.getElementById("profil-dosen-grid");
+        if (!grid) return;
+        var q = String((document.getElementById("dosen-search-input") || {}).value || "").trim().toLowerCase();
+        var list = window.getDosenTiList().filter(function (d) {
+          var hasVal = d.nama !== "" || d.sebagai !== "" || d.nidn !== "";
+          if (!hasVal) return false;
+          if (!q) return true;
+          var hay = (d.nama + " " + d.nidn + " " + d.sebagai).toLowerCase();
+          return hay.includes(q);
+        });
+        if (list.length === 0) {
+          grid.innerHTML = '<div class="col-span-full text-xs text-slate-500 italic py-6 text-center">Tidak ada data dosen yang cocok dengan pencarian.</div>';
+          return;
+        }
+        grid.innerHTML = list.map(function (d, idx) {
+          var roleText = d.sebagai || "Dosen Teknik Industri";
+          var isKalab = /kepala\s*lab|kalab|ketua\s*prodi|kaprodi/i.test(roleText);
+          var badgeCls = isKalab
+            ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
+            : "bg-slate-800/90 text-cyan-300 border-slate-700/80";
+          var nidnClean = String(d.nidn || "").trim();
+          var nidnHtml = nidnClean && nidnClean !== "-"
+            ? '<p class="text-[11px] font-mono text-amber-300/90 mt-1 flex items-center gap-1.5"><i class="fa-regular fa-id-card text-[10px] text-amber-400/80"></i><span>' + window.cmsEsc(nidnClean) + '</span></p>'
+            : '<p class="text-[11px] font-mono text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-regular fa-id-card text-[10px] text-slate-600"></i><span>NIDN / NUPTK: —</span></p>';
+
+          return '<div class="glass-card p-5 rounded-2xl border border-slate-800/90 bg-slate-900/55 hover:border-indigo-500/40 transition flex flex-col justify-between gap-3">' +
+            '<div>' +
+              '<div class="flex items-center justify-between gap-2 mb-2.5">' +
+                '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ' + badgeCls + '">' +
+                  '<i class="fa-solid ' + (isKalab ? 'fa-user-tie' : 'fa-chalkboard-user') + ' text-[9px]"></i>' +
+                  '<span>' + window.cmsEsc(roleText) + '</span>' +
+                '</span>' +
+                '<span class="text-[10px] font-mono text-slate-600">#' + (idx + 1) + '</span>' +
+              '</div>' +
+              '<h4 class="text-sm sm:text-base font-bold text-white leading-snug">' + window.cmsEsc(d.nama || "Nama Dosen Belum Diisi") + '</h4>' +
+              nidnHtml +
+            '</div>' +
+          '</div>';
+        }).join("");
+      };
+
+      window.openDosenCmsEditor = function () {
+        window.switchTab("dashboard-admin");
+        window.switchAdminSubTab("tampilan");
+        setTimeout(function () {
+          var det = document.querySelector('details[data-gid="struktural"]');
+          if (det) det.open = true;
+          var box = document.getElementById("cms-dosen-editor-box");
+          if (box) box.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 120);
+      };
+
+      window._cmsDosenDraft = null;
+
+      window.buildDosenEditorRowsHtml = function () {
+        var list = window._cmsDosenDraft || window.getDosenTiList();
+        var inpCls = "w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white text-xs focus:border-indigo-500 focus:outline-none";
+        return list.map(function (d, idx) {
+          return '<div class="p-3.5 rounded-xl border border-slate-800/90 bg-slate-950/90 space-y-2.5" data-dosen-row="' + idx + '">' +
+            '<div class="flex items-center justify-between gap-2">' +
+              '<span class="text-[11px] font-bold text-indigo-300 flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-[10px]"></i> Dosen #' + (idx + 1) + '</span>' +
+              '<button type="button" onclick="window.removeDosenCmsRow(' + idx + ')" class="text-[11px] font-semibold text-rose-400 hover:text-rose-300 px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 cursor-pointer transition inline-flex items-center gap-1"><i class="fa-solid fa-trash-can text-[10px]"></i> Hapus</button>' +
+            '</div>' +
+            '<div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">' +
+              '<div>' +
+                '<label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Nama Dosen &amp; Gelar</label>' +
+                '<input type="text" data-dosen-prop="nama" data-dosen-idx="' + idx + '" oninput="window.onDosenCmsInput()" value="' + window.cmsEsc(d.nama) + '" placeholder="Contoh: Ir. Nama Dosen, S.T., M.T." class="' + inpCls + '">' +
+              '</div>' +
+              '<div>' +
+                '<label class="block text-[10px] font-bold uppercase tracking-wider text-amber-300/90 mb-1">NIDN / NUPTK (Di Bawah Nama)</label>' +
+                '<input type="text" data-dosen-prop="nidn" data-dosen-idx="' + idx + '" oninput="window.onDosenCmsInput()" value="' + window.cmsEsc(d.nidn) + '" placeholder="Contoh: NUPTK. 9439777678230132" class="' + inpCls + ' font-mono">' +
+              '</div>' +
+              '<div>' +
+                '<label class="block text-[10px] font-bold uppercase tracking-wider text-cyan-300/90 mb-1">Sebagai (Jabatan / Dosen Pengampu)</label>' +
+                '<input type="text" data-dosen-prop="sebagai" data-dosen-idx="' + idx + '" oninput="window.onDosenCmsInput()" value="' + window.cmsEsc(d.sebagai) + '" placeholder="Contoh: Kepala Lab / Dosen Pengampu Statistika" class="' + inpCls + '">' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join("");
+      };
+
+      window.syncDosenCmsHiddenInput = function () {
+        var hiddenInp = document.getElementById("cms-f-DAFTAR_DOSEN_TI");
+        if (!hiddenInp || !window._cmsDosenDraft) return;
+        var clean = window._cmsDosenDraft.map(function (d) {
+          return {
+            nama: String(d.nama || "").trim(),
+            nidn: String(d.nidn || "").trim(),
+            sebagai: String(d.sebagai || "").trim()
+          };
+        });
+        hiddenInp.value = JSON.stringify(clean);
+        window.updateCmsDirtyBadge();
+      };
+
+      window.onDosenCmsInput = function () {
+        var rowsContainer = document.getElementById("cms-dosen-rows-list");
+        if (!rowsContainer) return;
+        var updated = [];
+        rowsContainer.querySelectorAll("[data-dosen-row]").forEach(function (rowEl) {
+          var namaInp = rowEl.querySelector('[data-dosen-prop="nama"]');
+          var nidnInp = rowEl.querySelector('[data-dosen-prop="nidn"]');
+          var sebagaiInp = rowEl.querySelector('[data-dosen-prop="sebagai"]');
+          updated.push({
+            nama: namaInp ? namaInp.value : "",
+            nidn: nidnInp ? nidnInp.value : "",
+            sebagai: sebagaiInp ? sebagaiInp.value : ""
+          });
+        });
+        window._cmsDosenDraft = updated;
+        window.syncDosenCmsHiddenInput();
+      };
+
+      window.addDosenCmsRow = function () {
+        window.onDosenCmsInput();
+        if (!window._cmsDosenDraft) window._cmsDosenDraft = window.getDosenTiList();
+        window._cmsDosenDraft.push({
+          nama: "",
+          nidn: "",
+          sebagai: "Dosen Pengampu Mata Kuliah"
+        });
+        var rowsContainer = document.getElementById("cms-dosen-rows-list");
+        if (rowsContainer) rowsContainer.innerHTML = window.buildDosenEditorRowsHtml();
+        window.syncDosenCmsHiddenInput();
+      };
+
+      window.removeDosenCmsRow = function (idx) {
+        window.onDosenCmsInput();
+        if (!window._cmsDosenDraft) window._cmsDosenDraft = window.getDosenTiList();
+        if (window._cmsDosenDraft.length <= 1) {
+          window.showToast("Minimal harus ada 1 baris dosen. Anda juga dapat mematikan toggle Tampilkan Daftar Dosen di atas.");
+          return;
+        }
+        window._cmsDosenDraft.splice(idx, 1);
+        var rowsContainer = document.getElementById("cms-dosen-rows-list");
+        if (rowsContainer) rowsContainer.innerHTML = window.buildDosenEditorRowsHtml();
+        window.syncDosenCmsHiddenInput();
+      };
+
       /* Menerapkan semua pengaturan ke halaman publik. Aman dipanggil berulang. */
       window.applyCms = function () {
         window.cmsCaptureDefaults();
         document.querySelectorAll("[data-cms]").forEach(function (el) {
           var v = window.cmsFill(window.cmsVal(el.getAttribute("data-cms")));
           if (el.textContent !== v) el.textContent = v;
+        });
+        document.querySelectorAll("[data-cms-src]").forEach(function (el) {
+          var k = el.getAttribute("data-cms-src");
+          var rawSrc = String(window.cmsVal(k) || "").trim();
+          var finalSrc = rawSrc ? (window.formatDriveImg ? window.formatDriveImg(rawSrc) : rawSrc) : window.cmsDefault(k);
+          if (finalSrc && el.getAttribute("src") !== finalSrc) {
+            el.setAttribute("src", finalSrc);
+          }
         });
         document.querySelectorAll("[data-periode-tpl]").forEach(function (el) {
           if (!el.dataset.tpl) el.dataset.tpl = el.textContent;
@@ -5442,34 +6185,98 @@ import '../styles/global.css';
           el.classList.toggle("cms-hidden", !on);
         });
         window.cmsApplyHeroCtas();
+        if (typeof window.renderDosenDirectory === "function") {
+          try { window.renderDosenDirectory(); } catch (e) {}
+        }
+        if (typeof window.renderInfoKontak === "function") {
+          try { window.renderInfoKontak(); } catch (e) {}
+        }
         document.title = "IELA WebApp - Profil & Recruitment Portal " + window.getPengaturanVal("ACTIVE_PERIODE", "2027-2028");
         if (typeof window.initCountUp === "function") window.initCountUp();
       };
 
       /* ---------- Panel admin: tab "Tampilan Web" ---------- */
+      window.toggleAllCmsGroups = function (openState) {
+        var box = document.getElementById("cms-admin-form");
+        if (!box) return;
+        box.querySelectorAll("details[data-gid]").forEach(function (d) {
+          if (!d.classList.contains("hidden")) d.open = Boolean(openState);
+        });
+      };
+
+      window.filterCmsGroups = function (query) {
+        var q = String(query || "").trim().toLowerCase();
+        var box = document.getElementById("cms-admin-form");
+        if (!box) return;
+        box.querySelectorAll("details[data-gid]").forEach(function (d) {
+          if (!q) {
+            d.classList.remove("hidden");
+            d.querySelectorAll("[data-cms-item-wrap]").forEach(function (w) { w.classList.remove("hidden"); });
+            return;
+          }
+          var groupText = (d.getAttribute("data-gsearch") || "").toLowerCase();
+          var anyFieldMatch = false;
+          d.querySelectorAll("[data-cms-item-wrap]").forEach(function (w) {
+            var itemSearch = (w.getAttribute("data-isearch") || "").toLowerCase();
+            var inp = w.querySelector("[data-cms-field]");
+            var valSearch = inp && inp.type !== "checkbox" ? String(inp.value || "").toLowerCase() : "";
+            var match = groupText.includes(q) || itemSearch.includes(q) || valSearch.includes(q);
+            w.classList.toggle("hidden", !match);
+            if (match) anyFieldMatch = true;
+          });
+          d.classList.toggle("hidden", !anyFieldMatch);
+          if (anyFieldMatch) d.open = true;
+        });
+      };
+
+      window.updateCmsDirtyBadge = function () {
+        var count = 0;
+        document.querySelectorAll("[data-cms-field]").forEach(function (inp) {
+          var cur = inp.getAttribute("data-type") === "toggle" ? (inp.checked ? "1" : "0") : String(inp.value).trim();
+          var init = String(inp.getAttribute("data-init-val") || "").trim();
+          if (cur !== init) count++;
+        });
+        var badge = document.getElementById("cms-dirty-count");
+        if (badge) {
+          if (count > 0) {
+            badge.textContent = count + " belum disimpan";
+            badge.classList.remove("hidden");
+          } else {
+            badge.classList.add("hidden");
+          }
+        }
+      };
+
       window.renderCmsAdminForm = function () {
+        window.cmsCaptureDefaults();
         var box = document.getElementById("cms-admin-form");
         if (!box) return;
         var openIds = {};
         box.querySelectorAll("details[data-gid]").forEach(function (d) { if (d.open) openIds[d.getAttribute("data-gid")] = true; });
         var firstRender = box.children.length === 0;
-        var inputCls = "w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-xs focus:border-indigo-500 focus:outline-none";
+        var inputCls = "w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-xs focus:border-indigo-500 focus:outline-none";
+        window._cmsDosenDraft = window.getDosenTiList();
 
         var fieldHtml = function (it) {
           var val = window.cmsVal(it.key);
           var id = "cms-f-" + it.key;
-          var attrs = ' id="' + id + '" data-cms-field="' + it.key + '" data-type="' + it.type + '"';
+          var initVal = it.type === "toggle" ? (window.cmsIsOn(val) ? "1" : "0") : String(val || "").trim();
+          var attrs = ' id="' + id + '" data-cms-field="' + it.key + '" data-type="' + it.type + '" data-init-val="' + window.cmsEsc(initVal) + '" oninput="window.updateCmsDirtyBadge()" onchange="window.updateCmsDirtyBadge()"';
           var hint = it.hint ? '<p class="text-[10px] text-slate-500 mt-1 leading-relaxed">' + window.cmsEsc(it.hint) + "</p>" : "";
+          var isCustom = window.cmsStoredRaw(it.key) !== "";
+          var customDot = isCustom ? '<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 ml-1.5" title="Telah dikustomisasi dari nilai bawaan"></span>' : "";
+          var searchMeta = window.cmsEsc((it.label + " " + it.key + " " + (it.hint || "")).toLowerCase());
+
           if (it.type === "toggle") {
-            return '<div class="md:col-span-2 flex items-center justify-between gap-4 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3">' +
-              '<div class="min-w-0"><label for="' + id + '" class="block text-xs font-bold text-slate-200">' + window.cmsEsc(it.label) + "</label>" + hint + "</div>" +
+            return '<div data-cms-item-wrap="1" data-isearch="' + searchMeta + '" class="md:col-span-2 flex items-center justify-between gap-4 bg-slate-950/90 border border-slate-800/90 rounded-xl px-4 py-3">' +
+              '<div class="min-w-0"><label for="' + id + '" class="block text-xs font-bold text-slate-200 cursor-pointer">' + window.cmsEsc(it.label) + customDot + "</label>" + hint + "</div>" +
               '<label class="relative inline-flex items-center cursor-pointer shrink-0">' +
               '<input type="checkbox" class="sr-only peer"' + attrs + (window.cmsIsOn(val) ? " checked" : "") + ">" +
               '<span class="w-11 h-6 bg-slate-700 rounded-full peer-checked:bg-emerald-600 transition peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400 after:content-[\'\'] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:transition-all peer-checked:after:translate-x-5"></span>' +
               "</label></div>";
           }
-          var wrap = '<div class="' + (it.wide || it.type === "area" ? "md:col-span-2" : "") + '">' +
-            '<label for="' + id + '" class="block text-xs font-bold text-slate-300 mb-1.5">' + window.cmsEsc(it.label) + "</label>";
+          var wrap = '<div data-cms-item-wrap="1" data-isearch="' + searchMeta + '" class="' + (it.wide || it.type === "area" ? "md:col-span-2" : "") + '">' +
+            '<label for="' + id + '" class="block text-xs font-bold text-slate-300 mb-1.5">' + window.cmsEsc(it.label) + customDot + "</label>";
           if (it.type === "select") {
             return wrap + "<select" + attrs + ' class="' + inputCls + '">' +
               window.CMS_ACTIONS.map(function (a) {
@@ -5484,17 +6291,47 @@ import '../styles/global.css';
         };
 
         box.innerHTML = window.CMS_FIELDS.map(function (g) {
-          var isOpen = firstRender ? g.id === "hero" : !!openIds[g.id];
-          return '<details data-gid="' + g.id + '" class="group glass-card rounded-3xl border border-slate-800"' + (isOpen ? " open" : "") + ">" +
-            '<summary class="list-none cursor-pointer select-none p-5 sm:p-6 flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">' +
-            '<div class="flex items-center gap-3 min-w-0">' +
-            '<div class="w-10 h-10 shrink-0 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400"><i class="fa-solid ' + g.icon + '"></i></div>' +
-            '<div class="min-w-0"><h4 class="text-sm font-bold text-white">' + window.cmsEsc(g.title) + '</h4><p class="text-[11px] text-slate-400">' + window.cmsEsc(g.desc) + "</p></div></div>" +
-            '<i class="fa-solid fa-chevron-down text-slate-500 transition-transform group-open:rotate-180"></i></summary>' +
-            '<div class="px-5 sm:px-6 pb-6 space-y-4">' +
+          var isOpen = firstRender ? (g.id === "umum" || g.id === "struktural") : !!openIds[g.id];
+          var customCount = g.items.filter(function (it) { return window.cmsStoredRaw(it.key) !== ""; }).length;
+          if (g.id === "struktural" && window.cmsStoredRaw("DAFTAR_DOSEN_TI") !== "") customCount++;
+          var badgeHtml = customCount > 0
+            ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shrink-0">' + customCount + ' Diubah</span>'
+            : '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800/80 text-slate-400 border border-slate-700/70 shrink-0">' + g.items.length + ' Kolom</span>';
+          var gSearch = window.cmsEsc((g.title + " " + g.desc + (g.id === "struktural" ? " daftar dosen teknik industri nidn nuptk dosen pengampu kepala laboratorium" : "")).toLowerCase());
+
+          var extraGroupHtml = "";
+          if (g.id === "struktural") {
+            var initDosenJson = JSON.stringify(window._cmsDosenDraft);
+            extraGroupHtml =
+              '<div id="cms-dosen-editor-box" data-cms-item-wrap="1" data-isearch="daftar dosen teknik industri nidn nuptk kepala laboratorium dosen pengampu statistika ergonomi manufaktur fisika pemrograman" class="mt-4 pt-4 border-t border-slate-800/80 space-y-3">' +
+                '<input type="hidden" id="cms-f-DAFTAR_DOSEN_TI" data-cms-field="DAFTAR_DOSEN_TI" data-type="text" data-init-val="' + window.cmsEsc(initDosenJson) + '" value="' + window.cmsEsc(initDosenJson) + '">' +
+                '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-indigo-950/25 border border-indigo-500/25 rounded-xl p-3.5">' +
+                  '<div>' +
+                    '<h5 class="text-xs sm:text-sm font-extrabold text-white flex items-center gap-2"><i class="fa-solid fa-chalkboard-user text-indigo-400"></i> Kelola Daftar Dosen Teknik Industri</h5>' +
+                    '<p class="text-[11px] text-slate-400 mt-0.5">Ubah nama dosen, isi NIDN/NUPTK di bawahnya (contoh: <span class="font-mono text-amber-300">NUPTK. 9439777678230132</span>), serta jabatan atau mata kuliah yang diampu.</p>' +
+                  '</div>' +
+                  '<button type="button" onclick="window.addDosenCmsRow()" class="self-start sm:self-auto shrink-0 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5 shadow-md shadow-indigo-600/20">' +
+                    '<i class="fa-solid fa-plus"></i> Tambah Dosen' +
+                  '</button>' +
+                '</div>' +
+                '<div id="cms-dosen-rows-list" class="space-y-2.5">' + window.buildDosenEditorRowsHtml() + '</div>' +
+              '</div>';
+          }
+
+          return '<details data-gid="' + g.id + '" data-gsearch="' + gSearch + '" class="group rounded-2xl border border-slate-800 bg-slate-900/40 overflow-hidden"' + (isOpen ? " open" : "") + ">" +
+            '<summary class="list-none cursor-pointer select-none px-5 py-4 flex items-center justify-between gap-4 hover:bg-slate-800/30 transition [&::-webkit-details-marker]:hidden">' +
+            '<div class="flex items-center gap-3.5 min-w-0">' +
+            '<div class="w-9 h-9 shrink-0 rounded-xl bg-indigo-600/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-sm"><i class="fa-solid ' + g.icon + '"></i></div>' +
+            '<div class="min-w-0"><h4 class="text-sm font-bold text-white">' + window.cmsEsc(g.title) + '</h4><p class="text-[11px] text-slate-400 truncate">' + window.cmsEsc(g.desc) + "</p></div></div>" +
+            '<div class="flex items-center gap-2.5 shrink-0">' + badgeHtml +
+            '<i class="fa-solid fa-chevron-down text-xs text-slate-500 transition-transform group-open:rotate-180"></i></div></summary>' +
+            '<div class="px-5 pb-5 pt-2 border-t border-slate-800/60 space-y-4">' +
             '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' + g.items.map(fieldHtml).join("") + "</div>" +
-            '<button type="button" onclick="window.cmsResetGroup(\'' + g.id + '\')" class="text-[11px] font-bold text-slate-400 hover:text-white transition cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-rotate-left"></i> Kembalikan bawaan grup ini</button>' +
-            "</div></details>";
+            extraGroupHtml +
+            '<div class="flex items-center justify-between pt-2 border-t border-slate-800/50">' +
+            '<button type="button" onclick="window.cmsResetGroup(\'' + g.id + '\')" class="text-[11px] font-bold text-slate-400 hover:text-amber-300 transition cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-rotate-left"></i> Kembalikan bawaan grup ini</button>' +
+            '<button type="button" onclick="window.handleSaveTampilan()" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>' +
+            "</div></div></details>";
         }).join("");
 
         var ind = document.getElementById("cms-status-note");
@@ -5503,6 +6340,11 @@ import '../styles/global.css';
             ? "Status pendaftaran saat ini: DITUTUP. Bawaan hero menyesuaikan diri (lencana disembunyikan, tombol utama menuju pengumuman)."
             : "Status pendaftaran saat ini: DIBUKA. Bawaan hero menampilkan lencana dan tombol pendaftaran.";
         }
+        box.querySelectorAll("[data-cms-field]").forEach(function (inp) {
+          var v = inp.getAttribute("data-type") === "toggle" ? (inp.checked ? "1" : "0") : String(inp.value).trim();
+          inp.setAttribute("data-init-val", v);
+        });
+        window.updateCmsDirtyBadge();
       };
 
       window.cmsResetGroup = function (gid) {
@@ -5515,15 +6357,28 @@ import '../styles/global.css';
           if (it.type === "toggle") el.checked = window.cmsIsOn(def);
           else el.value = def;
         });
-        window.showToast("Isi grup dikembalikan ke bawaan. Klik Simpan Tampilan untuk menerapkan.");
+        if (gid === "struktural") {
+          window._cmsDosenDraft = window.DEFAULT_DOSEN_TI.map(function (d) {
+            return { nama: d.nama, nidn: d.nidn, sebagai: d.sebagai };
+          });
+          var rowsContainer = document.getElementById("cms-dosen-rows-list");
+          if (rowsContainer) rowsContainer.innerHTML = window.buildDosenEditorRowsHtml();
+          window.syncDosenCmsHiddenInput();
+        }
+        window.updateCmsDirtyBadge();
+        window.showToast("Isi grup dikembalikan ke bawaan. Klik Simpan Tampilan untuk menyimpan ke database.");
       };
 
       window.cmsApplyLocal = function (payload) {
         var list = window.appState.data.pengaturan = window.appState.data.pengaturan || [];
         Object.keys(payload).forEach(function (k) {
-          var item = list.find(function (x) { return String(x.Key_Name || "").trim() === k; });
-          if (item) item.Value_Text = payload[k];
-          else list.push({ Key_Name: k, Value_Text: payload[k] });
+          var item = list.find(function (x) { return String(x.Key_Name || x.key || "").trim() === k; });
+          if (item) {
+            item.Value_Text = payload[k];
+            item.value = payload[k];
+          } else {
+            list.push({ Key_Name: k, Value_Text: payload[k], key: k, value: payload[k] });
+          }
         });
       };
 
@@ -5533,28 +6388,34 @@ import '../styles/global.css';
         document.querySelectorAll("[data-cms-field]").forEach(function (inp) {
           var key = inp.getAttribute("data-cms-field");
           var val = inp.getAttribute("data-type") === "toggle" ? (inp.checked ? "1" : "0") : String(inp.value).trim();
-          /* Sama dengan bawaan = kosongkan, supaya tetap mengikuti bawaan/otomatis. */
-          var store = val === String(window.cmsDefault(key)) ? "" : val;
-          if (store !== window.cmsStoredRaw(key)) {
+          var initVal = String(inp.getAttribute("data-init-val") || "").trim();
+          var defVal = String(window.cmsDefault(key) || "").trim();
+          var store = val === defVal ? "" : val;
+          if (val !== initVal) {
             payload[key] = store;
             count++;
           }
         });
-        if (!count) { window.showToast("Tidak ada perubahan untuk disimpan."); return; }
+        if (!count) { window.showToast("Tidak ada perubahan baru untuk disimpan."); return; }
 
-        var applyAll = function () {
-          window.cmsApplyLocal(payload);
+        var applyAll = function (serverPengaturan) {
+          if (Array.isArray(serverPengaturan) && serverPengaturan.length > 0) {
+            window.appState.data.pengaturan = serverPengaturan;
+          } else {
+            window.cmsApplyLocal(payload);
+          }
           try { window.applyCms(); } catch (e) { console.error(e); }
           try { window.renderRecruitmentStatus(); } catch (e) { console.error(e); }
+          try { window.renderCmsAdminForm(); } catch (e) { console.error(e); }
         };
-        window.showLoading(true, "Menyimpan tampilan web...");
+        window.showLoading(true, "Menyimpan " + count + " perubahan tampilan ke database...");
         if (window.checkIsGAS()) {
           google.script.run
             .withSuccessHandler(function (res) {
               window.showLoading(false);
               if (res && res.success) {
-                applyAll();
-                window.showToast(res.message || "Tampilan web berhasil disimpan!");
+                applyAll(res.pengaturan);
+                window.showToast(res.message || ("Berhasil menyimpan " + count + " pengaturan tampilan ke database!"));
               } else {
                 window.showToast("Gagal: " + (res ? res.message : "Error"));
               }
@@ -6545,17 +7406,46 @@ import '../styles/global.css';
         const linkWa = document.getElementById("setting-wa-link") ? document.getElementById("setting-wa-link").value.trim() : "";
         const statusVal = window.appState.settingStatusPendaftaran || (window.getPengaturanVal ? window.getPengaturanVal("STATUS_PENDAFTARAN", "BUKA") : "BUKA");
         const pesanTutup = document.getElementById("setting-pesan-tutup") ? document.getElementById("setting-pesan-tutup").value.trim() : "";
+        const minIpk = document.getElementById("setting-min-ipk") ? document.getElementById("setting-min-ipk").value.trim() : "3.00";
+        const b1 = Number(document.getElementById("setting-bobot-pengetahuan") ? document.getElementById("setting-bobot-pengetahuan").value : 25);
+        const b2 = Number(document.getElementById("setting-bobot-keterampilan") ? document.getElementById("setting-bobot-keterampilan").value : 35);
+        const b3 = Number(document.getElementById("setting-bobot-kedisiplinan") ? document.getElementById("setting-bobot-kedisiplinan").value : 20);
+        const b4 = Number(document.getElementById("setting-bobot-attitude") ? document.getElementById("setting-bobot-attitude").value : 20);
 
         if (!linkWa) {
           window.showToast("Link WhatsApp tidak boleh kosong!");
           return;
         }
-        window.showLoading(true, "Menyimpan pengaturan sistem...");
+        if (Math.round(b1 + b2 + b3 + b4) !== 100) {
+          window.showToast("Total bobot penilaian wawancara harus berjumlah tepat 100% (saat ini: " + (b1 + b2 + b3 + b4) + "%).");
+          return;
+        }
+        window.showLoading(true, "Menyimpan pengaturan sistem ke database...");
         
         var payload = {
           "LINK_WA_GROUP": linkWa,
           "STATUS_PENDAFTARAN": statusVal,
-          "PESAN_PENDAFTARAN_DITUTUP": pesanTutup
+          "PESAN_PENDAFTARAN_DITUTUP": pesanTutup,
+          "MIN_IPK": minIpk || "3.00",
+          "BOBOT_PENGETAHUAN": String(b1),
+          "BOBOT_KETERAMPILAN": String(b2),
+          "BOBOT_KEDISIPLINAN": String(b3),
+          "BOBOT_ATTITUDE": String(b4)
+        };
+
+        let updateLocal = function() {
+          Object.keys(payload).forEach(function(k) {
+            let p = window.appState.data.pengaturan.find(function(x) { return String(x.Key_Name || x.key).trim() === k; });
+            if (p) {
+              p.Value_Text = payload[k];
+              p.value = payload[k];
+            } else {
+              window.appState.data.pengaturan.push({ Key_Name: k, Value_Text: payload[k], key: k, value: payload[k] });
+            }
+          });
+          if (window.renderRecruitmentStatus) window.renderRecruitmentStatus();
+          if (window.applyCms) window.applyCms();
+          if (window.renderAdminOverview) window.renderAdminOverview();
         };
 
         if (window.checkIsGAS()) {
@@ -6563,7 +7453,8 @@ import '../styles/global.css';
             .withSuccessHandler(function (res) {
               window.showLoading(false);
               if (res && res.success) {
-                window.showToast(res.message || "Pengaturan berhasil disimpan!");
+                updateLocal();
+                window.showToast(res.message || "Pengaturan berhasil disimpan ke database!");
                 window.initData(true); // Refresh data
               } else {
                 window.showToast("Gagal: " + (res ? res.message : "Error"));
@@ -6577,22 +7468,8 @@ import '../styles/global.css';
         } else {
           setTimeout(function() {
             window.showLoading(false);
+            updateLocal();
             window.showToast("Pengaturan berhasil disimpan! (Demo Mode)");
-            let updateVal = function(k, v) {
-              let p = window.appState.data.pengaturan.find(function(x) { return x.Key_Name === k; });
-              if (p) {
-                p.Value_Text = v;
-              } else {
-                window.appState.data.pengaturan.push({ Key_Name: k, Value_Text: v });
-              }
-            };
-            updateVal("LINK_WA_GROUP", linkWa);
-            updateVal("STATUS_PENDAFTARAN", statusVal);
-            updateVal("PESAN_PENDAFTARAN_DITUTUP", pesanTutup);
-            if (window.renderRecruitmentStatus) {
-              window.renderRecruitmentStatus();
-            }
-            if (window.applyCms) window.applyCms();
           }, 500);
         }
       };
@@ -7263,6 +8140,7 @@ import '../styles/global.css';
         if (!tb) return;
 
         const rawList = window.appState.data.pendaftar || [];
+        if (typeof window.renderAdminOverview === "function") window.renderAdminOverview();
         const searchInput = document.getElementById("admin-search-input");
         const search = ((searchInput ? searchInput.value : "") || "").toLowerCase().trim();
 
@@ -7302,6 +8180,8 @@ import '../styles/global.css';
         if (countLolosBerkasEl) countLolosBerkasEl.innerText = totalLolosBerkas;
         if (countLolosIELAEl) countLolosIELAEl.innerText = totalLolosIELA;
         if (countTidakLolosEl) countTidakLolosEl.innerText = totalTidakLolos;
+        const countCleanupBtn = document.getElementById("btn-cleanup-rejected-count");
+        if (countCleanupBtn) countCleanupBtn.innerText = String(totalTidakLolos + totalDraft);
 
         // 2. Filter by Status (all / submitted / draft / lolos_berkas / lolos_iela / tidak_lolos)
         let list = rawList.slice();
@@ -7502,12 +8382,239 @@ import '../styles/global.css';
               '        <option value="Lolos Asisten Lab 2027">Lolos Asisten</option>' +
               '        <option value="Tidak Lolos">Tidak Lolos</option>' +
               '      </select>' +
+              '      <button type="button" onclick="window.handleDeleteSinglePendaftar(\'' + x.Pendaftar_ID + '\', \'' + x.NIM + '\', \'' + safeNama + '\')" title="Hapus pendaftar ini &amp; bebaskan NPM" class="p-1.5 px-2.5 bg-rose-500/15 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 rounded-lg text-xs transition cursor-pointer">' +
+              '        <i class="fa-solid fa-trash-can"></i>' +
+              '      </button>' +
               '    </div>' +
               '  </td>' +
               '</tr>'
             );
           })
           .join("");
+      };
+
+      window.exportPendaftarCsv = function (customPrefix) {
+        var list = window.appState.data.pendaftar || [];
+        if (list.length === 0) {
+          if (!customPrefix) window.showToast("Belum ada data pendaftar untuk diunduh.");
+          return false;
+        }
+        var headers = [
+          "Pendaftar_ID", "NPM", "Nama_Lengkap", "Nama_Panggilan", "Jenis_Kelamin",
+          "TTL", "No_HP", "Semester", "Prodi", "IPK", "Bidang_Pilihan_1",
+          "Bidang_Pilihan_2", "Status_Pendaftaran", "Keterampilan", "Motivasi"
+        ];
+        var escCsv = function (val) {
+          var s = String(val === undefined || val === null ? "" : val).replace(/"/g, '""');
+          return '"' + s + '"';
+        };
+        var rows = [headers.join(",")];
+        list.forEach(function (x) {
+          rows.push([
+            escCsv(x.Pendaftar_ID || ""),
+            escCsv(x.NIM || ""),
+            escCsv(x.Nama || ""),
+            escCsv(x.Nama_Panggilan || ""),
+            escCsv(x.Jenis_Kelamin || ""),
+            escCsv(x.TTL || ""),
+            escCsv(x.No_HP || ""),
+            escCsv(x.Semester || ""),
+            escCsv(x.Prodi || ""),
+            escCsv(x.IPK || ""),
+            escCsv(x.Bidang_Pilihan_1 || ""),
+            escCsv(x.Bidang_Pilihan_2 || ""),
+            escCsv(x.Status_Pendaftaran || ""),
+            escCsv(x.Keterampilan || ""),
+            escCsv(x.Motivasi || "")
+          ].join(","));
+        });
+        var csvContent = "\uFEFF" + rows.join("\r\n");
+        var blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        var periode = String(window.getPengaturanVal("ACTIVE_PERIODE", "2027-2028")).replace(/[^a-zA-Z0-9_-]/g, "-");
+        var dateStr = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = (customPrefix || "Data_Pendaftar_IELA") + "_" + periode + "_" + dateStr + ".csv";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 200);
+        if (!customPrefix) window.showToast("File CSV (" + list.length + " pendaftar) berhasil diunduh!");
+        return true;
+      };
+
+      window.refreshAfterPendaftarCleanup = function () {
+        if (typeof window.renderAdminTable === "function") window.renderAdminTable();
+        if (typeof window.renderAdminOverview === "function") window.renderAdminOverview();
+        if (typeof window.initInterviewQueue === "function") window.initInterviewQueue();
+        if (typeof window.renderInterviewQueue === "function") window.renderInterviewQueue();
+        if (typeof window.renderAdminRekapTable === "function") window.renderAdminRekapTable();
+        if (typeof window.renderPengujiTable === "function") window.renderPengujiTable();
+        if (typeof window.renderPengumumanLolosTable === "function") window.renderPengumumanLolosTable();
+        if (typeof window.renderUsersTable === "function") window.renderUsersTable();
+      };
+
+      window.handleDeleteSinglePendaftar = function (pendaftarId, npm, nama) {
+        var label = (nama ? nama + " (" + npm + ")" : npm || pendaftarId);
+        if (!window.confirm("Hapus data pendaftar " + label + " beserta akun login Pendaftar & nilai wawancaranya?\n\n(NPM ini akan bersih kembali dan bisa mendaftar ulang).")) {
+          return;
+        }
+        window.showLoading(true, "Menghapus data pendaftar " + label + "...");
+        var applyLocalDelete = function () {
+          window.appState.data.pendaftar = (window.appState.data.pendaftar || []).filter(function (x) {
+            return !(String(x.Pendaftar_ID) === String(pendaftarId) || (npm && String(x.NIM).replace(/\.0$/, "") === String(npm).replace(/\.0$/, "")));
+          });
+          window.appState.data.penilaianRekap = (window.appState.data.penilaianRekap || []).filter(function (x) {
+            return String(x.Pendaftar_ID) !== String(pendaftarId);
+          });
+          if (npm) {
+            var cleanNpm = String(npm).trim().replace(/\.0$/, "");
+            window.appState.data.users = (window.appState.data.users || []).filter(function (u) {
+              var uNim = String(u.Username_NIM || "").trim().replace(/\.0$/, "");
+              var uRole = String(u.Role || "").toLowerCase();
+              return !(uNim === cleanNpm && uRole.includes("pendaftar"));
+            });
+          }
+          window.refreshAfterPendaftarCleanup();
+        };
+
+        if (window.checkIsGAS()) {
+          google.script.run
+            .withSuccessHandler(function (res) {
+              window.showLoading(false);
+              if (res && res.success) {
+                applyLocalDelete();
+                window.showToast(res.message || "Pendaftar berhasil dihapus!");
+              } else {
+                window.showToast("Gagal: " + (res ? res.message : "Error"));
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showLoading(false);
+              window.showToast("Error Server: " + err.toString());
+            })
+            .deletePendaftar({ pendaftarId: pendaftarId, npm: npm });
+        } else {
+          window.showLoading(false);
+          applyLocalDelete();
+          window.showToast("Data pendaftar " + label + " berhasil dihapus!");
+        }
+      };
+
+      window.handleCleanupRejectedPendaftar = function () {
+        var list = window.appState.data.pendaftar || [];
+        var targets = list.filter(function (x) {
+          var s = String(x.Status_Pendaftaran || "").toLowerCase().trim();
+          return s === "draft" || s.includes("tidak");
+        });
+        if (targets.length === 0) {
+          window.showToast("Tidak ada pendaftar berstatus Tidak Lolos atau Draft saat ini.");
+          return;
+        }
+        var msg = "Bersihkan " + targets.length + " data pendaftar berstatus 'Tidak Lolos' & 'Draft' sekarang?\n\n" +
+          "• Data formulir & akun login Pendaftar mereka akan dihapus dari database.\n" +
+          "• Mahasiswa tersebut dapat mendaftar kembali dengan NPM yang sama pada periode rekrutmen berikutnya.\n" +
+          "• Kandidat yang Lolos Berkas / Lolos IELA TIDAK akan terhapus.";
+        if (!window.confirm(msg)) return;
+
+        window.showLoading(true, "Membersihkan " + targets.length + " data Tidak Lolos & Draft...");
+        var applyLocalCleanup = function () {
+          var removedIds = targets.map(function (t) { return String(t.Pendaftar_ID); });
+          var removedNims = targets.map(function (t) { return String(t.NIM || "").trim().replace(/\.0$/, ""); }).filter(Boolean);
+          window.appState.data.pendaftar = (window.appState.data.pendaftar || []).filter(function (x) {
+            var s = String(x.Status_Pendaftaran || "").toLowerCase().trim();
+            return !(s === "draft" || s.includes("tidak"));
+          });
+          window.appState.data.penilaianRekap = (window.appState.data.penilaianRekap || []).filter(function (x) {
+            return !removedIds.includes(String(x.Pendaftar_ID));
+          });
+          window.appState.data.users = (window.appState.data.users || []).filter(function (u) {
+            var uNim = String(u.Username_NIM || "").trim().replace(/\.0$/, "");
+            var uRole = String(u.Role || "").toLowerCase();
+            return !(removedNims.includes(uNim) && uRole.includes("pendaftar"));
+          });
+          window.refreshAfterPendaftarCleanup();
+        };
+
+        if (window.checkIsGAS()) {
+          google.script.run
+            .withSuccessHandler(function (res) {
+              window.showLoading(false);
+              if (res && res.success) {
+                applyLocalCleanup();
+                window.showToast(res.message || ("Berhasil membersihkan " + targets.length + " data Tidak Lolos & Draft!"));
+              } else {
+                window.showToast("Gagal: " + (res ? res.message : "Error"));
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showLoading(false);
+              window.showToast("Error Server: " + err.toString());
+            })
+            .cleanupRejectedAndDraftPendaftar();
+        } else {
+          window.showLoading(false);
+          applyLocalCleanup();
+          window.showToast("Berhasil membersihkan " + targets.length + " data Tidak Lolos & Draft!");
+        }
+      };
+
+      window.handleResetRecruitmentPeriod = function () {
+        var list = window.appState.data.pendaftar || [];
+        if (list.length === 0) {
+          window.showToast("Data pendaftar saat ini sudah kosong (0 peserta).");
+          return;
+        }
+        var msg = "PERINGATAN RESET PERIODE BARU:\n\n" +
+          "Apakah Anda yakin ingin mengosongkan SELURUH data rekrutmen periode ini (" + list.length + " pendaftar, antrean wawancara, & rekap nilai)?\n\n" +
+          "• Sistem akan otomatis mengunduh file Backup CSV ke perangkat Anda terlebih dahulu.\n" +
+          "• Akun Admin, Penguji, Aslab Aktif, Berita, Galeri, & Daftar Dosen TETAP AMAN dan tidak ikut terhapus.";
+        if (!window.confirm(msg)) return;
+
+        // Otomatis unduh backup CSV sebelum mengosongkan
+        try { window.exportPendaftarCsv("Backup_Arsip_Pendaftar_IELA"); } catch (e) {}
+
+        window.showLoading(true, "Mengarsipkan CSV & mereset data pendaftar untuk periode baru...");
+        var applyLocalReset = function () {
+          window.appState.data.pendaftar = [];
+          window.appState.data.penilaianRekap = [];
+          window.appState.data.seleksiLog = [];
+          window.appState.data.users = (window.appState.data.users || []).filter(function (u) {
+            return !String(u.Role || "").toLowerCase().includes("pendaftar");
+          });
+          window.appState.interviewQueueOrder = [];
+          window.appState.interviewDoneIds = {};
+          try {
+            localStorage.removeItem("IELA_INTERVIEW_QUEUE_ORDER");
+            localStorage.removeItem("IELA_INTERVIEW_QUEUE_DONE");
+          } catch (e) {}
+          window.refreshAfterPendaftarCleanup();
+        };
+
+        if (window.checkIsGAS()) {
+          google.script.run
+            .withSuccessHandler(function (res) {
+              window.showLoading(false);
+              if (res && res.success) {
+                applyLocalReset();
+                window.showToast(res.message || "Data rekrutmen berhasil direset untuk periode baru!");
+              } else {
+                window.showToast("Gagal: " + (res ? res.message : "Error"));
+              }
+            })
+            .withFailureHandler(function (err) {
+              window.showLoading(false);
+              window.showToast("Error Server: " + err.toString());
+            })
+            .resetAllRecruitmentData();
+        } else {
+          window.showLoading(false);
+          applyLocalReset();
+          window.showToast("Data rekrutmen berhasil direset untuk periode baru!");
+        }
       };
       window.appState.pendingStatusUpdate = null;
       window.promptUpdateStatus = function (pendaftarId, npm, nama, newStatus, currentStatus) {
@@ -8621,6 +9728,10 @@ import '../styles/global.css';
           return;
         }
         window.showLoading(true, "Menyimpan Nilai Wawancara...");
+        const w1 = Number(window.getPengaturanVal("BOBOT_PENGETAHUAN", "25")) || 25;
+        const w2 = Number(window.getPengaturanVal("BOBOT_KETERAMPILAN", "35")) || 35;
+        const w3 = Number(window.getPengaturanVal("BOBOT_KEDISIPLINAN", "20")) || 20;
+        const w4 = Number(window.getPengaturanVal("BOBOT_ATTITUDE", "20")) || 20;
         const payload = {
           pendaftarId: document.getElementById("eval-pendaftar-id").value,
           userIdPenilai: user.userId,
@@ -8629,6 +9740,10 @@ import '../styles/global.css';
           skorKedisiplinan: document.getElementById("eval-skor-3").value,
           skorAttitude: document.getElementById("eval-skor-4").value,
           catatan: document.getElementById("eval-catatan").value,
+          bobotPengetahuan: w1,
+          bobotKeterampilan: w2,
+          bobotKedisiplinan: w3,
+          bobotAttitude: w4
         };
         if (window.checkIsGAS()) {
           google.script.run
@@ -8886,6 +10001,11 @@ import '../styles/global.css';
         try {
           localStorage.setItem("IELA_OPT_" + pengaturanKey, serialized);
         } catch (e) {}
+        if (!exists && window.checkIsGAS && window.checkIsGAS()) {
+          try {
+            google.script.run.savePengaturan(pengaturanKey, serialized);
+          } catch (e) {}
+        }
       };
 
       window.mergeUniqueOptions = function (lists) {
@@ -9746,7 +10866,7 @@ import '../styles/global.css';
         const target = document.getElementById("profil-sub-" + subTab);
         if (target) target.classList.remove("hidden");
 
-        ["sublabs", "aslab", "visimisi", "fasilitas", "publikasi"].forEach(k => {
+        ["sublabs", "dosen", "aslab", "visimisi", "fasilitas", "publikasi"].forEach(k => {
           const btn = document.getElementById("profil-pill-" + k);
           if (btn) {
             btn.className = (k === subTab)
@@ -9755,6 +10875,7 @@ import '../styles/global.css';
           }
         });
 
+        if (subTab === "dosen" && typeof window.renderDosenDirectory === "function") window.renderDosenDirectory();
         if (subTab === "aslab") window.renderAslabDirectory();
         if (subTab === "sublabs") window.renderProfilList();
         if (subTab === "publikasi") window.renderPublikasiList();

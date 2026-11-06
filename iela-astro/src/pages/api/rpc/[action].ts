@@ -483,7 +483,33 @@ export const POST: APIRoute = async ({ params, request }) => {
       const sk3 = Number(payload.skorKedisiplinan || 0);
       const sk4 = Number(payload.skorAttitude || 0);
       const catatan = String(payload.catatan || '');
-      const bobotTotal = Number(((sk1 * 0.25) + (sk2 * 0.35) + (sk3 * 0.20) + (sk4 * 0.20)).toFixed(2));
+
+      // Read configurable weights from payload or Supabase pengaturan (default 25 / 35 / 20 / 20)
+      let w1 = Number(payload.bobotPengetahuan || 0);
+      let w2 = Number(payload.bobotKeterampilan || 0);
+      let w3 = Number(payload.bobotKedisiplinan || 0);
+      let w4 = Number(payload.bobotAttitude || 0);
+
+      if (!w1 && !w2 && !w3 && !w4) {
+        try {
+          const { data: bobotRows } = await client
+            .from('pengaturan')
+            .select('key_name, value_text')
+            .in('key_name', ['BOBOT_PENGETAHUAN', 'BOBOT_KETERAMPILAN', 'BOBOT_KEDISIPLINAN', 'BOBOT_ATTITUDE']);
+          const bMap: Record<string, number> = {};
+          (bobotRows || []).forEach((r: any) => {
+            bMap[String(r.key_name).trim()] = Number(r.value_text);
+          });
+          w1 = bMap.BOBOT_PENGETAHUAN || 25;
+          w2 = bMap.BOBOT_KETERAMPILAN || 35;
+          w3 = bMap.BOBOT_KEDISIPLINAN || 20;
+          w4 = bMap.BOBOT_ATTITUDE || 20;
+        } catch (e) {
+          w1 = 25; w2 = 35; w3 = 20; w4 = 20;
+        }
+      }
+      const wSum = (w1 + w2 + w3 + w4) || 100;
+      const bobotTotal = Number((((sk1 * w1) + (sk2 * w2) + (sk3 * w3) + (sk4 * w4)) / wSum).toFixed(2));
       const nowStr = new Date().toISOString();
 
       try {
@@ -607,31 +633,202 @@ export const POST: APIRoute = async ({ params, request }) => {
       }), { headers: { 'Content-Type': 'application/json' } });
     }
 
+    if (action === 'deletePendaftar') {
+      const payload = args[0] || {};
+      const pId = String(payload.pendaftarId || payload.Pendaftar_ID || '').trim();
+      const npm = String(payload.npm || payload.NIM || '').trim().replace(/\.0$/, '');
+
+      try {
+        if (pId) {
+          await client.from('penilaian_rekap').delete().eq('pendaftar_id', pId);
+          await client.from('seleksi_log').delete().eq('pendaftar_id', pId);
+          await client.from('pendaftar').delete().eq('pendaftar_id', pId);
+        } else if (npm) {
+          await client.from('pendaftar').delete().eq('nim', npm);
+        }
+        if (npm) {
+          await client
+            .from('users_profile')
+            .delete()
+            .or(`username_nim.eq.${npm},username_nim.eq.${npm}.0`)
+            .ilike('role', '%pendaftar%');
+        }
+      } catch (e) {
+        console.error('Failed to deletePendaftar in Supabase:', e);
+      }
+
+      localStore.PENDAFTAR = (localStore.PENDAFTAR || []).filter((x: any) =>
+        !(
+          (pId && String(x.Pendaftar_ID) === pId) ||
+          (npm && String(x.NIM).replace(/\.0$/, '') === npm)
+        )
+      );
+      if (pId) {
+        localStore.PENILAIAN_REKAP = (localStore.PENILAIAN_REKAP || []).filter(
+          (x: any) => String(x.Pendaftar_ID) !== pId
+        );
+      }
+      if (npm) {
+        localStore.USERS = (localStore.USERS || []).filter((u: any) => {
+          const uNim = String(u.Username_NIM || u.username_nim || '').trim().replace(/\.0$/, '');
+          const uRole = String(u.Role || u.role || '').toLowerCase();
+          return !(uNim === npm && uRole.includes('pendaftar'));
+        });
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        message: `Data pendaftar (${npm || pId}) beserta akun login pendaftarnya berhasil dihapus!`
+      }), { headers: { 'Content-Type': 'application/json' } });
+    }
+
+    if (action === 'cleanupRejectedAndDraftPendaftar') {
+      let deletedCount = 0;
+      const pIdsToDelete: string[] = [];
+      const nimsToDelete: string[] = [];
+
+      try {
+        const { data: allPendaftar } = await client
+          .from('pendaftar')
+          .select('pendaftar_id, nim, status_pendaftaran');
+
+        (allPendaftar || []).forEach((row: any) => {
+          const st = String(row.status_pendaftaran || '').toLowerCase().trim();
+          if (st === 'draft' || st.includes('tidak')) {
+            if (row.pendaftar_id) pIdsToDelete.push(String(row.pendaftar_id).trim());
+            if (row.nim) nimsToDelete.push(String(row.nim).trim().replace(/\.0$/, ''));
+          }
+        });
+
+        deletedCount = pIdsToDelete.length;
+
+        if (pIdsToDelete.length > 0) {
+          await client.from('penilaian_rekap').delete().in('pendaftar_id', pIdsToDelete);
+          await client.from('seleksi_log').delete().in('pendaftar_id', pIdsToDelete);
+          await client.from('pendaftar').delete().in('pendaftar_id', pIdsToDelete);
+        }
+        for (const nim of nimsToDelete) {
+          if (!nim) continue;
+          await client
+            .from('users_profile')
+            .delete()
+            .or(`username_nim.eq.${nim},username_nim.eq.${nim}.0`)
+            .ilike('role', '%pendaftar%');
+        }
+      } catch (e) {
+        console.error('Failed to cleanupRejectedAndDraftPendaftar in Supabase:', e);
+      }
+
+      const beforeLocal = (localStore.PENDAFTAR || []).length;
+      localStore.PENDAFTAR = (localStore.PENDAFTAR || []).filter((x: any) => {
+        const st = String(x.Status_Pendaftaran || '').toLowerCase().trim();
+        return !(st === 'draft' || st.includes('tidak'));
+      });
+      if (!deletedCount) {
+        deletedCount = Math.max(0, beforeLocal - (localStore.PENDAFTAR || []).length);
+      }
+      if (pIdsToDelete.length > 0) {
+        localStore.PENILAIAN_REKAP = (localStore.PENILAIAN_REKAP || []).filter(
+          (x: any) => !pIdsToDelete.includes(String(x.Pendaftar_ID))
+        );
+      }
+      if (nimsToDelete.length > 0) {
+        localStore.USERS = (localStore.USERS || []).filter((u: any) => {
+          const uNim = String(u.Username_NIM || u.username_nim || '').trim().replace(/\.0$/, '');
+          const uRole = String(u.Role || u.role || '').toLowerCase();
+          return !(nimsToDelete.includes(uNim) && uRole.includes('pendaftar'));
+        });
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        deletedCount,
+        message: `Berhasil membersihkan ${deletedCount} data pendaftar Tidak Lolos & Draft (NPM mereka kini bebas untuk mendaftar di periode berikutnya)!`
+      }), { headers: { 'Content-Type': 'application/json' } });
+    }
+
+    if (action === 'resetAllRecruitmentData') {
+      let deletedCount = 0;
+      try {
+        const { data: allPendaftar } = await client
+          .from('pendaftar')
+          .select('pendaftar_id');
+        deletedCount = (allPendaftar || []).length;
+
+        // Wipe all evaluation, log, and applicant records
+        await client.from('penilaian_rekap').delete().neq('penilaian_id', '__NONE__');
+        await client.from('seleksi_log').delete().neq('log_id', '__NONE__');
+        await client.from('pendaftar').delete().neq('pendaftar_id', '__NONE__');
+        // Delete only user accounts with role Pendaftar (preserving Admin, Penguji, Aslab/Anggota)
+        await client.from('users_profile').delete().ilike('role', '%pendaftar%');
+        // Clear interview queue state in pengaturan
+        await client
+          .from('pengaturan')
+          .update({ value_text: '[]' })
+          .in('key_name', ['INTERVIEW_QUEUE_ORDER', 'INTERVIEW_QUEUE_DONE']);
+      } catch (e) {
+        console.error('Failed to resetAllRecruitmentData in Supabase:', e);
+      }
+
+      if (!deletedCount) {
+        deletedCount = (localStore.PENDAFTAR || []).length;
+      }
+      localStore.PENDAFTAR = [];
+      localStore.PENILAIAN_REKAP = [];
+      localStore.SELEKSI_LOG = [];
+      localStore.USERS = (localStore.USERS || []).filter((u: any) => {
+        const uRole = String(u.Role || u.role || '').toLowerCase();
+        return !uRole.includes('pendaftar');
+      });
+
+      return new Response(JSON.stringify({
+        success: true,
+        deletedCount,
+        message: `Berhasil mengosongkan ${deletedCount} data pendaftar, antrean wawancara, & rekap nilai! Sistem siap untuk periode rekrutmen baru.`
+      }), { headers: { 'Content-Type': 'application/json' } });
+    }
+
     // ==========================================
     // 5. USER & ASLAB MANAGEMENT
     // ==========================================
     if (action === 'saveOrUpdateUser') {
       const p = args[0] || {};
-      const uId = String(p.userId || `USR-${Math.floor(100 + Math.random() * 900)}`).trim();
+      const isExistingUser = Boolean(p.userId);
+      const uId = String(p.userId || `USR-${Math.floor(1000 + Math.random() * 9000)}`).trim();
       const uNim = String(p.usernameNim || p.username || '').trim();
       const nama = String(p.namaLengkap ?? p.nama ?? p.name ?? '').trim();
       const role = String(p.role ?? 'Anggota').trim();
-      const div = String(p.bidangDivisi ?? '').trim();
-      const jab = String(p.jabatanDivisi ?? '').trim();
+      let div = String(p.bidangDivisi ?? '').trim();
+      let jab = String(p.jabatanDivisi ?? '').trim();
       const jabBid = String(p.jabatanBidang ?? (jab ? `${jab} / ${div}` : div)).trim();
 
-      // Inline role/status edits send only the changed field. Updating a full
-      // profile with those partial payloads used to replace the name with ''.
-      const isPartialUpdate = Boolean(p.userId) && !('namaLengkap' in p || 'nama' in p || 'name' in p || 'usernameNim' in p || 'username' in p);
+      if (jabBid && (!jab || !div)) {
+        if (jabBid.includes('/')) {
+          const parts = jabBid.split('/');
+          if (!jab) jab = String(parts[0] || '').trim();
+          if (!div) div = String(parts.slice(1).join('/') || '').trim();
+        } else if (!jab) {
+          jab = jabBid;
+        }
+      }
+
+      // Inline role/status edits send only the changed field.
+      const isPartialUpdate = isExistingUser && !('namaLengkap' in p || 'nama' in p || 'name' in p || 'usernameNim' in p || 'username' in p);
       const userRow: any = { user_id: uId };
       if ('namaLengkap' in p || 'nama' in p || 'name' in p) userRow.nama_lengkap = nama;
       if ('role' in p) userRow.role = role;
-      if ('bidangDivisi' in p) userRow.bidang_divisi = div;
-      if ('jabatanDivisi' in p) userRow.jabatan_divisi = jab;
+      if ('bidangDivisi' in p || div) userRow.bidang_divisi = div;
+      if ('jabatanDivisi' in p || jab) userRow.jabatan_divisi = jab;
       if ('jabatanBidang' in p || 'jabatanDivisi' in p || 'bidangDivisi' in p) userRow.jabatan_bidang = jabBid;
       if ('statusAktif' in p) userRow.status_aktif = p.statusAktif !== false && p.statusAktif !== 'Non-Aktif';
       if (uNim) userRow.username_nim = uNim;
-      if (p.password) userRow.password_hash = hashPassword(p.password);
+
+      const rawPass = String(p.newPassword || p.password || '').trim();
+      if (rawPass) {
+        userRow.password_hash = hashPassword(rawPass);
+      } else if (!isExistingUser) {
+        userRow.password_hash = hashPassword('das12345');
+      }
 
       const { data: savedRow, error: saveError } = isPartialUpdate
         ? await client.from('users_profile').update(userRow).eq('user_id', uId).select('*').maybeSingle()
@@ -742,9 +939,12 @@ export const POST: APIRoute = async ({ params, request }) => {
         }
       }
 
+      let seq = 0;
       for (const entry of entries) {
-        const kClean = String(entry.key).trim();
-        const vClean = entry.val !== null && entry.val !== undefined ? String(entry.val) : null;
+        seq++;
+        const kClean = String(entry.key || '').trim();
+        if (!kClean) continue;
+        const vClean = entry.val !== null && entry.val !== undefined ? String(entry.val) : '';
         try {
           const { data: existing } = await client.from('pengaturan')
             .select('param_id')
@@ -753,10 +953,10 @@ export const POST: APIRoute = async ({ params, request }) => {
 
           if (existing && existing.param_id) {
             await client.from('pengaturan')
-              .update({ value_text: vClean })
+              .update({ value_text: vClean, updated_at: new Date().toISOString() })
               .eq('param_id', existing.param_id);
-          } else {
-            const newParamId = 'PRM-' + Math.floor(1000 + Math.random() * 9000);
+          } else if (vClean !== '') {
+            const newParamId = `PRM-${Date.now().toString(36).toUpperCase()}-${seq}${Math.floor(10 + Math.random() * 89)}`;
             await client.from('pengaturan')
               .insert({
                 param_id: newParamId,
@@ -772,13 +972,31 @@ export const POST: APIRoute = async ({ params, request }) => {
         if (pt) {
           pt.Value_Text = vClean;
           pt.value_text = vClean;
-        } else {
+        } else if (vClean !== '') {
           localStore.PENGATURAN = localStore.PENGATURAN || [];
           localStore.PENGATURAN.push({ Param_ID: 'PRM-LCL', Key_Name: kClean, key_name: kClean, Value_Text: vClean, value_text: vClean });
         }
       }
 
-      return new Response(JSON.stringify({ success: true, message: 'Pengaturan berhasil disimpan!' }), {
+      let latestPengaturan: any[] = [];
+      try {
+        const { data: pRows } = await client.from('pengaturan').select('*').limit(2000);
+        if (pRows) {
+          latestPengaturan = pRows.map((pt: any) => ({
+            Param_ID: pt.param_id,
+            Key_Name: pt.key_name,
+            Value_Text: pt.value_text,
+            key: pt.key_name,
+            value: pt.value_text
+          }));
+        }
+      } catch (e) {}
+
+      return new Response(JSON.stringify({
+        success: true,
+        message: `Berhasil menyimpan ${entries.length} pengaturan ke database Supabase!`,
+        pengaturan: latestPengaturan
+      }), {
         headers: { 'Content-Type': 'application/json' }
       });
     }
@@ -852,7 +1070,10 @@ export const POST: APIRoute = async ({ params, request }) => {
       const judul = String(payload.judul || '').trim() || (type === 'Galeri' ? 'Dokumentasi Kegiatan IELA' : 'Informasi Profil IELA');
       const kategori = String(payload.kategori || '').trim();
       const deskripsi = String(payload.deskripsi || '').trim();
-      const urlGambar = String(payload.urlGambar || payload.urlFoto || '').trim() || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
+      const uploadedPhotos = Array.isArray(payload.gambarBase64List) && payload.gambarBase64List.length > 0
+        ? payload.gambarBase64List.filter(Boolean).join('||')
+        : String(payload.gambarBase64 || '').trim();
+      const urlGambar = String(payload.urlGambar || payload.urlFoto || '').trim() || uploadedPhotos || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
 
       if (type.toLowerCase().includes('galeri')) {
         if (!id) id = 'GAL-' + Math.floor(1000 + Math.random() * 9000);
