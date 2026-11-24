@@ -229,9 +229,14 @@ import '../styles/global.css';
             return async function() {
               var args = Array.prototype.slice.call(arguments);
               try {
+                var headersObj = { 'Content-Type': 'application/json' };
+                if (window.appState && window.appState.authToken) {
+                  headersObj['X-Iela-Token'] = window.appState.authToken;
+                }
                 var res = await fetch('/api/rpc/' + String(prop), {
                   method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
+                  headers: headersObj,
+                  credentials: 'same-origin',
                   body: JSON.stringify({ args: args })
                 });
                 var json = await res.json();
@@ -928,7 +933,7 @@ import '../styles/global.css';
               <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_1_DESC">Digunakan untuk praktikum turning, facing, pembuatan ulir, knurling, dan toleransi suaian logam.</p>
             </div>
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden space-y-3 p-5">
-              <img data-cms-src="FAS_2_IMG" src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
+              <img data-cms-src="FAS_2_IMG" src="https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
               <span class="text-[10px] uppercase font-bold text-cyan-400" data-cms="FAS_2_KAT">CNC &amp; CAD/CAM</span>
               <h4 class="font-bold text-white text-base" data-cms="FAS_2_NAMA">Mesin CNC Milling &amp; Turning</h4>
               <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_2_DESC">Pemrograman otomatis G-Code dan M-Code untuk pembuatan komponen presisi tingkat tinggi.</p>
@@ -952,7 +957,7 @@ import '../styles/global.css';
               <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_5_DESC">Perangkat pengujian gerak, viskositas fluida, kalorimetri, dan osiloskop digital sinyal listrik.</p>
             </div>
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden space-y-3 p-5">
-              <img data-cms-src="FAS_6_IMG" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
+              <img data-cms-src="FAS_6_IMG" src="https://images.unsplash.com/photo-1631541909061-71e349d1f203?w=800" class="w-full h-40 object-cover rounded-xl border border-slate-700" onerror="window.handleImgError(this, 'manufaktur')">
               <span class="text-[10px] uppercase font-bold text-purple-400" data-cms="FAS_6_KAT">3D Printing</span>
               <h4 class="font-bold text-white text-base" data-cms="FAS_6_NAMA">3D Printer FDM High Precision</h4>
               <p class="text-xs text-slate-400 leading-relaxed" data-cms="FAS_6_DESC">Pencetak 3 dimensi untuk pembuatan prototipe cepat suku cadang dan model perancangan produk industri.</p>
@@ -1245,8 +1250,10 @@ import '../styles/global.css';
                 class="bg-slate-900/80 uppercase font-bold text-slate-400 border-b border-slate-800"
               >
                 <tr>
+                  <th class="p-3 w-12 text-right">No.</th>
                   <th class="p-3">NPM</th>
                   <th class="p-3">Nama Peserta</th>
+                  <th class="p-3">Divisi / Sub-Lab</th>
                   <th class="p-3">Status Seleksi</th>
                 </tr>
               </thead>
@@ -1255,7 +1262,7 @@ import '../styles/global.css';
                 class="divide-y divide-slate-800/60"
               >
                 <tr>
-                  <td colspan="3" class="p-4 text-center text-slate-500 italic">
+                  <td colspan="5" class="p-4 text-center text-slate-500 italic">
                     Belum ada pengumuman kelulusan resmi.
                   </td>
                 </tr>
@@ -4819,7 +4826,8 @@ import '../styles/global.css';
               <button
                 type="button"
                 onclick="window.handleAdminEditFooter()"
-                class="text-[10px] text-indigo-400 hover:text-white flex items-center gap-1 font-bold cursor-pointer transition"
+                class="admin-only-btn hidden text-[10px] text-indigo-400 hover:text-white items-center gap-1 font-bold cursor-pointer transition"
+                style="display:none"
                 title="Edit informasi kontak, lokasi & medsos"
               >
                 <i class="fa-solid fa-pen-to-square"></i> Edit
@@ -4866,7 +4874,8 @@ import '../styles/global.css';
             <button
               type="button"
               onclick="window.handleAdminEditFooter()"
-              class="hover:text-indigo-300 text-slate-400 cursor-pointer flex items-center gap-1 font-semibold transition"
+              class="admin-only-btn hidden hover:text-indigo-300 text-slate-400 cursor-pointer items-center gap-1 font-semibold transition"
+              style="display:none"
             >
               <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit Footer (Admin)
             </button>
@@ -5603,7 +5612,7 @@ import '../styles/global.css';
       window.handleAdminEditFooter = function () {
         var user = window.appState.currentUser;
         var isAdmin = user && (String(user.role || "").toLowerCase().includes("admin") || String(user.role || "").toLowerCase().includes("koordinator"));
-        if (isAdmin || !window.checkIsGAS()) {
+        if (isAdmin) {
           window.openModalInfoKontak();
         } else {
           window.showToast("Silakan login sebagai Administrator terlebih dahulu untuk mengedit informasi footer.");
@@ -6671,8 +6680,11 @@ import '../styles/global.css';
       window.renderHomeShowcase = function () {
         const subContainer = document.getElementById("home-sublabs-container");
         if (subContainer) {
-          const list = (window.appState.data.profilKonten && window.appState.data.profilKonten.length > 0)
-            ? window.appState.data.profilKonten.filter(x => String(x.Kategori || "").toLowerCase() !== "berita").slice(0, 3)
+          const customSubLabs = (window.appState.data.profilKonten || []).filter(
+            x => String(x.Kategori || "").toLowerCase() !== "berita"
+          );
+          const list = customSubLabs.length > 0
+            ? customSubLabs.slice(0, 3)
             : window.defaultSubLabs.slice(0, 3);
           
           subContainer.innerHTML = list.map(function (item) {
@@ -6702,8 +6714,12 @@ import '../styles/global.css';
 
         const galContainer = document.getElementById("home-galeri-container");
         if (galContainer) {
-          const list = (window.appState.data.galeriKegiatan && window.appState.data.galeriKegiatan.length > 0)
-            ? window.appState.data.galeriKegiatan.slice(0, 3)
+          const validGaleri = (window.appState.data.galeriKegiatan || []).filter(function (g) {
+            var t = String(g.Judul_Kegiatan || g.judul || "").toLowerCase();
+            return t.indexOf("logo iela") === -1 && t !== "logo";
+          });
+          const list = validGaleri.length > 0
+            ? validGaleri.slice(0, 3)
             : window.defaultGaleri.slice(0, 3);
           
           galContainer.innerHTML = list.map(function (item) {
@@ -6723,7 +6739,8 @@ import '../styles/global.css';
             var cat = item.Kategori_Event || item.kategori || "Kegiatan";
             var isLogo = String(title).toLowerCase().indexOf("logo") !== -1 || String(desc).toLowerCase().indexOf("logo") !== -1;
             var fallbackCat = isLogo ? "logo" : cat;
-            var formattedFoto = window.formatDriveImg(foto);
+            var firstFoto = String(foto).split("||")[0].trim();
+            var formattedFoto = window.formatDriveImg(firstFoto);
 
             return (
               '<div onclick="window.openLightbox(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')" class="glass-card rounded-2xl border border-slate-800 overflow-hidden hover:border-emerald-500/50 transition cursor-pointer group">' +
@@ -6752,7 +6769,8 @@ import '../styles/global.css';
           newsContainer.innerHTML = list.map(function (x) {
             var title = x.Judul || x.judul || "Berita";
             var desc = x.Deskripsi || x.deskripsi || "";
-            var tgl = x.Tanggal || x.tanggal || "Terbaru";
+            var rawTgl = x.Tanggal_Publish || x.Tanggal || x.tanggal || "Terbaru";
+            var tgl = window.formatTanggalPengumuman ? (window.formatTanggalPengumuman(rawTgl) || rawTgl) : rawTgl;
             var img = window.formatDriveImg(x.URL_Gambar || x.gambar || "");
             return (
               '<div class="glass-card p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row gap-4 items-center hover:border-cyan-500/50 transition">' +
@@ -6833,7 +6851,15 @@ import '../styles/global.css';
       window.renderGaleriList = function () {
         const c = document.getElementById("galeri-list-container");
         if (!c) return;
-        const customItems = window.appState.data.galeriKegiatan || [];
+        const isAdmin = window.appState.currentUser && (
+          String(window.appState.currentUser.role).toLowerCase().includes("admin") ||
+          String(window.appState.currentUser.role).toLowerCase().includes("koordinator")
+        );
+        const customItems = (window.appState.data.galeriKegiatan || []).filter(function (g) {
+          if (isAdmin) return true;
+          var t = String(g.Judul_Kegiatan || g.judul || "").toLowerCase();
+          return t.indexOf("logo iela") === -1 && t !== "logo";
+        });
         let items = (customItems.length > 0) ? customItems : window.defaultGaleri;
         
         const filterCat = window.appState.activeGaleriCategory || 'all';
@@ -6843,11 +6869,6 @@ import '../styles/global.css';
             return cText.includes(filterCat.toLowerCase());
           });
         }
-
-        const isAdmin = window.appState.currentUser && (
-          String(window.appState.currentUser.role).toLowerCase().includes("admin") ||
-          String(window.appState.currentUser.role).toLowerCase().includes("koordinator")
-        );
 
         if (items.length === 0) {
           c.innerHTML = '<div class="col-span-3 text-center text-slate-500 py-12 italic">Tidak ada foto pada kategori ini.</div>';
@@ -6956,7 +6977,8 @@ import '../styles/global.css';
           }
 
           var cat = x.Kategori_Event || x.kategori || "Kegiatan";
-          var dateDisplay = (date && String(date).indexOf("http") === -1) ? date : "";
+          var rawDateStr = (date && String(date).indexOf("http") === -1) ? date : "";
+          var dateDisplay = window.formatTanggalPengumuman ? (window.formatTanggalPengumuman(rawDateStr) || rawDateStr) : rawDateStr;
 
           var adminActions = "";
           if (isAdmin) {
@@ -7024,7 +7046,8 @@ import '../styles/global.css';
           var id = x.Konten_ID || x.id;
           var title = x.Judul || x.judul || "Berita";
           var desc = x.Deskripsi || x.deskripsi || "";
-          var tgl = x.Tanggal || x.tanggal || "Terbaru";
+          var rawTgl = x.Tanggal_Publish || x.Tanggal || x.tanggal || "Terbaru";
+          var tgl = window.formatTanggalPengumuman ? (window.formatTanggalPengumuman(rawTgl) || rawTgl) : rawTgl;
           var img = window.formatDriveImg(x.URL_Gambar || x.gambar || "");
 
           var adminActions = "";
@@ -7067,16 +7090,19 @@ import '../styles/global.css';
         });
         if (lolosList.length === 0) {
           tb.innerHTML =
-            '<tr><td colspan="3" class="p-4 text-center text-slate-500 italic">Belum ada pengumuman kelulusan resmi.</td></tr>';
+            '<tr><td colspan="5" class="p-4 text-center text-slate-500 italic">Belum ada pengumuman kelulusan resmi.</td></tr>';
           return;
         }
         tb.innerHTML = lolosList
-          .map(function(x) {
+          .map(function(x, idx) {
+            var divisi = x.Bidang_Pilihan_1 || x.bidang_pilihan_1 || "Sub-Laboratorium IELA";
             return (
               '<tr class="hover:bg-slate-800/40">' +
-              '  <td class="p-3 font-mono font-bold text-indigo-400">' + (x.NIM || '-') + '</td>' +
+              '  <td class="p-3 font-mono text-slate-400 text-right tabular-nums">' + (idx + 1) + '</td>' +
+              '  <td class="p-3 font-mono font-bold text-indigo-400 tabular-nums">' + (x.NIM || '-') + '</td>' +
               '  <td class="p-3 font-bold text-white">' + (x.Nama || '-') + '</td>' +
-              '  <td class="p-3"><span class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Lolos</span></td>' +
+              '  <td class="p-3 text-slate-300 font-medium">' + divisi + '</td>' +
+              '  <td class="p-3"><span class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Lolos Asisten Lab</span></td>' +
               '</tr>'
             );
           })
@@ -7166,7 +7192,7 @@ import '../styles/global.css';
         var monthStr = monthsIndo[dt.getMonth()];
         var yearStr = dt.getFullYear();
 
-        var hasTime = String(rawDate).match(/\b\d{1,2}[:.]\d{2}\b/) !== null;
+        var hasTime = String(rawDate).match(/\b\d{1,2}[:.]\d{2}\b/) !== null && !/\b00[:.]00(?:[:.]00)?\b/.test(String(rawDate));
 
         if (hasTime) {
           var hours = dt.getHours();
@@ -7708,10 +7734,12 @@ import '../styles/global.css';
               if (res && res.success) {
                 window.saveRememberedLogin(u);
                 window.appState.currentUser = res.user;
+                window.appState.authToken = res.token || "";
                 window.updateUserUI();
                 window.closeModal("modal-login");
                 window.showToast("Selamat datang, " + res.user.nama + "!");
                 window.openDashboardByRole();
+                window.initData(true);
               } else {
                 window.showToast(res ? res.message : "Login gagal!");
               }
@@ -7794,11 +7822,22 @@ import '../styles/global.css';
         const user = window.appState.currentUser;
         const btnArea = document.getElementById("auth-btn-area");
         const profileArea = document.getElementById("user-profile-area");
+        const mobileAuthArea = document.getElementById("mobile-drawer-auth-area");
         if (user) {
           if (btnArea) btnArea.classList.add("hidden");
           if (profileArea) profileArea.classList.remove("hidden");
           document.getElementById("user-display-name").innerText = user.nama;
           document.getElementById("user-display-role").innerText = user.role;
+          if (mobileAuthArea) {
+            mobileAuthArea.innerHTML =
+              '<div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 mb-2">' +
+              '  <p class="text-xs font-bold text-white truncate">' + (user.nama || "User") + '</p>' +
+              '  <p class="text-xs text-emerald-400 font-semibold">' + (user.role || "Anggota") + '</p>' +
+              '</div>' +
+              '<button type="button" onclick="window.toggleMobileMenu(false); window.openDashboardByRole();" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl font-bold text-xs cursor-pointer"><i class="fa-solid fa-gauge-high"></i> Buka Dashboard</button>' +
+              '<button type="button" onclick="window.toggleMobileMenu(false); window.openModal(\'modal-ganti-password\');" class="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl font-bold text-xs border border-slate-700 cursor-pointer"><i class="fa-solid fa-key"></i> Ganti Password</button>' +
+              '<button type="button" onclick="window.toggleMobileMenu(false); window.handleLogout();" class="w-full flex items-center justify-center gap-2 bg-red-500/15 hover:bg-red-500/25 text-red-400 py-2.5 rounded-xl font-bold text-xs border border-red-500/30 cursor-pointer"><i class="fa-solid fa-power-off"></i> Keluar</button>';
+          }
           const isAdmin =
             String(user.role).toLowerCase().includes("admin") ||
             String(user.role).toLowerCase().includes("koordinator");
@@ -7814,6 +7853,10 @@ import '../styles/global.css';
         } else {
           if (btnArea) btnArea.classList.remove("hidden");
           if (profileArea) profileArea.classList.add("hidden");
+          if (mobileAuthArea) {
+            mobileAuthArea.innerHTML =
+              '<button type="button" onclick="window.toggleMobileMenu(false); window.openModal(\'modal-login\');" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-bold text-xs cursor-pointer"><i class="fa-solid fa-right-to-bracket"></i> Login Portal</button>';
+          }
           document.querySelectorAll(".admin-only-btn").forEach((el) => {
             el.classList.add("hidden");
             el.style.display = "none";
@@ -11191,6 +11234,7 @@ import '../styles/global.css';
         const list = allUsers.filter(function (x) {
           var curRole = String(x.Role || "Anggota").trim();
           var curJb = window.getUserJabatanBidang(x);
+          if (fRole === "all" && curRole.toLowerCase() === "pendaftar") return false;
           if (fRole !== "all" && curRole.toLowerCase() !== fRole.toLowerCase()) return false;
           if (fJb !== "all" && curJb.toLowerCase() !== fJb.toLowerCase()) return false;
           if (q) {
@@ -11721,21 +11765,33 @@ import '../styles/global.css';
         const filterBidang = (document.getElementById("aslab-filter-bidang") ? document.getElementById("aslab-filter-bidang").value : "all") || "all";
         const search = ((document.getElementById("aslab-search-input") ? document.getElementById("aslab-search-input").value : "") || "").toLowerCase();
 
+        const pendaftarMap = {};
+        (window.appState.data.pendaftar || []).forEach(function (p) {
+          var pNim = String(p.NIM || p.nim || "").trim().replace(/\.0$/, "");
+          if (pNim) pendaftarMap[pNim] = p;
+        });
+
         let rawList = (window.appState.data.users && window.appState.data.users.length > 5)
           ? window.appState.data.users.filter(function (u) {
               var r = String(u.Role || "").toLowerCase();
               var act = String(u.Status_Aktif).toLowerCase() !== "false";
-              return act && r !== "pendaftar" && String(u.Username_NIM || "").toLowerCase() !== "admin";
+              var isDemis = r === "demisioner";
+              return act && r !== "pendaftar" && (!isDemis || filterBidang.toLowerCase() === "demisioner") && String(u.Username_NIM || "").toLowerCase() !== "admin";
             })
           : window.defaultAslabList;
 
         let list = rawList.filter(function (x) {
           var nama = (x.Nama_Lengkap || x.nama || "").toLowerCase();
-          var npm = (x.Username_NIM || x.npm || "").toLowerCase();
+          var npm = String(x.Username_NIM || x.npm || "").trim().replace(/\.0$/, "");
+          var matchedP = pendaftarMap[npm];
+          var rawBidang = x.Bidang_Divisi || x.bidang || "";
+          if ((!rawBidang || /praktikan|calon asisten|pendaftar/i.test(rawBidang)) && matchedP && matchedP.Bidang_Pilihan_1) {
+            rawBidang = matchedP.Bidang_Pilihan_1;
+          }
           var jb = window.getUserJabatanBidang ? window.getUserJabatanBidang(x) : "";
-          var bidangRaw = ((x.Bidang_Divisi || x.bidang || "") + " " + jb).toLowerCase();
+          var bidangRaw = (rawBidang + " " + jb).toLowerCase();
 
-          if (search && !nama.includes(search) && !npm.includes(search) && !jb.toLowerCase().includes(search)) return false;
+          if (search && !nama.includes(search) && !npm.toLowerCase().includes(search) && !bidangRaw.includes(search)) return false;
           if (filterBidang !== "all") {
             var fb = filterBidang.toLowerCase();
             if (fb === "manufaktur") {
@@ -11754,13 +11810,14 @@ import '../styles/global.css';
 
         c.innerHTML = list.map(function (x) {
           var nama = x.Nama_Lengkap || x.nama || "-";
-          var npm = x.Username_NIM || x.npm || "-";
+          var npm = String(x.Username_NIM || x.npm || "-").trim().replace(/\.0$/, "");
+          var matchedP = pendaftarMap[npm];
           var jbFull = window.getUserJabatanBidang ? window.getUserJabatanBidang(x) : "";
           var bidang = x.Bidang_Divisi || x.bidang || "Sub-Laboratorium";
           var jabatan = x.Jabatan_Divisi || x.jabatan || "Pembimbing Praktikum";
           var roleTxt = String(x.Role || "").trim();
 
-          if (jbFull && jbFull !== "-") {
+          if (jbFull && jbFull !== "-" && !/praktikan|calon asisten|pendaftar/i.test(jbFull)) {
             if (jbFull.indexOf("/") !== -1) {
               var parts = jbFull.split("/");
               jabatan = parts[0].trim() || jabatan;
@@ -11768,6 +11825,14 @@ import '../styles/global.css';
             } else {
               jabatan = jbFull;
             }
+          }
+
+          if (!bidang || /praktikan|calon asisten|pendaftar/i.test(bidang)) {
+            bidang = (matchedP && matchedP.Bidang_Pilihan_1) ? matchedP.Bidang_Pilihan_1 : "Sub-Laboratorium IELA";
+          }
+          if (!jabatan || /praktikan|calon asisten|pendaftar/i.test(jabatan)) {
+            jabatan = "Anggota Sub-Lab";
+            jbFull = "Anggota / " + bidang;
           }
 
           var matchRef = (bidang + " " + jbFull).toLowerCase();

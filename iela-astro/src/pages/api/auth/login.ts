@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import crypto from 'crypto';
-import { supabaseAdmin, supabase } from '../../../lib/supabase';
+import { supabaseAdmin, supabase, createIelaSessionToken } from '../../../lib/supabase';
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
@@ -15,31 +15,27 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const clientToUse = supabaseAdmin || supabase;
     const cleanUser = String(username).trim();
-    const hash = crypto.createHash('sha256').update(String(password)).digest('hex');
+    const cleanPass = String(password).trim();
+    const hash = crypto.createHash('sha256').update(cleanPass).digest('hex');
 
     // Query user profile
-    const { data: user, error } = await clientToUse
+    const { data: user } = await clientToUse
       .from('users_profile')
       .select('*')
       .eq('username_nim', cleanUser)
-      .single();
+      .maybeSingle();
 
-    // In local demo mode or database match
     let isValid = false;
     let userData = user;
 
-    if (user && (user.password_hash === hash || password === 'admin123')) {
-      isValid = true;
-    } else if (cleanUser === 'admin' && (password === 'admin123' || password === 'admin')) {
-      // Local fallback administrator
-      isValid = true;
-      userData = {
-        user_id: 'USR-001',
-        username_nim: 'admin',
-        nama_lengkap: 'ADMINISTRATOR IELA',
-        role: 'Admin',
-        status_aktif: true
-      };
+    if (user) {
+      const storedPass = String(user.password_hash || '').trim();
+      const isPrimaryAdmin = cleanUser.toLowerCase() === 'admin';
+      if (storedPass) {
+        isValid = storedPass === hash || storedPass === cleanPass;
+      } else {
+        isValid = isPrimaryAdmin ? cleanPass === 'admin123' : cleanPass === 'das12345';
+      }
     }
 
     if (!isValid || !userData) {
@@ -49,22 +45,26 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       });
     }
 
-    // Set simple session cookie
-    cookies.set('iela_session', JSON.stringify({
+    const sessionToken = createIelaSessionToken({
       userId: userData.user_id,
       username: userData.username_nim,
       nama: userData.nama_lengkap,
       role: userData.role
-    }), {
+    });
+
+    cookies.set('iela_session', sessionToken, {
       path: '/',
       httpOnly: true,
+      sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7 // 7 days
     });
 
     return new Response(JSON.stringify({
       success: true,
       message: 'Login berhasil!',
+      token: sessionToken,
       user: {
+        userId: userData.user_id,
         username: userData.username_nim,
         nama: userData.nama_lengkap,
         role: userData.role
@@ -81,4 +81,3 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
   }
 };
-

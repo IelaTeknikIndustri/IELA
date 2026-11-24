@@ -1,8 +1,16 @@
 import type { APIRoute } from 'astro';
-import { supabaseAdmin, supabase } from '../../../lib/supabase';
+import { supabaseAdmin, supabase, getAuthenticatedIelaUser } from '../../../lib/supabase';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
+    const authUser = getAuthenticatedIelaUser(request, cookies);
+    if (!authUser || String(authUser.role || '').toLowerCase() === 'pendaftar') {
+      return new Response(JSON.stringify({ success: false, message: 'Akses ditolak: Silakan login sebagai Admin/Pengurus untuk mengunggah galeri.' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const judul = formData.get('judul') as string;

@@ -1,9 +1,17 @@
 import type { APIRoute } from 'astro';
-import { supabaseAdmin, supabase } from '../../../lib/supabase';
+import { supabaseAdmin, supabase, getAuthenticatedIelaUser } from '../../../lib/supabase';
 import { buildStatusEmailHtml } from '../../../utils/emailTemplate';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
+    const authUser = getAuthenticatedIelaUser(request, cookies);
+    if (!authUser || String(authUser.role || '').toLowerCase() === 'pendaftar') {
+      return new Response(JSON.stringify({ success: false, message: 'Akses ditolak: Hanya Admin dan Penguji yang berwenang memproses rekap seleksi.' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     const { action, candidates, customNote, sendEmail } = await request.json();
 
     if (!action || !candidates || !Array.isArray(candidates) || candidates.length === 0) {

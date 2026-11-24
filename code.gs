@@ -21,72 +21,16 @@ function findHeaderColumnIndex(headers, possibleNames, defaultIndex) {
 
 function doGet(e) {
   try {
-    if (e && e.parameter && (e.parameter.action === 'clearUserValidations' || e.parameter.action === 'clearValidations')) {
-      var ss = getSpreadsheet();
-      var uSheet = ss.getSheetByName("USERS");
-      if (uSheet) {
-        try { uSheet.getDataRange().clearDataValidations(); } catch (e1) {}
-        try { uSheet.getRange(1, 1, Math.max(uSheet.getMaxRows(), 1), Math.max(uSheet.getMaxColumns(), 1)).clearDataValidations(); } catch (e2) {}
-      }
-      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Seluruh aturan validasi kaku pada sheet USERS berhasil dibersihkan!" })).setMimeType(ContentService.MimeType.JSON);
-    }
-
-    if (e && e.parameter && (e.parameter.action === 'sendTestLolosEmail' || e.parameter.action === 'testEmail')) {
-      var to = e.parameter.to || 'luqmanf667@gmail.com';
-      var nama = e.parameter.nama || 'M. Luqman Firdaus';
-      var npm = e.parameter.npm || '1411230105';
-      var status = e.parameter.status || 'Lolos Asisten Lab 2027';
-      var note = e.parameter.note || '';
-      var result = sendTestLolosEmail(to, nama, npm, status, note);
-      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-    }
-
-    if (e && e.parameter && (e.parameter.action === 'sendTestTidakLolosEmail' || e.parameter.action === 'testTidakLolosEmail')) {
-      var to = e.parameter.to || 'luqmanf667@gmail.com';
-      var nama = e.parameter.nama || 'M. Luqman Firdaus';
-      var npm = e.parameter.npm || '1411230105';
-      var note = e.parameter.note || '';
-      var result = sendTestTidakLolosEmail(to, nama, npm, note);
-      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-    }
-
     return HtmlService.createHtmlOutputFromFile('index')
       .setTitle('IELA WebApp - Profil & Recruitment Portal 2027-2028')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
   } catch (err) {
     return HtmlService.createHtmlOutput("<h3>Server Error: " + err.toString() + "</h3>");
   }
 }
 
 function doPost(e) {
-  try {
-    var params = (e && e.parameter) || {};
-    var postData = {};
-    if (e && e.postData && e.postData.contents) {
-      try {
-        postData = JSON.parse(e.postData.contents);
-      } catch (ex) {}
-    }
-    var action = params.action || postData.action;
-    if (action === 'sendTestLolosEmail' || action === 'testEmail') {
-      var to = params.to || postData.to || 'luqmanf667@gmail.com';
-      var nama = params.nama || postData.nama || 'M. Luqman Firdaus';
-      var npm = params.npm || postData.npm || '1411230105';
-      var status = params.status || postData.status || 'Lolos Asisten Lab 2027';
-      var note = params.note || postData.note || '';
-      var result = sendTestLolosEmail(to, nama, npm, status, note);
-      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-    }
-    if (action === 'sendTestTidakLolosEmail' || action === 'testTidakLolosEmail') {
-      var to = params.to || postData.to || 'luqmanf667@gmail.com';
-      var nama = params.nama || postData.nama || 'M. Luqman Firdaus';
-      var npm = params.npm || postData.npm || '1411230105';
-      var note = params.note || postData.note || '';
-      var result = sendTestTidakLolosEmail(to, nama, npm, note);
-      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-    }
-  } catch (err) {}
   return doGet(e);
 }
 

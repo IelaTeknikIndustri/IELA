@@ -61,10 +61,11 @@ function setupDatabase() {
     return (jClean && bClean && bClean !== "-") ? (jClean + " / " + bClean) : (jClean || bClean || "-");
   }
 
+  var defaultPassHash = "79f0441c3b8f6cedad861c9fe892d1e67cfcbe45e58ab2257c8c170f494549d8";
   var initialUsers = [
-    ["USR-001", "admin", "das12345", "Koordinator Utama IELA", "admin@iela.unirow.ac.id", "Admin", true, "Manajemen Lab", "Koordinator Utama", "Koordinator Utama / Manajemen Lab"],
-    ["USR-002", "penguji1", "das12345", "Ir. Budi Santoso, M.T.", "budi@iela.unirow.ac.id", "Penguji", true, "1. Fisika", "Penguji Wawancara", "Penguji Wawancara / Fisika"],
-    ["USR-003", "penguji2", "das12345", "Siti Aminah, S.T., M.T.", "siti@iela.unirow.ac.id", "Penguji", true, "2. Ergonomi", "Penguji Wawancara", "Penguji Wawancara / Ergonomi"]
+    ["USR-001", "admin", defaultPassHash, "Koordinator Utama IELA", "admin@iela.unirow.ac.id", "Admin", true, "Manajemen Lab", "Koordinator Utama", "Koordinator Utama / Manajemen Lab"],
+    ["USR-002", "penguji1", defaultPassHash, "Ir. Budi Santoso, M.T.", "budi@iela.unirow.ac.id", "Penguji", true, "1. Fisika", "Penguji Wawancara", "Penguji Wawancara / Fisika"],
+    ["USR-003", "penguji2", defaultPassHash, "Siti Aminah, S.T., M.T.", "siti@iela.unirow.ac.id", "Penguji", true, "2. Ergonomi", "Penguji Wawancara", "Penguji Wawancara / Ergonomi"]
   ];
 
   for (var k = 0; k < aslabList.length; k++) {
@@ -72,7 +73,7 @@ function setupDatabase() {
     var uId = "USR-" + String(100 + k);
     var emailVal = "mhs" + item.npm + "@student.unirow.ac.id";
     initialUsers.push([
-      uId, item.npm, "das12345", item.nama, emailVal, "Anggota", true, item.bidang, item.jabatan, formatSeedJabBid_(item.jabatan, item.bidang)
+      uId, item.npm, defaultPassHash, item.nama, emailVal, "Anggota", true, item.bidang, item.jabatan, formatSeedJabBid_(item.jabatan, item.bidang)
     ]);
   }
 

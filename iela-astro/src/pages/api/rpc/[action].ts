@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { supabase, supabaseAdmin } from '../../../lib/supabase';
+import { supabase, supabaseAdmin, createIelaSessionToken, getAuthenticatedIelaUser } from '../../../lib/supabase';
 import crypto from 'crypto';
 import dbSeedRaw from '../../../data/db_seed.json';
 
@@ -10,9 +10,31 @@ function hashPassword(str: string): string {
   return crypto.createHash('sha256').update(String(str).trim()).digest('hex');
 }
 
-export const POST: APIRoute = async ({ params, request }) => {
-  const action = params.action;
+const STAFF_PROTECTED_ACTIONS = new Set([
+  'savePenilaian',
+  'updatePendaftarStatusAndNotify',
+  'batchUpdatePendaftarStatusAndNotify',
+  'deletePendaftar',
+  'cleanupRejectedAndDraftPendaftar',
+  'resetAllRecruitmentData',
+  'importRecruitmentBackup',
+  'saveOrUpdateUser',
+  'deleteUserAccount',
+  'savePengaturan',
+  'savePengaturanMulti',
+  'saveCmsSettings',
+  'simpanPengumuman',
+  'hapusPengumuman',
+  'saveOrUpdateKonten',
+  'deleteKontenItem',
+  'simpanPublikasi',
+  'hapusPublikasi'
+]);
+
+export const POST: APIRoute = async ({ params, request, cookies }) => {
+  const action = params.action || '';
   const client = supabaseAdmin || supabase;
+  const authUser = getAuthenticatedIelaUser(request, cookies);
 
   try {
     let body: any = {};
@@ -20,6 +42,21 @@ export const POST: APIRoute = async ({ params, request }) => {
       body = await request.json();
     } catch (e) {
       body = {};
+    }
+
+    if (STAFF_PROTECTED_ACTIONS.has(action)) {
+      if (!authUser) {
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'Akses ditolak: Sesi login tidak valid atau telah berakhir. Silakan login kembali.'
+        }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+      }
+      if (String(authUser.role || '').toLowerCase() === 'pendaftar') {
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'Akses ditolak: Anda tidak memiliki hak akses Administrator / Penguji untuk aksi ini.'
+        }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+      }
     }
 
     const args = Array.isArray(body.args) ? body.args : [body];
@@ -50,65 +87,107 @@ export const POST: APIRoute = async ({ params, request }) => {
         ]);
 
         if (!usersRes.error && usersRes.data && usersRes.data.length > 0) {
-          const USERS = usersRes.data.map((u: any) => ({
-            User_ID: u.user_id,
-            user_id: u.user_id,
-            Username_NIM: u.username_nim,
-            username_nim: u.username_nim,
-            Nama_Lengkap: u.nama_lengkap,
-            nama_lengkap: u.nama_lengkap,
-            Email: u.email || '',
-            email: u.email || '',
-            Role: u.role,
-            role: u.role,
-            Status_Aktif: (u.status_aktif !== false && u.status_aktif !== 'Non-Aktif' && String(u.status_aktif).toLowerCase() !== 'false'),
-            status_aktif: u.status_aktif,
-            Bidang_Divisi: u.bidang_divisi || '',
-            bidang_divisi: u.bidang_divisi || '',
-            Jabatan_Divisi: u.jabatan_divisi || '',
-            jabatan_divisi: u.jabatan_divisi || '',
-            Jabatan_Bidang: u.jabatan_bidang || ''
-          }));
+          const isAuthenticated = Boolean(authUser);
+          const isStaff = isAuthenticated && String(authUser?.role || '').toLowerCase() !== 'pendaftar';
 
-          const PENDAFTAR = (pendaftarRes.data || []).map((p: any) => ({
-            Pendaftar_ID: p.pendaftar_id,
-            pendaftar_id: p.pendaftar_id,
-            NIM: p.nim,
-            nim: p.nim,
-            Nama: p.nama,
-            nama: p.nama,
-            Nama_Panggilan: p.nama_panggilan || '',
-            Jenis_Kelamin: p.jenis_kelamin || '',
-            TTL: p.ttl || '',
-            Alamat_Asal: p.alamat_asal || '',
-            Alamat_Sekarang: p.alamat_sekarang || '',
-            No_HP: p.no_hp || '',
-            Hobby: p.hobby || '',
-            Cita_Cita: p.cita_cita || '',
-            Motto_Hidup: p.motto_hidup || '',
-            Semester: p.semester || '3',
-            Prodi: p.prodi || 'Teknik Industri',
-            IPK: p.ipk || 0,
-            Bidang_Pilihan_1: p.bidang_pilihan_1 || '',
-            Bidang_Pilihan_2: p.bidang_pilihan_2 || '',
-            Keterampilan: p.keterampilan || '',
-            Motivasi: p.motivasi || '',
-            Target_IELA: p.target_iela || '',
-            Riwayat_Organisasi: p.riwayat_organisasi || '',
-            Pelatihan_Diikuti: p.pelatihan_diikuti || '',
-            Buku_Diresume: p.buku_diresume || '',
-            URL_Foto: p.url_foto || '',
-            URL_KHS: p.url_khs || '',
-            URL_CV: p.url_cv || '',
-            URL_Sertifikat: p.url_sertifikat || '',
-            URL_Resume: p.url_resume || '',
-            URL_Jurnal_Referensi: p.url_jurnal_referensi || '',
-            URL_Follow_IG: p.url_follow_ig || '',
-            URL_Follow_TikTok: p.url_follow_tiktok || '',
-            Status_Pendaftaran: p.status_pendaftaran || 'Submitted',
-            status_pendaftaran: p.status_pendaftaran || 'Submitted',
-            QR_Code_ID: p.qr_code_id || ''
-          }));
+          const PENDAFTAR = (pendaftarRes.data || []).map((p: any) => {
+            const isOwnRecord = isAuthenticated && (
+              String(p.nim || '').trim().replace(/\.0$/, '') === String(authUser?.username || '').trim().replace(/\.0$/, '') ||
+              String(p.pendaftar_id || '').trim() === String(authUser?.userId || '').trim()
+            );
+            const canSeePii = isStaff || isOwnRecord;
+
+            return {
+              Pendaftar_ID: p.pendaftar_id,
+              pendaftar_id: p.pendaftar_id,
+              NIM: p.nim,
+              nim: p.nim,
+              Nama: p.nama,
+              nama: p.nama,
+              Nama_Panggilan: p.nama_panggilan || '',
+              Jenis_Kelamin: p.jenis_kelamin || '',
+              TTL: canSeePii ? (p.ttl || '') : '',
+              Alamat_Asal: canSeePii ? (p.alamat_asal || '') : '',
+              Alamat_Sekarang: canSeePii ? (p.alamat_sekarang || '') : '',
+              No_HP: canSeePii ? (p.no_hp || '') : '',
+              Hobby: canSeePii ? (p.hobby || '') : '',
+              Cita_Cita: canSeePii ? (p.cita_cita || '') : '',
+              Motto_Hidup: canSeePii ? (p.motto_hidup || '') : '',
+              Semester: p.semester || '3',
+              Prodi: p.prodi || 'Teknik Industri',
+              IPK: canSeePii ? (p.ipk || 0) : 0,
+              Bidang_Pilihan_1: p.bidang_pilihan_1 || '',
+              Bidang_Pilihan_2: p.bidang_pilihan_2 || '',
+              Keterampilan: canSeePii ? (p.keterampilan || '') : '',
+              Motivasi: canSeePii ? (p.motivasi || '') : '',
+              Target_IELA: canSeePii ? (p.target_iela || '') : '',
+              Riwayat_Organisasi: canSeePii ? (p.riwayat_organisasi || '') : '',
+              Pelatihan_Diikuti: canSeePii ? (p.pelatihan_diikuti || '') : '',
+              Buku_Diresume: canSeePii ? (p.buku_diresume || '') : '',
+              URL_Foto: canSeePii ? (p.url_foto || '') : '',
+              URL_KHS: canSeePii ? (p.url_khs || '') : '',
+              URL_CV: canSeePii ? (p.url_cv || '') : '',
+              URL_Sertifikat: canSeePii ? (p.url_sertifikat || '') : '',
+              URL_Resume: canSeePii ? (p.url_resume || '') : '',
+              URL_Jurnal_Referensi: canSeePii ? (p.url_jurnal_referensi || '') : '',
+              URL_Follow_IG: canSeePii ? (p.url_follow_ig || '') : '',
+              URL_Follow_TikTok: canSeePii ? (p.url_follow_tiktok || '') : '',
+              Status_Pendaftaran: p.status_pendaftaran || 'Submitted',
+              status_pendaftaran: p.status_pendaftaran || 'Submitted',
+              QR_Code_ID: p.qr_code_id || ''
+            };
+          });
+
+          const pendaftarByNim = new Map<string, any>();
+          for (const p of PENDAFTAR) {
+            const normNim = String(p.NIM || '').trim().replace(/\.0$/, '');
+            if (normNim) pendaftarByNim.set(normNim, p);
+          }
+
+          const USERS = usersRes.data.map((u: any) => {
+            const normNim = String(u.username_nim || '').trim().replace(/\.0$/, '');
+            const matchedPendaftar = pendaftarByNim.get(normNim);
+            const roleStr = String(u.role || '').trim();
+            let bidangDiv = String(u.bidang_divisi || '').trim();
+            let jabatanDiv = String(u.jabatan_divisi || '').trim();
+            let jabatanBidang = String(u.jabatan_bidang || '').trim();
+
+            const isGenericCandLabel = (val: string) =>
+              !val || /praktikan|calon asisten|^pendaftar$/i.test(val.trim());
+
+            if (roleStr.toLowerCase() !== 'pendaftar' && matchedPendaftar) {
+              const pil1 = String(matchedPendaftar.Bidang_Pilihan_1 || '').trim();
+              if (isGenericCandLabel(bidangDiv) && pil1) {
+                bidangDiv = pil1;
+              }
+              if (isGenericCandLabel(jabatanDiv)) {
+                jabatanDiv = 'Anggota Sub-Lab';
+              }
+              if (isGenericCandLabel(jabatanBidang) || /praktikan|calon asisten|pendaftar/i.test(jabatanBidang)) {
+                jabatanBidang = bidangDiv ? `Anggota / ${bidangDiv}` : jabatanDiv;
+              }
+            }
+
+            return {
+              User_ID: u.user_id,
+              user_id: u.user_id,
+              Username_NIM: u.username_nim,
+              username_nim: u.username_nim,
+              Nama_Lengkap: u.nama_lengkap,
+              nama_lengkap: u.nama_lengkap,
+              Email: u.email || '',
+              email: u.email || '',
+              Role: u.role,
+              role: u.role,
+              Status_Aktif: (u.status_aktif !== false && u.status_aktif !== 'Non-Aktif' && String(u.status_aktif).toLowerCase() !== 'false'),
+              status_aktif: u.status_aktif,
+              Bidang_Divisi: bidangDiv,
+              bidang_divisi: bidangDiv,
+              Jabatan_Divisi: jabatanDiv,
+              jabatan_divisi: jabatanDiv,
+              Jabatan_Bidang: jabatanBidang
+            };
+          });
 
           const PROFIL_KONTEN = (profilRes.data || []).map((k: any) => ({
             Konten_ID: k.konten_id,
@@ -136,7 +215,7 @@ export const POST: APIRoute = async ({ params, request }) => {
             Tanggal_Kegiatan: g.tanggal_kegiatan
           }));
 
-          const PENILAIAN_REKAP = (penilaianRes.data || []).map((p: any) => ({
+          const PENILAIAN_REKAP = isStaff ? (penilaianRes.data || []).map((p: any) => ({
             Penilaian_ID: p.penilaian_id,
             id: p.penilaian_id,
             Pendaftar_ID: p.pendaftar_id,
@@ -158,7 +237,7 @@ export const POST: APIRoute = async ({ params, request }) => {
             Tanggal_Penilaian: p.tanggal_penilaian || p.created_at,
             Nama_Pendaftar: p.nama_pendaftar || '',
             Nama_Penilai: p.nama_penilai || ''
-          }));
+          })) : [];
 
           const PENGUMUMAN = (pengumumanRes.data || []).map((p: any) => ({
             Pengumuman_ID: p.pengumuman_id,
@@ -296,15 +375,24 @@ export const POST: APIRoute = async ({ params, request }) => {
           }
 
           if (isMatch) {
+            const userPayload = {
+              userId: u.user_id,
+              username: u.username_nim,
+              nama: u.nama_lengkap,
+              role: u.role,
+              jabatanBidang: u.jabatan_bidang || `${u.jabatan_divisi || ''} / ${u.bidang_divisi || ''}`.trim()
+            };
+            const token = createIelaSessionToken(userPayload);
+            cookies.set('iela_session', token, {
+              path: '/',
+              httpOnly: true,
+              sameSite: 'lax',
+              maxAge: 60 * 60 * 24 * 7
+            });
             return new Response(JSON.stringify({
               success: true,
-              user: {
-                userId: u.user_id,
-                username: u.username_nim,
-                nama: u.nama_lengkap,
-                role: u.role,
-                jabatanBidang: u.jabatan_bidang || `${u.jabatan_divisi || ''} / ${u.bidang_divisi || ''}`.trim()
-              }
+              token,
+              user: userPayload
             }), { headers: { 'Content-Type': 'application/json' } });
           }
 
@@ -327,15 +415,24 @@ export const POST: APIRoute = async ({ params, request }) => {
         if (pendaftarList && pendaftarList.length > 0) {
           const p = pendaftarList[0];
           if (password === 'das12345') {
+            const userPayload = {
+              userId: p.pendaftar_id,
+              username: p.nim,
+              nama: p.nama,
+              role: 'Pendaftar',
+              jabatanBidang: p.bidang_pilihan_1 || 'Calon Asisten'
+            };
+            const token = createIelaSessionToken(userPayload);
+            cookies.set('iela_session', token, {
+              path: '/',
+              httpOnly: true,
+              sameSite: 'lax',
+              maxAge: 60 * 60 * 24 * 7
+            });
             return new Response(JSON.stringify({
               success: true,
-              user: {
-                userId: p.pendaftar_id,
-                username: p.nim,
-                nama: p.nama,
-                role: 'Pendaftar',
-                jabatanBidang: p.bidang_pilihan_1 || 'Calon Asisten'
-              }
+              token,
+              user: userPayload
             }), { headers: { 'Content-Type': 'application/json' } });
           }
 
@@ -362,15 +459,24 @@ export const POST: APIRoute = async ({ params, request }) => {
             : (isPrimaryAdmin ? password === 'admin123' : password === 'das12345');
 
           if (isMatch) {
+            const userPayload = {
+              userId: foundUser.User_ID || foundUser.user_id,
+              username: foundUser.Username_NIM || foundUser.username_nim,
+              nama: foundUser.Nama_Lengkap || foundUser.nama_lengkap,
+              role: foundUser.Role || foundUser.role,
+              jabatanBidang: foundUser.Jabatan_Bidang || foundUser.jabatan_bidang || ''
+            };
+            const token = createIelaSessionToken(userPayload);
+            cookies.set('iela_session', token, {
+              path: '/',
+              httpOnly: true,
+              sameSite: 'lax',
+              maxAge: 60 * 60 * 24 * 7
+            });
             return new Response(JSON.stringify({
               success: true,
-              user: {
-                userId: foundUser.User_ID || foundUser.user_id,
-                username: foundUser.Username_NIM || foundUser.username_nim,
-                nama: foundUser.Nama_Lengkap || foundUser.nama_lengkap,
-                role: foundUser.Role || foundUser.role,
-                jabatanBidang: foundUser.Jabatan_Bidang || foundUser.jabatan_bidang || ''
-              }
+              token,
+              user: userPayload
             }), { headers: { 'Content-Type': 'application/json' } });
           }
         }
@@ -672,10 +778,24 @@ export const POST: APIRoute = async ({ params, request }) => {
       const newStatus = String(payload.newStatus || '').trim();
 
       try {
+        let pRow: any = null;
         if (pId) {
-          await client.from('pendaftar').update({ status_pendaftaran: newStatus }).eq('pendaftar_id', pId);
+          const { data } = await client.from('pendaftar').update({ status_pendaftaran: newStatus }).eq('pendaftar_id', pId).select('*').maybeSingle();
+          pRow = data;
         } else if (npm) {
-          await client.from('pendaftar').update({ status_pendaftaran: newStatus }).eq('nim', npm);
+          const { data } = await client.from('pendaftar').update({ status_pendaftaran: newStatus }).eq('nim', npm).select('*').maybeSingle();
+          pRow = data;
+        }
+        const stLower = newStatus.toLowerCase();
+        const isFinalPass = (stLower.includes('iela') || stLower.includes('asisten') || stLower === 'lolos') && !stLower.includes('tidak') && !stLower.includes('berkas');
+        const targetNim = (pRow?.nim || npm || '').trim().replace(/\.0$/, '');
+        if (isFinalPass && targetNim) {
+          const pil1 = String(pRow?.bidang_pilihan_1 || '').trim() || 'Sub-Laboratorium';
+          await client.from('users_profile').update({
+            role: 'Anggota',
+            bidang_divisi: pil1,
+            jabatan_divisi: 'Anggota Sub-Lab'
+          }).eq('username_nim', targetNim);
         }
       } catch (e) {
         console.error('Failed to update status in Supabase:', e);

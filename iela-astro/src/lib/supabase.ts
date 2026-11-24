@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
 
 const defaultUrl = 'https://nlvzvpajpngxhlllbtsq.supabase.co';
 const defaultKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.placeholder';
@@ -16,6 +17,54 @@ export const supabaseAdmin = supabaseServiceKey
       auth: { autoRefreshToken: false, persistSession: false }
     })
   : supabase;
+
+const SESSION_HMAC_SECRET = supabaseServiceKey || 'iela-unirow-hmac-secret-2026';
+
+export interface IelaSessionUser {
+  userId?: string;
+  username: string;
+  nama: string;
+  role: string;
+  iat?: number;
+}
+
+export function createIelaSessionToken(user: IelaSessionUser): string {
+  const payload = Buffer.from(JSON.stringify({
+    userId: user.userId || '',
+    username: user.username,
+    nama: user.nama,
+    role: user.role,
+    iat: Date.now()
+  }), 'utf-8').toString('base64url');
+  const sig = crypto.createHmac('sha256', SESSION_HMAC_SECRET).update(payload).digest('base64url');
+  return `${payload}.${sig}`;
+}
+
+export function verifyIelaSessionToken(token?: string | null): IelaSessionUser | null {
+  if (!token || typeof token !== 'string' || !token.includes('.')) return null;
+  const [payload, sig] = token.split('.');
+  if (!payload || !sig) return null;
+  const expected = crypto.createHmac('sha256', SESSION_HMAC_SECRET).update(payload).digest('base64url');
+  if (sig.length !== expected.length) return null;
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+  try {
+    return JSON.parse(Buffer.from(payload, 'base64url').toString('utf-8')) as IelaSessionUser;
+  } catch {
+    return null;
+  }
+}
+
+export function getAuthenticatedIelaUser(request: Request, cookies?: any): IelaSessionUser | null {
+  const headerToken = request.headers.get('x-iela-token');
+  const fromHeader = verifyIelaSessionToken(headerToken);
+  if (fromHeader) return fromHeader;
+
+  const cookieVal = cookies?.get?.('iela_session')?.value;
+  const fromCookie = verifyIelaSessionToken(cookieVal);
+  if (fromCookie) return fromCookie;
+
+  return null;
+}
 
 export interface Pendaftar {
   pendaftar_id: string;

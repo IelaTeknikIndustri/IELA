@@ -7,8 +7,19 @@ package-lock.json
 
 # Environment & Temporary files
 .env
-.env.local
+.env.*
+!.env.example
+!iela-astro/.env.example
 .DS_Store
 Thumbs.db
 *.log
-mcp-server/.google-token.json
+mcp-server/
+scratch/
+.agents/
+.taste-skill/
+.continue/
+.vscode/
+*.xlsx
+*.csv
+temp_*.html
+step
